@@ -92,6 +92,44 @@ namespace s1_problems {
 		output << res;
 	}
 	/*-------------------------------------------------------------------------*/
+	bool CheckRightDay(std::vector<int>& vec, size_t i) { // Right - shift to +1 of i day
+		return vec[i] > vec[i + 1];
+	}
+
+	bool CheckLeftDay(std::vector<int>& vec, size_t i) { // Left - shift to -1 of i day
+		return vec[i] > vec[i - 1];
+	}
+
+	void D_WeatherRandomness(std::istream& input, std::ostream& output) {
+		int n;
+		input >> n;
+		if (n == 0) { // if no data - NO randomness days
+			output << 0;
+			return;
+		}
+		else if (n == 1) { // if data for 1 day only - 1 randomness day
+			output << 1;
+			return;
+		}
+		// other conditions
+		std::vector<int> vec(n); 
+		for (int i = 0; i < n; ++i) {
+			int num;
+			input >> num;
+			vec[i] = num;
+		}
+
+		int cnt = 0;
+		for (size_t i = 0; i < vec.size(); ++i) {
+			if (i == 0 && CheckRightDay(vec, i) 
+				|| i == vec.size() - 1 && CheckLeftDay(vec, i)
+				|| i > 0 && i < vec.size() - 1 && CheckLeftDay(vec, i) && CheckRightDay(vec, i)
+				) {
+				++cnt;
+			}			
+		}
+		output << cnt;
+	}
 }
 
 namespace s1_tests {
@@ -145,6 +183,21 @@ namespace s1_tests {
 			std::ostringstream output(std::ios_base::ate);
 			s1_problems::C_Neighbours(input, output);
 			assert(output.str() == "0 2"s);
+		}
+	}
+	/*-------------------------------------------------------------------------*/
+	void D_WeatherRandomness_test() {
+		{
+			std::istringstream input("7\n-1 -10 -8 0 2 0 5"s);
+			std::ostringstream output(std::ios_base::ate);
+			s1_problems::D_WeatherRandomness(input, output);
+			assert(output.str() == "3"s);
+		}
+		{
+			std::istringstream input("5\n1 2 5 4 8"s);
+			std::ostringstream output(std::ios_base::ate);
+			s1_problems::D_WeatherRandomness(input, output);
+			assert(output.str() == "2"s);
 		}
 	}
 }
