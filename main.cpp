@@ -18,5 +18,12 @@ int main()
     //s1_problems::C_Neighbours(input_file, output_file);
     //s1_problems::D_WeatherRandomness(input_file, output_file);
     //s1_problems::E_LongestWord(input_file, output_file);
-    s1_problems::F_Palindrome(input_file, output_file);
+    //s1_problems::F_Palindrome(input_file, output_file);
+    //s1_problems::G_WorkFromHome(input_file, output_file);
+    //s1_problems::H_BinarySystem(input_file, output_file);
+    //s1_problems::I_PowerOfFour(input_file, output_file);
+    //s1_problems::J_Factorization(input_file, output_file);
+    //s1_problems::K_ListForm(input_file, output_file);
+    s1_problems::L_ExtraLetter(input_file, output_file);
 }
+

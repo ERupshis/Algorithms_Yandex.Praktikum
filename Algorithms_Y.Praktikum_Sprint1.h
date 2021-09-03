@@ -7,6 +7,7 @@
 #include <cmath>
 #include <vector>
 #include <algorithm>
+#include <unordered_map>
 
 namespace s1_problems {
 	using namespace std::literals;
@@ -54,7 +55,8 @@ namespace s1_problems {
 		}
 	}
 
-	std::ostream& operator<< (std::ostream& out, std::vector<int>& vector) {
+	template <typename type>
+	std::ostream& operator<< (std::ostream& out, std::vector<type>& vector) {
 		bool f = false;
 		for (size_t i = 0; i < vector.size(); ++i) {
 			if (f) {
@@ -161,7 +163,7 @@ namespace s1_problems {
 		}
 		return res;
 	}
-
+	/*-------------------------------------------------------------------------*/
 	void F_Palindrome(std::istream& input, std::ostream& output) {
 		std::string in_str;
 		std::getline(input, in_str);
@@ -176,6 +178,228 @@ namespace s1_problems {
 			++i;
 		}
 		output << "True"s;		
+	}
+	/*-------------------------------------------------------------------------*/
+	void G_WorkFromHome(std::istream& input, std::ostream& output) { // convert dec int into binary
+		int num;
+		input >> num;
+
+		std::string reversed_res;
+		while (num != 0) {
+			reversed_res.push_back((num % 2) ? '1' : '0');
+			num /= 2;
+		}
+		std::string res(reversed_res.rbegin(), reversed_res.rend());
+		output << res;
+	}
+	/*-------------------------------------------------------------------------*/
+	void H_BinarySystem(std::istream& input, std::ostream& output) { // sum to binary numbers
+		std::string a, b;
+		input >> a >> b;
+		
+		if (a.size() < b.size()) {
+			a.swap(b); // a is always > or == to b
+		}		
+
+		std::string rev_res;
+		int buf = 0;
+		for (size_t i = 0; i < a.size(); ++i) {
+			int sum = (i < b.size()) ? (b[b.size() - 1 - i] - '0') + (a[a.size() - 1 - i] - '0') + buf : (a[a.size() - 1 - i] - '0') + buf;
+			if (sum == 3) { // buf stays 1
+				rev_res.push_back('1');
+			}
+			else if (sum == 2) {
+				rev_res.push_back('0');
+				buf = 1;
+			}
+			else if (sum == 1) {
+				rev_res.push_back('1');
+				buf = 0;
+			}
+			else {
+				rev_res.push_back('0');
+			}				
+		}
+		if (buf) {
+			rev_res.push_back('1');
+		}
+
+		std::string res(rev_res.rbegin(), rev_res.rend());
+		output << res;		
+	}
+	/*-------------------------------------------------------------------------*/
+	void I_PowerOfFour(std::istream& input, std::ostream& output) { // check if input is the power of 4
+		int num;
+		input >> num;
+
+		while (num != 1) {			
+			if (num % 4 != 0) {
+				output << "False"s;
+				return;
+			}
+			num /= 4;
+		}
+
+		output << "True"s;
+	}
+	/*-------------------------------------------------------------------------*/
+	std::vector<int> FillVectorByIndexes(int num) {
+		std::vector<int> res(num + 1);
+		for (size_t i = 0; i < res.size(); ++i) {
+			res[i] = i;
+		}
+
+		return res;
+	}
+
+	std::vector<int> EratothenesSieve(int num) { // return vector of prime numbers only from 2 up to num // O(n*log(log n))
+		std::vector<int> vec = std::move(FillVectorByIndexes(num));
+		if (num <= 2) {
+			return { 0 };
+		} 
+
+		vec[1] = 0;
+		for (size_t i = 2; i < vec.size(); ++i) { // 
+			if (vec[i]) { // if number with ind i is not equal to 0
+				for (size_t j = i * i; j < vec.size(); j += i) {
+					vec[j] = 0;
+				}
+			}
+		}
+
+		std::vector<int> res;
+		for (size_t i = 0; i < vec.size(); ++i) {
+			if (vec[i]) {
+				res.push_back(vec[i]);
+			}
+		}
+
+		return res;
+	}
+
+	std::vector<int> LinearSieve(int num) {
+		std::vector<int> least_prime(num + 1);
+		std::vector<int> primes; // result of function
+		if (num <= 2) {
+			return { 0 };
+		}
+
+		for (size_t i = 2; i < least_prime.size(); ++i) {
+			if (least_prime[i] == 0) { // if least prime is 0, suppose that i is prime
+				least_prime[i] = i;
+				primes.push_back(i);
+			}
+			for (auto p : primes) {
+				size_t x = p * i;
+				if (p > least_prime[i] || x > least_prime.size() - 1) {
+					break;
+				}
+				least_prime[x] = p;
+			}
+		}
+		return primes;
+	}
+
+	void J_Factorization(std::istream& input, std::ostream& output) {
+		int in_num;
+		input >> in_num;
+		std::vector<int> prime_multipliers;
+		/*//std::vector<int> primes = std::move(EratothenesSieve(in_num));	//can't handle too big numbers	
+		//std::vector<int> primes = std::move(LinearSieve(in_num));	
+		for (int p : primes) {
+			if (in_num == 1) {
+				break;
+			}
+			while (in_num % p == 0) {
+				prime_multipliers.push_back(p);
+				in_num /= p;
+			}
+		}*/
+		int max_num = in_num;
+		for (int i = 2; i <= max_num; ++i) {
+			if (in_num == 1 || in_num < i) {
+				break;
+			}
+			while (in_num % i == 0) {
+				prime_multipliers.push_back(i);
+				in_num /= i;
+			}
+		}
+		
+		if (in_num != 1) { // remains after division on primes is prime itself 
+			prime_multipliers.push_back(in_num);
+		}
+
+		output << prime_multipliers;
+	}
+	/*-------------------------------------------------------------------------*/
+	std::vector<int> FillVectorFromStream(std::istream& input, int cnt) {
+		std::vector<int> res;
+		res.reserve(cnt);
+
+		for (int i = 0; i < cnt; ++i) {
+			int num;
+			input >> num;
+			res.push_back(num);
+		}
+
+		return res;
+	}
+
+	void K_ListForm(std::istream& input, std::ostream& output) {
+		int cnt;
+		input >> cnt;
+		std::vector<int> in_vec = std::move(FillVectorFromStream(input, cnt));		
+		int addend;
+		input >> addend;
+		
+		std::vector<int> reversed_res;
+		for (auto it = in_vec.rbegin(); it != in_vec.rend(); ++it) {
+			int tmp = *it + addend;
+			if (tmp < 10) { 
+				reversed_res.push_back(tmp);
+			}
+			else { // we need to move remains higher
+				reversed_res.push_back(tmp % 10);				
+				
+			}
+			addend = tmp / 10; // NA for numbers with 0 i nthe begining
+		}
+
+		while (addend != 0) { // if addend number is bigger than first
+			reversed_res.push_back(addend % 10);
+			addend /= 10;
+		}
+
+		std::vector<int> res(reversed_res.rbegin(), reversed_res.rend());
+
+		output << res;
+	}
+	/*-------------------------------------------------------------------------*/
+	std::unordered_map<char, int> FillCharsDict(std::string& str) {
+		std::unordered_map<char, int> dict;
+
+		for (size_t i = 0; i < str.size(); ++i) {
+			dict[str[i]] += 1;
+		}
+
+		return dict;
+	}
+
+	void L_ExtraLetter(std::istream& input, std::ostream& output) {
+		std::string s, t;
+		input >> s >> t;
+
+		std::unordered_map<char, int> dict_s, dict_t;
+		dict_s = std::move(FillCharsDict(s));
+		dict_t = std::move(FillCharsDict(t));		
+
+		for (auto elem : dict_t) {
+			if (!dict_s.count(elem.first) || elem.second != dict_s.at(elem.first)) {
+				output << elem.first;
+				break;
+			}
+		}
 	}
 }
 
@@ -275,6 +499,168 @@ namespace s1_tests {
 			std::ostringstream output(std::ios_base::ate);
 			s1_problems::F_Palindrome(input, output);
 			assert(output.str() == "False"s);
+		}
+	}
+	/*-------------------------------------------------------------------------*/
+	void G_WorkFromHome_test() {
+		{
+			std::istringstream input("5"s);
+			std::ostringstream output(std::ios_base::ate);
+			s1_problems::G_WorkFromHome(input, output);
+			assert(output.str() == "101"s);
+		}
+		{
+			std::istringstream input("14"s);
+			std::ostringstream output(std::ios_base::ate);
+			s1_problems::G_WorkFromHome(input, output);
+			assert(output.str() == "1110"s);
+		}
+	}
+	/*-------------------------------------------------------------------------*/
+	void H_BinarySystem_test() {
+		{
+			std::istringstream input("1010\n1011"s);
+			std::ostringstream output(std::ios_base::ate);
+			s1_problems::H_BinarySystem(input, output);
+			assert(output.str() == "10101"s);
+		}
+		{
+			std::istringstream input("111010\n1011"s);
+			std::ostringstream output(std::ios_base::ate);
+			s1_problems::H_BinarySystem(input, output);
+			assert(output.str() == "1000101"s);
+		}
+		{
+			std::istringstream input("1\n1"s);
+			std::ostringstream output(std::ios_base::ate);
+			s1_problems::H_BinarySystem(input, output);
+			assert(output.str() == "10"s);
+		}
+	}
+	/*-------------------------------------------------------------------------*/
+	void I_PowerOfFour_test() {
+		{
+			std::istringstream input("15"s);
+			std::ostringstream output(std::ios_base::ate);
+			s1_problems::I_PowerOfFour(input, output);
+			assert(output.str() == "False"s);
+		}
+		{
+			std::istringstream input("16"s);
+			std::ostringstream output(std::ios_base::ate);
+			s1_problems::I_PowerOfFour(input, output);
+			assert(output.str() == "True"s);
+		}
+		{
+			std::istringstream input("24"s);
+			std::ostringstream output(std::ios_base::ate);
+			s1_problems::I_PowerOfFour(input, output);
+			assert(output.str() == "False"s);
+		}
+	}
+	/*-------------------------------------------------------------------------*/
+	void J_Factorization_test() {
+		{
+			std::istringstream input("8"s);
+			std::ostringstream output(std::ios_base::ate);
+			s1_problems::J_Factorization(input, output);
+			assert(output.str() == "2 2 2"s);
+		}
+		{
+			std::istringstream input("13"s);
+			std::ostringstream output(std::ios_base::ate);
+			s1_problems::J_Factorization(input, output);
+			assert(output.str() == "13"s);
+		}
+		{
+			std::istringstream input("100"s);
+			std::ostringstream output(std::ios_base::ate);
+			s1_problems::J_Factorization(input, output);
+			assert(output.str() == "2 2 5 5"s);
+		}
+		{
+			std::istringstream input("794897"s);
+			std::ostringstream output(std::ios_base::ate);
+			s1_problems::J_Factorization(input, output);
+			assert(output.str() == "73 10889"s);
+		}
+		{
+			std::istringstream input("120683"s);
+			std::ostringstream output(std::ios_base::ate);
+			s1_problems::J_Factorization(input, output);
+			assert(output.str() == "17 31 229"s);
+		}
+		{
+			std::istringstream input("669392"s);
+			std::ostringstream output(std::ios_base::ate);
+			s1_problems::J_Factorization(input, output);
+			assert(output.str() == "2 2 2 2 17 23 107"s);
+		}
+		{
+			std::istringstream input("802066951"s);
+			std::ostringstream output(std::ios_base::ate);
+			s1_problems::J_Factorization(input, output);
+			assert(output.str() == "7 4951 23143"s);
+		}
+		{
+			std::istringstream input("464458159"s);
+			std::ostringstream output(std::ios_base::ate);
+			s1_problems::J_Factorization(input, output);
+			assert(output.str() == "11 23 89 20627"s);
+		}
+		{
+			std::istringstream input("333826595"s);
+			std::ostringstream output(std::ios_base::ate);
+			s1_problems::J_Factorization(input, output);
+			assert(output.str() == "5 53 281 4483"s);
+		}
+		{
+			std::istringstream input("917521579"s);
+			std::ostringstream output(std::ios_base::ate);
+			s1_problems::J_Factorization(input, output);
+			assert(output.str() == "13 70578583"s);
+		}
+	}
+	/*-------------------------------------------------------------------------*/
+	void J_K_ListForm_test() {
+		{
+			std::istringstream input("4\n1 2 0 0\n34"s);
+			std::ostringstream output(std::ios_base::ate);
+			s1_problems::K_ListForm(input, output);
+			assert(output.str() == "1 2 3 4"s);
+		}
+		{
+			std::istringstream input("2\n9 5\n17"s);
+			std::ostringstream output(std::ios_base::ate);
+			s1_problems::K_ListForm(input, output);
+			assert(output.str() == "1 1 2"s);
+		}
+		{
+			std::istringstream input("2\n9 5\n906"s);
+			std::ostringstream output(std::ios_base::ate);
+			s1_problems::K_ListForm(input, output);
+			assert(output.str() == "1 0 0 1"s);
+		}
+	}
+	/*-------------------------------------------------------------------------*/
+	void L_ExtraLetter_test() {
+		{
+			std::istringstream input("abcd\nabcde"s);
+			std::ostringstream output(std::ios_base::ate);
+			s1_problems::L_ExtraLetter(input, output);
+			assert(output.str() == "e"s);
+		}
+		{
+			std::istringstream input("go\nogg"s);
+			std::ostringstream output(std::ios_base::ate);
+			s1_problems::L_ExtraLetter(input, output);
+			assert(output.str() == "g"s);
+		}
+		{
+			std::istringstream input("xtkpx\nxkctpx"s);
+			std::ostringstream output(std::ios_base::ate);
+			s1_problems::L_ExtraLetter(input, output);
+			assert(output.str() == "c"s);
 		}
 	}
 }
