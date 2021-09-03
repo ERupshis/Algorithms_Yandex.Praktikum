@@ -130,6 +130,53 @@ namespace s1_problems {
 		}
 		output << cnt;
 	}
+	/*-------------------------------------------------------------------------*/
+	void E_LongestWord(std::istream& input, std::ostream& output) {
+		int length;
+		input >> length;
+
+		size_t res = 0;
+		std::string res_w;
+		std::string tmp_word = ""s;
+		while (input >> tmp_word) {
+			if (tmp_word.size() > res) {
+				res = tmp_word.size();
+				res_w = tmp_word;
+			}
+		}
+
+		output << res_w << '\n' << res;		
+	}
+	/*-------------------------------------------------------------------------*/
+	std::string RemoveExcessSymbolsInRequest(std::string& in_str) {
+		std::string res;
+		res.reserve(in_str.size());
+		for (size_t i = 0; i < in_str.size(); ++i) {
+			if (islower(in_str[i]) || isdigit(in_str[i])) {
+				res.push_back(in_str[i]);
+			}
+			else if (isupper(in_str[i])) {
+				res.push_back(tolower(in_str[i]));
+			}
+		}
+		return res;
+	}
+
+	void F_Palindrome(std::istream& input, std::ostream& output) {
+		std::string in_str;
+		std::getline(input, in_str);
+
+		std::string str_to_check = std::move(RemoveExcessSymbolsInRequest(in_str));		
+		size_t i = 0;
+		while (i < str_to_check.size() / 2) {
+			if (str_to_check[i] != str_to_check[str_to_check.size() - 1 - i]) { //check symbols on opposite side of string
+				output << "False"s;
+				return;
+			}
+			++i;
+		}
+		output << "True"s;		
+	}
 }
 
 namespace s1_tests {
@@ -198,6 +245,36 @@ namespace s1_tests {
 			std::ostringstream output(std::ios_base::ate);
 			s1_problems::D_WeatherRandomness(input, output);
 			assert(output.str() == "2"s);
+		}
+	}
+	/*-------------------------------------------------------------------------*/
+	void E_LongestWord_test() {
+		{
+			std::istringstream input("19\ni love segment tree"s);
+			std::ostringstream output(std::ios_base::ate);
+			s1_problems::E_LongestWord(input, output);
+			assert(output.str() == "segment\n7"s);
+		}
+		{
+			std::istringstream input("21\nfrog jumps from river"s);
+			std::ostringstream output(std::ios_base::ate);
+			s1_problems::E_LongestWord(input, output);
+			assert(output.str() == "jumps\n5"s);
+		}
+	}
+	/*-------------------------------------------------------------------------*/
+	void F_Palindrome_test() {
+		{
+			std::istringstream input("A man, a plan, a canal: Panama"s);
+			std::ostringstream output(std::ios_base::ate);
+			s1_problems::F_Palindrome(input, output);
+			assert(output.str() == "True"s);
+		}
+		{
+			std::istringstream input("zo"s);
+			std::ostringstream output(std::ios_base::ate);
+			s1_problems::F_Palindrome(input, output);
+			assert(output.str() == "False"s);
 		}
 	}
 }
