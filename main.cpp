@@ -1,7 +1,7 @@
 #include "Algorithms_Y.Praktikum_Sprint1.h"
+#include "Algorithms_Y.Praktikum_Sprint1_Exam_Problems.h"
 #include "Tests_Launcher.h"
 
-#include <iostream>
 #include <fstream>
 
 void Test() {
@@ -24,6 +24,6 @@ int main()
     //s1_problems::I_PowerOfFour(input_file, output_file);
     //s1_problems::J_Factorization(input_file, output_file);
     //s1_problems::K_ListForm(input_file, output_file);
-    s1_problems::L_ExtraLetter(input_file, output_file);
+    //s1_problems::L_ExtraLetter(input_file, output_file);
 }
 

@@ -325,7 +325,18 @@ namespace s1_problems {
 				in_num /= i;
 			}
 		}
-		
+		/*
+		int divider = 2;
+		while (in_num > 1) {
+			if (in_num % divider == 0) {
+				prime_multipliers.push_back(divider);
+				in_num /= divider;
+			}
+			else {
+				divider += 1;
+			}
+		}
+		*/
 		if (in_num != 1) { // remains after division on primes is prime itself 
 			prime_multipliers.push_back(in_num);
 		}
