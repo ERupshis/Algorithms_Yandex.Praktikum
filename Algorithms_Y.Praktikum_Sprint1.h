@@ -314,32 +314,21 @@ namespace s1_problems {
 				prime_multipliers.push_back(p);
 				in_num /= p;
 			}
-		}*/
-		int max_num = in_num;
-		for (int i = 2; i <= max_num; ++i) {
-			if (in_num == 1 || in_num < i) {
-				break;
-			}
+		}*/				
+		
+		int i = 2;	
+		while (in_num > 1) {
 			while (in_num % i == 0) {
 				prime_multipliers.push_back(i);
 				in_num /= i;
 			}
-		}
-		/*
-		int divider = 2;
-		while (in_num > 1) {
-			if (in_num % divider == 0) {
-				prime_multipliers.push_back(divider);
-				in_num /= divider;
+			++i;
+			if (i * i > in_num && in_num != 1) {
+				prime_multipliers.push_back(in_num);
+				in_num /= in_num;
+				break;
 			}
-			else {
-				divider += 1;
-			}
-		}
-		*/
-		if (in_num != 1) { // remains after division on primes is prime itself 
-			prime_multipliers.push_back(in_num);
-		}
+		}						
 
 		output << prime_multipliers;
 	}

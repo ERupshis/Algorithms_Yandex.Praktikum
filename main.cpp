@@ -13,6 +13,7 @@ int main()
     Test();
     std::ifstream input_file("input.txt");
     std::ofstream output_file("output.txt");
+
     //s1_problems::A_FunctionValues(input_file, output_file);
     //s1_problems::B_EvenAndOddNumbers(input_file, output_file);
     //s1_problems::C_Neighbours(input_file, output_file);
@@ -25,5 +26,7 @@ int main()
     //s1_problems::J_Factorization(input_file, output_file);
     //s1_problems::K_ListForm(input_file, output_file);
     //s1_problems::L_ExtraLetter(input_file, output_file);
+
+    s1_exam_problems::A_NearestZero(input_file, output_file);
 }
 
