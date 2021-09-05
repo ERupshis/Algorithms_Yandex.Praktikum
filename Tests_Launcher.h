@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Algorithms_Y.Praktikum_Sprint1.h"
-#include "Algorithms_Y.Praktikum_Sprint1_Exam_Problems.h"
+#include "Algorithms_Y.Praktikum_Sprint1_Exam.h"
 
 void sprint1_tests() {
     s1_tests::A_FunctionValues_test();
@@ -18,5 +18,5 @@ void sprint1_tests() {
     s1_tests::L_ExtraLetter_test();
 
     s1_exam_tests::A_NearestZero_test();
-
+    s1_exam_tests::B_SleightOfHand_test();
 }

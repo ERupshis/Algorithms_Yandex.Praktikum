@@ -26,9 +26,11 @@ namespace s1_exam_problems {
 
 	void A_NearestZero(std::istream& input, std::ostream& output);
 	/*-------------------------------------------------------------------------*/
+	void B_SleightOfHand(std::istream& input, std::ostream& output);
 }
 
 namespace s1_exam_tests {
 	void A_NearestZero_test();
 	/*-------------------------------------------------------------------------*/
+	void B_SleightOfHand_test();
 }

@@ -1,5 +1,5 @@
-#include "Algorithms_Y.Praktikum_Sprint1.h"
-#include "Algorithms_Y.Praktikum_Sprint1_Exam_Problems.h"
+//#include "Algorithms_Y.Praktikum_Sprint1.h"
+//#include "Algorithms_Y.Praktikum_Sprint1_Exam.h"
 #include "Tests_Launcher.h"
 
 #include <fstream>
@@ -27,6 +27,7 @@ int main()
     //s1_problems::K_ListForm(input_file, output_file);
     //s1_problems::L_ExtraLetter(input_file, output_file);
 
-    s1_exam_problems::A_NearestZero(input_file, output_file);
+    //s1_exam_problems::A_NearestZero(input_file, output_file);
+    s1_exam_problems::B_SleightOfHand(input_file, output_file);
 }
 

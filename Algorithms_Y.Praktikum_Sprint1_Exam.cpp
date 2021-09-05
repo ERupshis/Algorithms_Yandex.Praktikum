@@ -1,4 +1,4 @@
-#include "Algorithms_Y.Praktikum_Sprint1_Exam_Problems.h"
+#include "Algorithms_Y.Praktikum_Sprint1_Exam.h"
 
 namespace s1_exam_problems {
 	using namespace std::literals;	
@@ -51,6 +51,28 @@ namespace s1_exam_problems {
 		output << distances;
 	}
 	/*-------------------------------------------------------------------------*/
+	void B_SleightOfHand(std::istream& input, std::ostream& output) {
+		int one_kid_clicks;
+		input >> one_kid_clicks;
+
+		std::vector<int> buttons_on_board(10);
+		char ch;
+		while (input.peek() > -1) {
+			ch = input.get();
+			if (std::isdigit(ch)) {
+				buttons_on_board[ch - '0'] += 1;
+			}
+		}
+			
+		int res = 0;
+		for (int buttons : buttons_on_board) {
+			if (buttons > 0 && buttons <= 2 * one_kid_clicks) {
+				++res;
+			}
+		}
+
+		output << res;		
+	}
 }
 
 namespace s1_exam_tests {
@@ -107,4 +129,54 @@ namespace s1_exam_tests {
 		}
 	}
 	/*-------------------------------------------------------------------------*/
+	void B_SleightOfHand_test() {
+		{
+			std::istringstream input("3\n1231\n2..2\n2..2\n2..2"s);
+			std::ostringstream output(std::ios_base::ate);
+			s1_exam_problems::B_SleightOfHand(input, output);
+			assert(output.str() == "2"s);
+		}
+		{
+			std::istringstream input("4\n1111\n9999\n1111\n9911"s);
+			std::ostringstream output(std::ios_base::ate);
+			s1_exam_problems::B_SleightOfHand(input, output);
+			assert(output.str() == "1"s);
+		}
+		{
+			std::istringstream input("4\n1111\n1111\n1111\n1111"s);
+			std::ostringstream output(std::ios_base::ate);
+			s1_exam_problems::B_SleightOfHand(input, output);
+			assert(output.str() == "0"s);
+		}
+		{
+			std::istringstream input("1\n1999\n5436\n4368\n1712"s);
+			std::ostringstream output(std::ios_base::ate);
+			s1_exam_problems::B_SleightOfHand(input, output);
+			assert(output.str() == "7"s);
+		}
+		{
+			std::istringstream input("3\n8844\n43.9\n2247\n4.48"s);
+			std::ostringstream output(std::ios_base::ate);
+			s1_exam_problems::B_SleightOfHand(input, output);
+			assert(output.str() == "6"s);
+		}
+		{
+			std::istringstream input("1\n2293\n4912\n4836\n745."s);
+			std::ostringstream output(std::ios_base::ate);
+			s1_exam_problems::B_SleightOfHand(input, output);
+			assert(output.str() == "7"s);
+		}
+		{
+			std::istringstream input("1\n2.89\n2994\n8946\n63.."s);
+			std::ostringstream output(std::ios_base::ate);
+			s1_exam_problems::B_SleightOfHand(input, output);
+			assert(output.str() == "5"s);
+		}
+		{
+			std::istringstream input("1\n8177\n5321\n6633\n8213"s);
+			std::ostringstream output(std::ios_base::ate);
+			s1_exam_problems::B_SleightOfHand(input, output);
+			assert(output.str() == "5"s);
+		}
+	}
 }
