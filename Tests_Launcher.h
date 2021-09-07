@@ -3,6 +3,8 @@
 #include "Algorithms_Y.Praktikum_Sprint1.h"
 #include "Algorithms_Y.Praktikum_Sprint1_Exam.h"
 
+#include "Algorithms_Y.Praktikum_Sprint2.h"
+
 void sprint1_tests() {
     s1_tests::A_FunctionValues_test();
     s1_tests::B_EvenAndOddNumbers_test();
@@ -19,4 +21,10 @@ void sprint1_tests() {
 
     s1_exam_tests::A_NearestZero_test();
     s1_exam_tests::B_SleightOfHand_test();
+}
+
+void sprint2_tests() {
+    s2_tests::F_StackMax();
+    s2_tests::G_StackMaxEffective();
+
 }

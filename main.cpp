@@ -6,6 +6,7 @@
 
 void Test() {
     sprint1_tests();
+    sprint2_tests();
 }
 
 int main()
@@ -28,6 +29,8 @@ int main()
     //s1_problems::L_ExtraLetter(input_file, output_file);
 
     //s1_exam_problems::A_NearestZero(input_file, output_file);
-    s1_exam_problems::B_SleightOfHand(input_file, output_file);
+    //s1_exam_problems::B_SleightOfHand(input_file, output_file);
+
+    //s2_problems::F_StackMax(input_file, output_file);
 }
 
