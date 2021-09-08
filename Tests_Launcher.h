@@ -26,5 +26,9 @@ void sprint1_tests() {
 void sprint2_tests() {
     s2_tests::F_StackMax();
     s2_tests::G_StackMaxEffective();
-
+    s2_tests::H_BracketSequence();
+    s2_tests::I_LimitedQueue();
+    s2_tests::J_ListedQueue();
+    s2_tests::K_RecursionFibonacci();
+    s2_tests::L_RecursionFibonacciAbs();
 }
