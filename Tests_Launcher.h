@@ -4,6 +4,7 @@
 #include "Algorithms_Y.Praktikum_Sprint1_Exam.h"
 
 #include "Algorithms_Y.Praktikum_Sprint2.h"
+#include "Algorithms_Y.Praktikum_Sprint2_Exam.h"
 
 void sprint1_tests() {
     s1_tests::A_FunctionValues_test();
@@ -32,4 +33,7 @@ void sprint2_tests() {
     s2_tests::J_ListedQueue();
     s2_tests::K_RecursionFibonacci();
     s2_tests::L_RecursionFibonacciAbs();
+
+    s2_exam_tests::A_Deque();
+    s2_exam_tests::B_Calc();
 }

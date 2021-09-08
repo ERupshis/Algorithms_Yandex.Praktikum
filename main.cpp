@@ -15,7 +15,6 @@ int main()
     std::ifstream input_file("input.txt");
     std::ofstream output_file("output.txt");
 
-
     //s1_problems::A_FunctionValues(input_file, output_file);
     //s1_problems::B_EvenAndOddNumbers(input_file, output_file);
     //s1_problems::C_Neighbours(input_file, output_file);
@@ -40,5 +39,11 @@ int main()
     //s2_problems::J_ListedQueue(input_file, output_file);
     //s2_problems::K_RecursionFibonacci(input_file, output_file);
     //s2_problems::L_RecursionFibonacciAbs(input_file, output_file);
+
+    //s2_exam_problems::A_Deque(input_file, output_file);
+    //s2_exam_problems::B_Calc(input_file, output_file);
+
+    
+    
 }
 
