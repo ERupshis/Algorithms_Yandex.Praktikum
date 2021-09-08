@@ -32,7 +32,10 @@ int main()
     //s1_exam_problems::A_NearestZero(input_file, output_file);
     //s1_exam_problems::B_SleightOfHand(input_file, output_file);
 
+    //s2_problems::A_Monitoring(input_file, output_file);
     //s2_problems::F_StackMax(input_file, output_file);
+    //s2_problems::G_StackMaxEffective(input_file, output_file);
+    //s2_problems::H_BracketSequence(input_file, output_file);
     //s2_problems::I_LimitedQueue(input_file, output_file);
     //s2_problems::J_ListedQueue(input_file, output_file);
     //s2_problems::K_RecursionFibonacci(input_file, output_file);

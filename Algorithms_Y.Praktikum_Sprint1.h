@@ -56,7 +56,7 @@ namespace s1_problems {
 	}
 
 	template <typename type>
-	std::ostream& operator<< (std::ostream& out, std::vector<type>& vector) {
+	std::ostream& operator<< (std::ostream& out, const std::vector<type>& vector) {
 		bool f = false;
 		for (size_t i = 0; i < vector.size(); ++i) {
 			if (f) {

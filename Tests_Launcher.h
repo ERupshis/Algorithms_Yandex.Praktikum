@@ -24,6 +24,7 @@ void sprint1_tests() {
 }
 
 void sprint2_tests() {
+    s2_tests::A_Monitoring();
     s2_tests::F_StackMax();
     s2_tests::G_StackMaxEffective();
     s2_tests::H_BracketSequence();

@@ -7,10 +7,76 @@
 #include <list>
 #include <optional>
 #include <cmath>
+#include <stack>
 
 namespace s2_problems {
 	using namespace std::literals;
 
+
+    std::vector<std::vector<int>> FillMatrix(std::istream& input) {
+        int cols, rows;
+        input >> rows >> cols;
+
+        if (cols == 0 && rows == 0) {
+            return { {} };
+        }
+
+        std::vector<std::vector<int>> matrix(rows);
+        int i = 0;
+        while (i < rows) {
+            int j = 0;
+            while (j < cols) {
+                int num;
+                input >> num;
+                matrix[i].push_back(num);
+                ++j;
+            }
+            ++i;
+        }
+
+        return matrix;
+    }
+
+    std::vector<std::vector<int>> TransposeMatrix(const std::vector<std::vector<int>>& matrix) {
+        std::vector<std::vector<int>> transposed_matrix(matrix[0].size());
+        for (size_t i = 0; i < matrix.size(); ++i) {
+            for (size_t j = 0; j < matrix[0].size(); ++j) {
+                transposed_matrix[j].push_back(matrix[i][j]);
+            }
+        }
+
+        return transposed_matrix;
+    }
+
+    template <typename type>
+    std::ostream& operator<< (std::ostream& out, const std::vector<std::vector<type>>& vector) {
+        for (size_t i = 0; i < vector.size(); ++i) {
+            bool f = false;
+            for (size_t j = 0; j < vector[i].size(); ++j) {
+                if (f) {
+                    out << ' ';
+                }
+                else {
+                    f = true;
+                }
+                out << vector[i][j];
+                if (j == vector[i].size() - 1) {
+                    out << '\n';
+                }
+            }            
+        }
+        return out;
+    }
+
+    void A_Monitoring(std::istream& input, std::ostream& output) {
+        std::vector<std::vector<int>> matrix = std::move(FillMatrix(input));
+        if (matrix.size() == 0) {
+            return;
+        }
+        std::vector<std::vector<int>> transposed_matrix = std::move(TransposeMatrix(matrix));
+
+        output << transposed_matrix;
+    }
 	/*-------------------------------------------------------------------------*/
     void B_ListToDo() {
         /* //remove comment quote before sending Send for checking only as file in Y.Contest
@@ -273,33 +339,26 @@ namespace s2_problems {
         std::string str;
         input >> str;
 
+        std::stack<char> stack;        
         
-        size_t i = 0;
-        size_t right_seq = 0;
-        bool f = true;
-        while (i < str.size()) {
-            if (str[i] == '[' || str[i] == '{' || str[i] == '(') {   
-                f = true;
-                ++i;
-                continue;
+        for (size_t i = 0; i < str.size(); ++i) {
+            if (str[i] == '(' || str[i] == '{' || str[i] == '[') {
+                stack.push(str[i]);
+            }
+            else if (!stack.empty() && (str[i] == stack.top() + 2 || str[i] == stack.top() + 1)) {
+                stack.pop();
             }
             else {
-                right_seq = i;
-                char ch1 = str[2 * right_seq - i];
-                char ch2 = str[i] - 1;
-                char ch3 = str[i] - 2;
-                if (str[2 * right_seq - i] == str[i] - 1 && str[2 * right_seq - i] == str[i] - 2) {
-                    ++i;
-                    continue;
-                }
-                else {
-                    output << "False"s;
-                    return;
-                }
-
+                output << "False"s;
+                return;
             }
+        }  
+        if (stack.empty()) {
+            output << "True"s;
         }
-        output << "True"s;
+        else {
+            output << "False"s;
+        }
     }
     /*-------------------------------------------------------------------------*/
     class StackMaxEffective {
@@ -561,6 +620,47 @@ namespace s2_problems {
 namespace s2_tests {
 	using namespace std::literals;
 
+    void A_Monitoring() {
+        {
+            std::stringstream input;
+            input << "4"s << '\n'
+                << "3"s << '\n'
+                << "1 2 3"s << '\n'
+                << "0 2 6"s << '\n'
+                << "7 4 1"s << '\n'
+                << "2 7 0"s;
+            std::ostringstream output(std::ios_base::ate);
+            s2_problems::A_Monitoring(static_cast<std::iostream&>(input), output);
+            std::stringstream res;
+            res << "1 0 7 2"s << '\n'
+                << "2 2 4 7"s << '\n'
+                << "3 6 1 0"s << '\n';
+            assert(output.str() == res.str());
+        }
+        {
+            std::stringstream input;
+            input << "9"s << '\n'
+                << "5"s << '\n'
+                << "-7 -1 0 -4 -9"s << '\n'
+                << "5 -1 2 2 9"s << '\n'
+                << "3 1 -8 -1 -7"s << '\n'
+                << "9 0 8 -8 -1"s << '\n'
+                << "2 4 5 2 8"s << '\n'
+                << "-7 10 0 -4 -8"s << '\n'
+                << "-3 10 -7 10 3"s << '\n'
+                << "1 6 -7 -5 9"s << '\n'
+                << "-1 9 9 1 9"s;
+            std::ostringstream output(std::ios_base::ate);
+            s2_problems::A_Monitoring(static_cast<std::iostream&>(input), output);
+            std::stringstream res;
+            res << "-7 5 3 9 2 -7 -3 1 -1"s << '\n'
+                << "-1 -1 1 0 4 10 10 6 9"s << '\n'
+                << "0 2 -8 8 5 0 -7 -7 9"s << '\n'
+                << "-4 2 -1 -8 2 -4 10 -5 1"s << '\n'
+                << "-9 9 -7 -1 8 -8 3 9 9"s << '\n';
+            assert(output.str() == res.str());
+        }
+    }
 	/*-------------------------------------------------------------------------*/
     void F_StackMax() {
         {                        
@@ -663,6 +763,36 @@ namespace s2_tests {
             std::ostringstream output(std::ios_base::ate);
             s2_problems::H_BracketSequence(input, output);
             assert(output.str() == "True"s);
+        }
+        {
+            std::istringstream input(")("s);
+            std::ostringstream output(std::ios_base::ate);
+            s2_problems::H_BracketSequence(input, output);
+            assert(output.str() == "False"s);
+        }
+        {
+            std::istringstream input("()()"s);
+            std::ostringstream output(std::ios_base::ate);
+            s2_problems::H_BracketSequence(input, output);
+            assert(output.str() == "True"s);
+        }
+        {
+            std::istringstream input("({()()})"s);
+            std::ostringstream output(std::ios_base::ate);
+            s2_problems::H_BracketSequence(input, output);
+            assert(output.str() == "True"s);
+        }
+        {
+            std::istringstream input("({()(}))"s);
+            std::ostringstream output(std::ios_base::ate);
+            s2_problems::H_BracketSequence(input, output);
+            assert(output.str() == "False"s);
+        }
+        {
+            std::istringstream input("({}()(])[)"s);
+            std::ostringstream output(std::ios_base::ate);
+            s2_problems::H_BracketSequence(input, output);
+            assert(output.str() == "False"s);
         }
     }
     /*-------------------------------------------------------------------------*/
@@ -849,6 +979,7 @@ namespace s2_tests {
             assert(output.str() == "17711"s);
         }
     }
+    /*-------------------------------------------------------------------------*/
     void L_RecursionFibonacciAbs() {
         {
             std::istringstream input("3 1"s);
