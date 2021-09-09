@@ -27,7 +27,7 @@ namespace s2_exam_problems {
 		//    
 		// *Time complexity - O(1)  due to constant time access to elements of vector.
 		// Elements moving is not required
-		// *Spacial complexity - O(n) where is n is a number of element in vector. 
+		// *Space complexity - O(n) where is n is a number of element in vector. 
 		// This space is reserved in the Deque constructor
 		// 
 
@@ -133,6 +133,10 @@ namespace s2_exam_problems {
 	/*-------------------------------------------------------------------------*/
 	// SEND ID: 52800303
 
+	// IsSing() - check if 'str' in B_Calc contain an arithmetic sign 
+	// Time complexity - O(1)
+	// Space complexity - 0?
+
 	bool IsSign(const std::string& str) { // check if str is a special sign
 		if (str.size() == 1 && (str[0] == '+' 
 								|| str[0] == '-' 
@@ -143,6 +147,11 @@ namespace s2_exam_problems {
 		}
 		return false;
 	}
+
+	// PerformOperation()  - extract two last operand from stack and execute arithmetic 
+	// operation according 'sign_str' varible value.
+	// Time complexity - O(1)
+	// Space complexity - 0? temporary variable are stored in automatic memory
 
 	void PerformOperation(const std::string& sign_str, std::stack<int>& stack) {
 		int num2 = stack.top(); // opposite sequnece of elements in stack
@@ -174,6 +183,21 @@ namespace s2_exam_problems {
 			}			
 		}
 	}
+
+	// B Calc() - contains only one cycle of reading and processing signs and integers from istream
+	// standard stack was chosen as a container due to it allows to extract last elements for a O(1) time complexity.
+	// Every step of cycle read input stream and assign this value to 'str'  variable, check if special arithmetic sign (+, -, /, *) has come
+	// from stream(func IsSign() which returns boolean value):
+	//  - if yes - func PerformOperation() extracts two last integers from stack and perform arithmetic operation (according symbol that is stored in 'str')
+	//    and push result in stack instead of two operands
+	//  - if no - new integer has come from input stream which should be added in the end of stack for a O(1) time complexity due to
+	//    std::stack generates stack based on deque by default. And the cost of pop and push operations is a O(1).
+	//
+	// Time complexity - O(n) where n is a count of operands and arithmetic signs. I would say that qty of operands may be 2*(n-1) + 1 due to we push in stack 
+	//	  temporary result of arithm. execution. But we don't take into account multipliers in complexity execution. We are worry about the powers of n in formula.
+	// 
+	// Space compelixty - O(n) where is n - is qty of integer operands from input stream (n is max in case if all arithmetic sign in the end of input (example: 1 2 3 4 5 6 * + - + /),
+	//	  the best situation when arithemtic sign are located one-by-one with operands (1 2 + 3 * 4 - 5 - 6 /) - in this way n is  equal 2)     
 
 	void B_Calc(std::istream& input, std::ostream& output) {
 		std::stack<int> stack;
