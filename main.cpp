@@ -7,6 +7,7 @@
 void Test() {
     sprint1_tests();
     sprint2_tests();
+    sprint3_tests();
 }
 
 int main()

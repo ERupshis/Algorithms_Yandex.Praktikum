@@ -18,8 +18,9 @@ namespace s3_problems {
 		}		
 
 		size_t mid = (left + right) / 2;
-		if (x == array[mid]) {
-			return mid;
+		if (mid >= 1 && array[mid - 1] < x && x <= array[mid]
+			|| mid == 0 && x <= array[mid]) {
+			return mid + 1;
 		}
 		else if (x < array[mid]) {
 			BinarySearchRecursion(array, x, left, mid);
@@ -54,7 +55,7 @@ namespace s3_tests {
 				<< "1 2 4 4 6 8"s << '\n'
 				<< "3"s;
 			std::ostringstream output(std::ios_base::ate);
-			s2_problems::I_LimitedQueue(static_cast<std::iostream&>(input), output);
+			s3_problems::L_TwoBikes(static_cast<std::iostream&>(input), output);
 			std::stringstream res;
 			res << "3 5"s << '\n';
 			assert(output.str() == res.str());
@@ -65,7 +66,7 @@ namespace s3_tests {
 				<< "1 2 4 4 4 4"s << '\n'
 				<< "3"s;
 			std::ostringstream output(std::ios_base::ate);
-			s2_problems::I_LimitedQueue(static_cast<std::iostream&>(input), output);
+			s3_problems::L_TwoBikes(static_cast<std::iostream&>(input), output);
 			std::stringstream res;
 			res << "3 -1"s << '\n';
 			assert(output.str() == res.str());
@@ -76,7 +77,7 @@ namespace s3_tests {
 				<< "1 2 4 4 4 4"s << '\n'
 				<< "10"s;
 			std::ostringstream output(std::ios_base::ate);
-			s2_problems::I_LimitedQueue(static_cast<std::iostream&>(input), output);
+			s3_problems::L_TwoBikes(static_cast<std::iostream&>(input), output);
 			std::stringstream res;
 			res << "-1 -1"s << '\n';
 			assert(output.str() == res.str());
