@@ -13,20 +13,22 @@ namespace s3_problems {
 	/*-------------------------------------------------------------------------*/
 	template <typename Container>
 	int BinarySearchRecursion(const Container& array, int x, size_t left, size_t right) {
-		if (left >= right) {
+		if (left >= right) { // base case
 			return -1;
 		}		
 
 		size_t mid = (left + right) / 2;
-		if (mid >= 1 && array[mid - 1] < x && x <= array[mid]
-			|| mid == 0 && x <= array[mid]) {
-			return mid + 1;
+		if (x <= array[0]) { // base case
+			return 1;
 		}
-		else if (x < array[mid]) {
-			BinarySearchRecursion(array, x, left, mid);
+		else if (mid >= 1 && array[mid - 1] < x && x <= array[mid]) {
+			return mid + 1; // base case
+		}		 
+		else if (x <= array[mid]) {
+			BinarySearchRecursion(array, x, left, mid);  // recursion case
 		}
 		else {
-			BinarySearchRecursion(array, x, mid + 1, right);
+			BinarySearchRecursion(array, x, mid + 1, right); // recursion case
 		}
 	}
 
@@ -82,6 +84,40 @@ namespace s3_tests {
 			res << "-1 -1"s << '\n';
 			assert(output.str() == res.str());
 		}
+		{
+			std::stringstream input;
+			input << "6"s << '\n'
+				<< "1 1 4 4 4 4"s << '\n'
+				<< "1"s;
+			std::ostringstream output(std::ios_base::ate);
+			s3_problems::L_TwoBikes(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "1 3"s << '\n';
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "6"s << '\n'
+				<< "1 1 4 4 4 4"s << '\n'
+				<< "4"s;
+			std::ostringstream output(std::ios_base::ate);
+			s3_problems::L_TwoBikes(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "3 -1"s << '\n';
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "7"s << '\n'
+				<< "1 1 4 4 4 4 8"s << '\n'
+				<< "4"s;
+			std::ostringstream output(std::ios_base::ate);
+			s3_problems::L_TwoBikes(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "3 7"s << '\n';
+			assert(output.str() == res.str());
+		}
 	}
+
 
 }
