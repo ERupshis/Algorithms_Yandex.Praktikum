@@ -6,6 +6,8 @@
 #include "Algorithms_Y.Praktikum_Sprint2.h"
 #include "Algorithms_Y.Praktikum_Sprint2_Exam.h"
 
+#include "Algorithms_Y.Praktikum_Sprint3.h"
+
 void sprint1_tests() {
     s1_tests::A_FunctionValues_test();
     s1_tests::B_EvenAndOddNumbers_test();
@@ -36,4 +38,10 @@ void sprint2_tests() {
 
     s2_exam_tests::A_Deque();
     s2_exam_tests::B_Calc();
+}
+
+void sprint3_tests() {
+    
+    s3_tests::L_TwoBikes();
+    
 }

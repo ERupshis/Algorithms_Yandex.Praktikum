@@ -135,7 +135,7 @@ namespace s2_exam_problems {
 
 	// IsSing() - check if 'str' in B_Calc contain an arithmetic sign 
 	// Time complexity - O(1)
-	// Space complexity - 0?
+	// Space complexity - 0(1)
 
 	bool IsSign(const std::string& str) { // check if str is a special sign
 		if (str.size() == 1 && (str[0] == '+' 
@@ -151,7 +151,7 @@ namespace s2_exam_problems {
 	// PerformOperation()  - extract two last operand from stack and execute arithmetic 
 	// operation according 'sign_str' varible value.
 	// Time complexity - O(1)
-	// Space complexity - 0? temporary variable are stored in automatic memory
+	// Space complexity - 0(1) temporary variable are stored in automatic memory
 
 	void PerformOperation(const std::string& sign_str, std::stack<int>& stack) {
 		int num2 = stack.top(); // opposite sequnece of elements in stack
