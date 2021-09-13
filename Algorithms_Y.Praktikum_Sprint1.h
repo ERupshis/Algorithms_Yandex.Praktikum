@@ -163,7 +163,7 @@ namespace s1_problems {
 		}
 		return res;
 	}
-	/*-------------------------------------------------------------------------*/
+	
 	void F_Palindrome(std::istream& input, std::ostream& output) {
 		std::string in_str;
 		std::getline(input, in_str);
