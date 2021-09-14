@@ -4,6 +4,7 @@
 #include <iostream>
 #include <vector>
 #include <stack>
+#include <algorithm>
 
 #include "Algorithms_Y.Praktikum_Sprint1_Exam.h"
 
@@ -86,6 +87,81 @@ namespace s3_problems {
 				output << ' ';
 			}
 			output << str;
+		}
+	}
+	/*-------------------------------------------------------------------------*/
+	std::vector<std::string> FillInputVector(std::istream& input) {
+		int cnt;
+		input >> cnt;
+
+		std::vector<std::string> res;
+		res.reserve(cnt);
+		for (int i = 0; i < cnt; ++i) {
+			std::string num;
+			input >> num;
+			res.push_back(num);
+		}
+
+		return res;
+	}	
+	
+	void H_BigNumber(std::istream& input, std::ostream& output) {		
+		std::vector<std::string> arr = std::move(FillInputVector(input));		
+
+		auto comparator = [](const std::string& lhs, const std::string& rhs)
+			{return std::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()); };
+
+		for (size_t i = 1; i < arr.size(); ++i) {			
+			for (size_t j = i; j > 0 && comparator(arr[j - 1], arr[j]); --j) {
+				std::swap(arr[j], arr[j - 1]);				
+			}				
+		}
+
+		for (size_t i = 0; i < arr.size(); ++i) {
+			output << arr[i];
+		}
+		output << '\n';
+	}
+	/*-------------------------------------------------------------------------*/
+	void InsertSort(std::istream& input, std::ostream& output) {
+		using namespace s1_problems;
+		std::vector<int> arr = std::move(s1_exam_problems::FillInputVector(input));
+
+		for (size_t i = 1; i < arr.size(); ++i) {
+			int num_to_insert = arr[i];
+			size_t j = i;
+			while (j > 0 && num_to_insert < arr[j - 1]) {
+				arr[j] = arr[j - 1];
+				--j;
+			}
+			arr[j] = num_to_insert;
+		}
+		output << arr << '\n';
+	}
+
+	void J_Bubble(std::istream& input, std::ostream& output) { // bubble sort O(n^2) // total amount of comprasions (N-1)N
+		using namespace s1_problems;
+		std::vector<int> arr = std::move(s1_exam_problems::FillInputVector(input));
+
+		bool sorted = true;;
+		for (size_t i = 1; i < arr.size(); ++i) { // outer cycle (N-1)
+			bool f = false;
+			for (size_t j = 0; j < arr.size() - i; ++j) { // internal cycle N/2 step due to we reduce the qty of compare iterations
+				if (arr[j] > arr[j + 1]) {
+					std::swap(arr[j], arr[j + 1]);
+					f = true;
+				}				
+			}
+			if (f) { 
+				output << arr << '\n';
+				sorted = false;
+			}
+			else { // helps to reduce better case to 2(N-1) - if already sorted arr comes to input
+				if (sorted) {
+					output << arr << '\n';
+				}
+				return;
+			}
 		}
 	}
 	/*-------------------------------------------------------------------------*/
@@ -187,6 +263,96 @@ namespace s3_tests {
 			s3_problems::B_Combinations(static_cast<std::iostream&>(input), output);
 			std::stringstream res;
 			res << ""s;
+			assert(output.str() == res.str());
+		}
+	}
+	/*-------------------------------------------------------------------------*/
+	void H_BigNumber() {
+		{
+			std::stringstream input;
+			input << "3"s << '\n'
+				<< "15 56 2"s;
+			std::ostringstream output(std::ios_base::ate);
+			s3_problems::H_BigNumber(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "56215"s << '\n';
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "3"s << '\n'
+				<< "1 783 2"s;
+			std::ostringstream output(std::ios_base::ate);
+			s3_problems::H_BigNumber(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "78321"s << '\n';
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "5"s << '\n'
+				<< "2 4 5 2 10"s;
+			std::ostringstream output(std::ios_base::ate);
+			s3_problems::H_BigNumber(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "542210"s << '\n';
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "5"s << '\n'
+				<< "5 73 7"s;
+			std::ostringstream output(std::ios_base::ate);
+			s3_problems::H_BigNumber(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "7735"s << '\n';
+			assert(output.str() == res.str());
+		}
+	}
+	/*-------------------------------------------------------------------------*/
+	void J_Bubble() {
+		{
+			std::stringstream input;
+			input << "5"s << '\n'
+				<< "4 3 9 2 1"s;
+			std::ostringstream output(std::ios_base::ate);
+			s3_problems::J_Bubble(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "3 4 2 1 9"s << '\n'
+				<< "3 2 1 4 9"s << '\n'
+				<< "2 1 3 4 9"s << '\n'
+				<< "1 2 3 4 9"s << '\n';
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "5"s << '\n'
+				<< "12 8 9 10 11"s;
+			std::ostringstream output(std::ios_base::ate);
+			s3_problems::J_Bubble(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "8 9 10 11 12"s << '\n';
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "5"s << '\n'
+				<< "8 9 10 11 12"s;
+			std::ostringstream output(std::ios_base::ate);
+			s3_problems::J_Bubble(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "8 9 10 11 12"s << '\n';
+			assert(output.str() == res.str());
+		}
+		//InsertSort test
+		{
+			std::stringstream input;
+			input << "5"s << '\n'
+				<< "4 3 9 2 1"s;
+			std::ostringstream output(std::ios_base::ate);
+			s3_problems::InsertSort(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "1 2 3 4 9"s << '\n';
 			assert(output.str() == res.str());
 		}
 	}
