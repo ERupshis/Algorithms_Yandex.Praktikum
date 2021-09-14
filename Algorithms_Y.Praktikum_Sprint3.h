@@ -106,17 +106,27 @@ namespace s3_problems {
 	}	
 	
 	void H_BigNumber(std::istream& input, std::ostream& output) {		
-		std::vector<std::string> arr = std::move(FillInputVector(input));		
+		std::vector<std::string> arr = std::move(FillInputVector(input));			
 
-		auto comparator = [](const std::string& lhs, const std::string& rhs)
-			{return std::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()); };
-
-		for (size_t i = 1; i < arr.size(); ++i) {			
-			for (size_t j = i; j > 0 && comparator(arr[j - 1], arr[j]); --j) {
-				std::swap(arr[j], arr[j - 1]);				
-			}				
+		auto less_sum = [](const std::string& lhs, const std::string& rhs) { return lhs + rhs < rhs + lhs; };
+		for (size_t i = 1; i < arr.size(); ++i) {
+			for (size_t j = i; j > 0 && less_sum(arr[j - 1], arr[j]); --j) {
+				std::swap(arr[j], arr[j - 1]);
+			}
 		}
-
+		/*for (size_t i = 1; i < arr.size(); ++i) {
+			bool f = false;
+			for (size_t j = 0; j < arr.size() - i; ++j) {
+				if (less_sum(arr[j], arr[j + 1])) {
+					std::swap(arr[j], arr[j + 1]);
+					f = true;
+				}
+			}
+			if (!f) {
+				break;
+			}
+		}*/
+		
 		for (size_t i = 0; i < arr.size(); ++i) {
 			output << arr[i];
 		}
@@ -270,12 +280,12 @@ namespace s3_tests {
 	void H_BigNumber() {
 		{
 			std::stringstream input;
-			input << "3"s << '\n'
-				<< "15 56 2"s;
+			input << "4"s << '\n'
+				<< "15 20 56 2"s;
 			std::ostringstream output(std::ios_base::ate);
 			s3_problems::H_BigNumber(static_cast<std::iostream&>(input), output);
 			std::stringstream res;
-			res << "56215"s << '\n';
+			res << "5622015"s << '\n';
 			assert(output.str() == res.str());
 		}
 		{
@@ -306,6 +316,42 @@ namespace s3_tests {
 			s3_problems::H_BigNumber(static_cast<std::iostream&>(input), output);
 			std::stringstream res;
 			res << "7735"s << '\n';
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "38"s << '\n'
+				<< "82 58 66 34 64 37 40 97 93 52 28 98 90 64 19 22 21 83 56 70 46 17 31 51 55 41 68 18 98 89 88 74 6 6 31 36 35 8"s;
+			std::ostringstream output(std::ios_base::ate);
+			s3_problems::H_BigNumber(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "9898979390898888382747068666664645856555251464140373635343131282221191817"s << '\n';
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "100"s << '\n'
+				<< "82 468 941 181 287 861 291 515 263 424 470 "
+				<< "620 954 894 565 69 148 587 823 57 730 389 921 "
+				<< "1000 447 1000 748 104 831 943 174 24 340 1000 "
+				<< "150 937 324 919 748 271 980 575 392 779 222 316 "
+				<< "944 1000 160 501 319 436 26 828 348 211 825 857 "
+				<< "486 1000 419 509 409 679 576 700 418 810 674 83 "
+				<< "785 251 947 868 964 384 497 192 1000 998 756 649 "
+				<< "269 290 197 30 95 796 642 980 474 122 443 707 839 "
+				<< "213 1000 530 263 193"s;
+			std::ostringstream output(std::ios_base::ate);
+			s3_problems::H_BigNumber(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "998980980964959549479449439419379219"
+				<< "198948688618578398383182882825823810"
+				<< "796785779756748748730707700696796746"
+				<< "496426205875765757556553051550950149"
+				<< "748647447046844744343642441941840939"
+				<< "238938434834032431931630291290287271"
+				<< "269263263262512422221321119719319218"
+				<< "117416015014812210410001000100010001"
+				<< "00010001000"s << '\n';
 			assert(output.str() == res.str());
 		}
 	}
