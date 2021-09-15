@@ -46,6 +46,7 @@ int main()
 
     //s3_problems::A_BracketsGenerator(input_file, output_file);
     //s3_problems::B_Combinations(input_file, output_file);
+    //s3_problems::C_Subsequence(input_file, output_file);
     //s3_problems::H_BigNumber(input_file, output_file);
     //s3_problems::J_Bubble(input_file, output_file);
     //s3_problems::L_TwoBikes(input_file, output_file);

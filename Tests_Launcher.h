@@ -43,6 +43,7 @@ void sprint2_tests() {
 void sprint3_tests() {
     s3_tests::A_BracketsGenerator();
     s3_tests::B_Combinations();
+    s3_tests::C_Subsequence();
     s3_tests::H_BigNumber();
     s3_tests::J_Bubble();
     s3_tests::L_TwoBikes();

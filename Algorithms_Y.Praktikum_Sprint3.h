@@ -90,6 +90,25 @@ namespace s3_problems {
 		}
 	}
 	/*-------------------------------------------------------------------------*/
+	void C_Subsequence(std::istream& input, std::ostream& output) {
+		std::string s, t;
+		std::getline(input, s);
+		std::getline(input, t);
+		size_t s_cntr = 0, t_cntr = 0;
+
+		while (s_cntr < s.size() && t_cntr < t.size()) {			
+			if (t[t_cntr] == s[s_cntr]) {					
+				++s_cntr;				
+			}							
+			++t_cntr;
+		}
+		if (s_cntr == s.size() && t_cntr <= t.size()) {
+			output << "True"s;
+			return;
+		}
+		output << "False"s;
+	}
+	/*-------------------------------------------------------------------------*/
 	std::vector<std::string> FillInputVector(std::istream& input) {
 		int cnt;
 		input >> cnt;
@@ -361,6 +380,79 @@ namespace s3_tests {
 			s3_problems::B_Combinations(static_cast<std::iostream&>(input), output);
 			std::stringstream res;
 			res << ""s;
+			assert(output.str() == res.str());
+		}
+	}
+	/*-------------------------------------------------------------------------*/
+	void C_Subsequence() {
+		{
+			std::stringstream input;
+			input << "ijha"s << '\n'
+				<< "hmrqvftefyixinahlzgbkidroxiptbbkjmtwpsujevkulgrjiwiwzyhngulrodiwyg"s;
+			std::ostringstream output(std::ios_base::ate);
+			s3_problems::C_Subsequence(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "False"s;
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "abc"s << '\n'
+				<< "ahbgdcu"s;
+			std::ostringstream output(std::ios_base::ate);
+			s3_problems::C_Subsequence(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "True"s;
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "abc"s << '\n'
+				<< "abc"s;
+			std::ostringstream output(std::ios_base::ate);
+			s3_problems::C_Subsequence(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "True"s;
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "a"s << '\n'
+				<< "hbgadcu"s;
+			std::ostringstream output(std::ios_base::ate);
+			s3_problems::C_Subsequence(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "True"s;
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "abcp"s << '\n'
+				<< "ahpc"s;
+			std::ostringstream output(std::ios_base::ate);
+			s3_problems::C_Subsequence(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "False"s;
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << ""s << '\n'
+				<< "ahbgdcu"s;
+			std::ostringstream output(std::ios_base::ate);
+			s3_problems::C_Subsequence(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "True"s;
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "abc"s << '\n'
+				<< ""s;
+			std::ostringstream output(std::ios_base::ate);
+			s3_problems::C_Subsequence(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "False"s;
 			assert(output.str() == res.str());
 		}
 	}
