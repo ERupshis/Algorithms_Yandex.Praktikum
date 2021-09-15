@@ -1,9 +1,9 @@
 #include "Algorithms_Y.Praktikum_Sprint1_Exam.h"
 
 namespace s1_exam_problems {
-	using namespace std::literals;	
+	using namespace std::literals;
 
-	std::vector<int> FillInputVector(std::istream& input) {		
+	std::vector<int> FillInputVector(std::istream& input) {
 		int cnt;
 		input >> cnt;
 
@@ -18,15 +18,15 @@ namespace s1_exam_problems {
 		return res;
 	}
 
-	void A_NearestZero(std::istream& input, std::ostream& output) {		
-		std::vector<int> house_nums = std::move(FillInputVector(input));		
+	void A_NearestZero(std::istream& input, std::ostream& output) {
+		std::vector<int> house_nums = std::move(FillInputVector(input));
 
 		std::vector<int> distances(house_nums.size());
 		int curr_empty = -1; // index of empty land on start
 		for (size_t i = 0; i < distances.size(); ++i) {
 			int new_empty = -1; // index of NEW empty land on in cycle
 			if (house_nums[i] == 0) { // NEW empty land
-				new_empty = i;				
+				new_empty = i;
 			}
 			if (new_empty >= 0) { // need to revise previous lands
 				int start_ind;
@@ -63,7 +63,7 @@ namespace s1_exam_problems {
 				buttons_on_board[ch - '0'] += 1;
 			}
 		}
-			
+
 		int res = 0;
 		for (int buttons : buttons_on_board) {
 			if (buttons > 0 && buttons <= 2 * one_kid_clicks) {
@@ -71,14 +71,14 @@ namespace s1_exam_problems {
 			}
 		}
 
-		output << res;		
+		output << res;
 	}
 }
 
 namespace s1_exam_tests {
 	using namespace std::literals;
 
-	void A_NearestZero_test() {
+	void A_NearestZero() {
 		{
 			std::istringstream input("6\n0 7 9 4 8 20"s);
 			std::ostringstream output(std::ios_base::ate);
@@ -129,7 +129,7 @@ namespace s1_exam_tests {
 		}
 	}
 	/*-------------------------------------------------------------------------*/
-	void B_SleightOfHand_test() {
+	void B_SleightOfHand() {
 		{
 			std::istringstream input("3\n1231\n2..2\n2..2\n2..2"s);
 			std::ostringstream output(std::ios_base::ate);

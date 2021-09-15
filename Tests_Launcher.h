@@ -22,8 +22,8 @@ void sprint1_tests() {
     s1_tests::J_K_ListForm_test();
     s1_tests::L_ExtraLetter_test();
 
-    s1_exam_tests::A_NearestZero_test();
-    s1_exam_tests::B_SleightOfHand_test();
+    s1_exam_tests::A_NearestZero();
+    s1_exam_tests::B_SleightOfHand();
 }
 
 void sprint2_tests() {
@@ -46,6 +46,7 @@ void sprint3_tests() {
     s3_tests::C_Subsequence();
     s3_tests::H_BigNumber();
     s3_tests::J_Bubble();
+    s3_tests::K_MergeSort();
     s3_tests::L_TwoBikes();
     s3_tests::N_FlowerBeds();
     

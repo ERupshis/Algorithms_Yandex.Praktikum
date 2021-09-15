@@ -6,7 +6,7 @@
 #include <stack>
 #include <algorithm>
 
-#include "Algorithms_Y.Praktikum_Sprint1_Exam.h"
+//#include "Algorithms_Y.Praktikum_Sprint1_Exam.h"
 
 namespace s3_problems {
 	using namespace std::literals;
@@ -152,9 +152,24 @@ namespace s3_problems {
 		output << '\n';
 	}
 	/*-------------------------------------------------------------------------*/
+	std::vector<int> FillInputVectorInt(std::istream& input) {
+		int cnt;
+		input >> cnt;
+
+		std::vector<int> res;
+		res.reserve(cnt);
+		for (int i = 0; i < cnt; ++i) {
+			int num;
+			input >> num;
+			res.push_back(num);
+		}
+
+		return res;
+	}
+
 	void InsertSort(std::istream& input, std::ostream& output) {
 		using namespace s1_problems;
-		std::vector<int> arr = std::move(s1_exam_problems::FillInputVector(input));
+		std::vector<int> arr = std::move(FillInputVectorInt(input));
 
 		for (size_t i = 1; i < arr.size(); ++i) {
 			int num_to_insert = arr[i];
@@ -170,7 +185,7 @@ namespace s3_problems {
 
 	void J_Bubble(std::istream& input, std::ostream& output) { // bubble sort O(n^2) // total amount of comprasions (N-1)N
 		using namespace s1_problems;
-		std::vector<int> arr = std::move(s1_exam_problems::FillInputVector(input));
+		std::vector<int> arr = std::move(FillInputVectorInt(input));
 
 		bool sorted = true;;
 		for (size_t i = 1; i < arr.size(); ++i) { // outer cycle (N-1)
@@ -194,6 +209,66 @@ namespace s3_problems {
 		}
 	}
 	/*-------------------------------------------------------------------------*/
+	//MakeFile Problem K
+	using Iterator = std::vector<int>::iterator;
+	using CIterator = std::vector<int>::const_iterator;
+
+	std::vector<int> merge(
+		CIterator left_begin, CIterator left_end,
+		CIterator right_begin, CIterator right_end) {
+
+		std::vector<int> res;
+		while (left_begin != left_end && right_begin != right_end) {
+			if (*left_begin < *right_begin) {
+				res.push_back(*left_begin);
+				++left_begin;
+			}
+			else {
+				res.push_back(*right_begin);
+				++right_begin;
+			}
+		}
+
+		while (left_begin != left_end) {
+			res.push_back(*left_begin);
+			++left_begin;
+		}
+
+		while (right_begin != right_end) {
+			res.push_back(*right_begin);
+			++right_begin;
+		}
+
+		return res;
+	}
+
+	void merge_sort(Iterator begin, Iterator end) {
+		if (begin + 1 == end) {
+			return;
+		}
+
+		merge_sort(begin, begin + (end - begin) / 2 );
+		merge_sort(begin + (end - begin) / 2, end);
+
+		std::vector<int> res = merge(begin, begin + (end - begin) / 2, begin + (end - begin) / 2, end);
+		for (auto it = begin; it != end; ++it) {
+			*it = res[it - begin];
+		}
+	}
+
+	void test_merge_sort() {
+		std::vector<int> a = { 1, 4, 9 };
+		std::vector<int> b = { 2, 10, 11 };
+		std::vector<int> c = merge(a.cbegin(), a.cend(), b.cbegin(), b.cend());
+		std::vector<int> expected = { 1, 2, 4, 9, 10, 11 };
+		assert(c == expected);
+		std::vector<int> d = { 1, 4, 2, 10, 1, 2 };
+		std::vector<int> sorted = { 1, 1, 2, 2, 4, 10 };
+		merge_sort(d.begin(), d.end());
+		assert(d == sorted);
+	}
+		
+	/*-------------------------------------------------------------------------*/
 	template <typename Container>
 	int BinarySearchRecursion(const Container& array, int x, size_t left, size_t right) {
 		if (left >= right) { // base case
@@ -213,10 +288,10 @@ namespace s3_problems {
 		else {
 			BinarySearchRecursion(array, x, mid + 1, right); // recursion case
 		}
-	}
+	}	
 
 	void L_TwoBikes(std::istream& input, std::ostream& output) {
-		std::vector<int> input_array = std::move(s1_exam_problems::FillInputVector(input));
+		std::vector<int> input_array = std::move(FillInputVectorInt(input));
 
 		int cost;
 		input >> cost;
@@ -238,7 +313,7 @@ namespace s3_problems {
 
 		auto comp = [](const std::vector<int>& lhs, const std::vector<int>& rhs) {
 			if (lhs[0] == rhs[0]) {
-				return -lhs[1] < -rhs[1];
+				return lhs[1] > rhs[1];
 			}
 			return lhs[0] < rhs[0]; };
 
@@ -581,6 +656,10 @@ namespace s3_tests {
 			res << "1 2 3 4 9"s << '\n';
 			assert(output.str() == res.str());
 		}
+	}
+	/*-------------------------------------------------------------------------*/
+	void K_MergeSort() {
+		s3_problems::test_merge_sort();
 	}
 	/*-------------------------------------------------------------------------*/
 	void L_TwoBikes() {

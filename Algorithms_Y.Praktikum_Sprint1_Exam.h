@@ -30,7 +30,7 @@ namespace s1_exam_problems {
 }
 
 namespace s1_exam_tests {
-	void A_NearestZero_test();
+	void A_NearestZero();
 	/*-------------------------------------------------------------------------*/
-	void B_SleightOfHand_test();
+	void B_SleightOfHand();
 }
