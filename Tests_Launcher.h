@@ -46,5 +46,6 @@ void sprint3_tests() {
     s3_tests::H_BigNumber();
     s3_tests::J_Bubble();
     s3_tests::L_TwoBikes();
+    s3_tests::N_FlowerBeds();
     
 }

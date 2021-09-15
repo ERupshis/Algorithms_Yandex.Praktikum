@@ -206,7 +206,95 @@ namespace s3_problems {
 			<< BinarySearchRecursion(input_array, 2 * cost, 0, input_array.size()) << '\n';
 
 	}
+	/*-------------------------------------------------------------------------*/	
+	std::vector<std::vector<int>> MergeSort(const std::vector<std::vector<int>>& arr) {
+		if (arr.size() == 1) { // base case of recursion
+			return arr;
+		}
 
+		std::vector<std::vector<int>> left = MergeSort({ arr.begin(), arr.begin() + arr.size() / 2 }); // recursion sort of left part
+		std::vector<std::vector<int>> right = MergeSort({ arr.begin() + arr.size() / 2, arr.end() }); // recursion sort of right part
+
+		std::vector<std::vector<int>> res(arr.size());
+
+		auto comp = [](const std::vector<int>& lhs, const std::vector<int>& rhs) {
+			if (lhs[0] == rhs[0]) {
+				return -lhs[1] < -rhs[1];
+			}
+			return lhs[0] < rhs[0]; };
+
+		size_t l = 0, r = 0, k = 0; 
+		while (l < left.size() && r < right.size()) {
+			if (comp(left[l], right[r])) {
+				res[k] = left[l];
+				++l;
+			}
+			else {
+				res[k] = right[r];
+				++r;
+			}
+			++k;
+		}
+
+		while (l < left.size()) {
+			res[k] = left[l];
+			++l;
+			++k;
+		}
+		while (r < right.size()) {
+			res[k] = right[r];
+			++r;
+			++k;
+		}
+
+		return res;
+
+	}
+
+	void N_FlowerBeds(std::istream& input, std::ostream& output) {
+		std::vector<std::vector<int>> arr;
+		int count;
+		input >> count;
+
+		while (count != 0) {
+			int start, end;
+			input >> start >> end;
+			arr.push_back({ start, end });
+			--count;
+		}
+		// insert sort is too slow
+		/*auto comp = [](const std::vector<int>& lhs, const std::vector<int>& rhs) {
+			if (lhs[0] == rhs[0]) {
+				return -lhs[1] < -rhs[1];
+			}
+			return lhs[0] < rhs[0]; };
+
+
+		for (size_t i = 1; i < arr.size(); ++i) {
+			for (size_t j = i; j > 0 && comp(arr[j], arr[j - 1]); --j) {
+				std::swap(arr[j], arr[j - 1]);
+			}
+		}*/
+
+		std::vector<std::vector<int>> sorted_vec = std::move(MergeSort(arr));
+
+		int start = 0, end = 0;
+		for (size_t i = 0; i < sorted_vec.size(); ++i) {
+			if (start == 0 && end == 0) { // initialize new flower bed area
+				start = sorted_vec[i][0];
+				end = sorted_vec[i][1];
+			}
+			else if (end >= sorted_vec[i][0] && end < sorted_vec[i][1]) { // check extension of curr flower bed
+				end = sorted_vec[i][1];
+			}
+			else if (end < sorted_vec[i][0]) { // new flower bed
+				output << start << ' ' << end << '\n';
+				start = sorted_vec[i][0];
+				end = sorted_vec[i][1];
+			}
+		}
+		output << start << ' ' << end << '\n';
+	}
 }
 
 namespace s3_tests {
@@ -471,6 +559,51 @@ namespace s3_tests {
 			assert(output.str() == res.str());
 		}
 	}
-
-
+	/*-------------------------------------------------------------------------*/
+	void N_FlowerBeds() {
+		{
+			std::stringstream input;
+			input << "4"s << '\n'
+				<< "7 8"s << '\n'
+				<< "7 12"s << '\n'
+				<< "2 3"s << '\n'
+				<< "6 10"s;
+			std::ostringstream output(std::ios_base::ate);
+			s3_problems::N_FlowerBeds(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "2 3"s << '\n'
+				<< "6 12"s << '\n';
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "4"s << '\n'
+				<< "7 8"s << '\n'
+				<< "7 8"s << '\n'
+				<< "2 3"s << '\n'
+				<< "6 10"s;
+			std::ostringstream output(std::ios_base::ate);
+			s3_problems::N_FlowerBeds(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "2 3"s << '\n'				
+				<< "6 10"s << '\n';
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "6"s << '\n'
+				<< "1 3"s << '\n'
+				<< "3 5"s << '\n'
+				<< "4 6"s << '\n'
+				<< "5 6"s << '\n'
+				<< "2 4"s << '\n'
+				<< "7 10"s;
+			std::ostringstream output(std::ios_base::ate);
+			s3_problems::N_FlowerBeds(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "1 6"s << '\n'
+				<< "7 10"s << '\n';
+			assert(output.str() == res.str());
+		}
+	}
 }
