@@ -109,6 +109,150 @@ namespace s3_problems {
 		output << "False"s;
 	}
 	/*-------------------------------------------------------------------------*/
+	std::vector<int> FillInputVectorInt(std::istream& input) {
+		int cnt;
+		input >> cnt;
+
+		std::vector<int> res;
+		res.reserve(cnt);
+		for (int i = 0; i < cnt; ++i) {
+			int num;
+			input >> num;
+			res.push_back(num);
+		}
+
+		return res;
+	}
+
+	void D_Cookies(std::istream& input, std::ostream& output) {
+		std::vector<int> greed_arr = std::move(FillInputVectorInt(input));
+		std::vector<int> cookie_size_arr = std::move(FillInputVectorInt(input));
+
+		std::vector<int> satisfied_arr(1001);
+
+		for (size_t i = 0; i < cookie_size_arr.size(); ++i) {
+			--satisfied_arr[cookie_size_arr[i]];
+		}		
+		for (size_t i = 0; i < greed_arr.size(); ++i) {
+			++satisfied_arr[greed_arr[i]];
+		}
+		
+		int not_satisfied_kids = 0;
+		int cookies_buf = 0;
+		for (size_t i = 0; i < satisfied_arr.size() - 1; ++i) { // reverse cycle for cookies buffer collecting
+			int ind = satisfied_arr.size() - 1 - i;
+			if (satisfied_arr[ind] > 0) { // some not_satisfied kids. they will be happy with bigger cookie
+				if (cookies_buf >= satisfied_arr[ind]) { //spend buffer for needs.
+					cookies_buf -= satisfied_arr[ind];
+				}
+				else {
+					not_satisfied_kids += satisfied_arr[ind] - cookies_buf; // buffer can't handle all unsatisfied kids
+					cookies_buf = 0;
+				}				
+			}
+			else if (satisfied_arr[ind] < 0) { // cookies buffer
+				cookies_buf -= satisfied_arr[ind];
+			}
+		}
+
+		output << greed_arr.size() - not_satisfied_kids;
+	}
+	/*-------------------------------------------------------------------------*/
+	std::vector<int> E_Merge(std::vector<int>::const_iterator left_begin, std::vector<int>::const_iterator left_end, // self training to reproduce from memory
+		std::vector<int>::const_iterator right_begin, std::vector<int>::const_iterator right_end) {		
+		std::vector<int> res;
+		while (left_begin != left_end && right_begin != right_end) {
+			if (*left_begin < *right_begin) {
+				res.push_back(*left_begin);
+				++left_begin;
+			}
+			else {
+				res.push_back(*right_begin);
+				++right_begin;
+			}
+		}
+
+		while (left_begin != left_end) {
+			res.push_back(*left_begin);
+			++left_begin;
+		}
+		while (right_begin != right_end) {
+			res.push_back(*right_begin);
+			++right_begin;
+		}
+
+		return res;
+	}
+
+	void E_MergeSort(std::vector<int>::iterator begin, std::vector<int>::iterator end) {
+		if (begin + 1 == end) { // base case - arr consist of 1 elem
+			return;
+		}
+
+		E_MergeSort(begin, begin + (end - begin) / 2);
+		E_MergeSort(begin + (end - begin) / 2, end);
+
+		std::vector<int> res = std::move(E_Merge(begin, begin + (end - begin) / 2, begin + (end - begin) / 2, end));		
+		for (auto it = begin; it != end; ++it) {
+			*it = res[it - begin];
+		}
+	}
+
+	void E_HouseBuying(std::istream& input, std::ostream& output) { // merge sort?
+		int n, k;
+		input >> n >> k;
+
+		std::vector<int> arr;
+		arr.reserve(n);
+		while (n != 0) {
+			int house_cost;
+			input >> house_cost;
+			arr.push_back(house_cost);
+			--n;
+		}
+
+		E_MergeSort(arr.begin(), arr.end());
+		int money = k;
+		int houses_can_afford = 0; // count lowest price houses
+		for (size_t i = 0; i < arr.size(); ++i) {
+			if (arr[i] <= money) {
+				money -= arr[i];
+				++houses_can_afford;
+			}
+			else { // money are spent. no need to continue
+				break;
+			}
+			
+		}
+
+		output << houses_can_afford;
+	}
+	/*-------------------------------------------------------------------------*/
+	void G_Wardrobe(std::istream& input, std::ostream& output) {
+		std::vector<int> arr = std::move(FillInputVectorInt(input));
+
+		std::vector<int> count_sort_arr(3);
+
+		for (size_t i = 0; i < arr.size(); ++i) {
+			++count_sort_arr[arr[i]];
+		}
+
+		bool f = false;
+		for (size_t i = 0; i < count_sort_arr.size(); ++i) {			
+			int j = 0;
+			while (j != count_sort_arr[i]) {
+				if (f) {
+					output << ' ';
+				}
+				else {
+					f = true;
+				}
+				output << i;
+				++j;
+			}
+		}
+	}
+	/*-------------------------------------------------------------------------*/
 	std::vector<std::string> FillInputVector(std::istream& input) {
 		int cnt;
 		input >> cnt;
@@ -152,21 +296,6 @@ namespace s3_problems {
 		output << '\n';
 	}
 	/*-------------------------------------------------------------------------*/
-	std::vector<int> FillInputVectorInt(std::istream& input) {
-		int cnt;
-		input >> cnt;
-
-		std::vector<int> res;
-		res.reserve(cnt);
-		for (int i = 0; i < cnt; ++i) {
-			int num;
-			input >> num;
-			res.push_back(num);
-		}
-
-		return res;
-	}
-
 	void InsertSort(std::istream& input, std::ostream& output) {
 		using namespace s1_problems;
 		std::vector<int> arr = std::move(FillInputVectorInt(input));
@@ -528,6 +657,111 @@ namespace s3_tests {
 			s3_problems::C_Subsequence(static_cast<std::iostream&>(input), output);
 			std::stringstream res;
 			res << "False"s;
+			assert(output.str() == res.str());
+		}
+	}
+	/*-------------------------------------------------------------------------*/
+	void D_Cookies() {
+		{
+			std::stringstream input;
+			input << "2"s << '\n'
+				<< "1 2"s << '\n'
+				<< "3"s << '\n'
+				<< "2 1 3"s;
+			std::ostringstream output(std::ios_base::ate);
+			s3_problems::D_Cookies(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "2"s;
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "3"s << '\n'
+				<< "1 2 3"s << '\n'
+				<< "3"s << '\n'
+				<< "2 1 4"s;
+			std::ostringstream output(std::ios_base::ate);
+			s3_problems::D_Cookies(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "3"s;
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "3"s << '\n'
+				<< "2 1 3"s << '\n'
+				<< "2"s << '\n'
+				<< "1 1"s;
+			std::ostringstream output(std::ios_base::ate);
+			s3_problems::D_Cookies(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "1"s;
+			assert(output.str() == res.str());
+		}
+	}
+	/*-------------------------------------------------------------------------*/
+	void E_HousesBuying() {
+		{
+			std::stringstream input;
+			input << "3 300"s << '\n'
+				<< "999 999 999"s;
+			std::ostringstream output(std::ios_base::ate);
+			s3_problems::E_HouseBuying(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "0"s;
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "3 1000"s << '\n'
+				<< "350 999 200"s;
+			std::ostringstream output(std::ios_base::ate);
+			s3_problems::E_HouseBuying(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "2"s;
+			assert(output.str() == res.str());
+		}
+	}
+	/*-------------------------------------------------------------------------*/
+	void G_Wardrobe() {
+		{
+			std::stringstream input;
+			input << "7"s << '\n'
+				<< "0 2 1 2 0 0 1"s;
+			std::ostringstream output(std::ios_base::ate);
+			s3_problems::G_Wardrobe(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "0 0 0 1 1 2 2"s;
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "5"s << '\n'
+				<< "2 1 2 0 1"s;
+			std::ostringstream output(std::ios_base::ate);
+			s3_problems::G_Wardrobe(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "0 1 1 2 2"s;
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "6"s << '\n'
+				<< "2 1 1 2 0 2"s;
+			std::ostringstream output(std::ios_base::ate);
+			s3_problems::G_Wardrobe(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "0 1 1 2 2 2"s;
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "6"s << '\n'
+				<< "2 2 2 2 2 2"s;
+			std::ostringstream output(std::ios_base::ate);
+			s3_problems::G_Wardrobe(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "2 2 2 2 2 2"s;
 			assert(output.str() == res.str());
 		}
 	}
