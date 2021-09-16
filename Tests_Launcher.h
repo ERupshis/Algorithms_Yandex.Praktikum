@@ -46,7 +46,9 @@ void sprint3_tests() {
     s3_tests::C_Subsequence();
     s3_tests::D_Cookies();
     s3_tests::E_HousesBuying();
+    s3_tests::F_TrianglePerimiter();
     s3_tests::G_Wardrobe();
+    s3_tests::I_ConferenceLovers();
     s3_tests::H_BigNumber();
     s3_tests::J_Bubble();
     s3_tests::K_MergeSort();

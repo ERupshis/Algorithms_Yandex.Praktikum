@@ -158,6 +158,7 @@ namespace s3_problems {
 		output << greed_arr.size() - not_satisfied_kids;
 	}
 	/*-------------------------------------------------------------------------*/
+
 	std::vector<int> E_Merge(std::vector<int>::const_iterator left_begin, std::vector<int>::const_iterator left_end, // self training to reproduce from memory
 		std::vector<int>::const_iterator right_begin, std::vector<int>::const_iterator right_end) {		
 		std::vector<int> res;
@@ -228,6 +229,19 @@ namespace s3_problems {
 		output << houses_can_afford;
 	}
 	/*-------------------------------------------------------------------------*/
+	void F_TrianglePerimeter(std::istream& input, std::ostream& output) {
+		std::vector<int> arr = std::move(FillInputVectorInt(input));
+
+		E_MergeSort(arr.begin(), arr.end());
+
+		for (size_t i = 3; i <= arr.size(); ++i) {
+			if (arr[arr.size() - i] + arr[arr.size() - i + 1] > arr[arr.size() - i + 2]) { // consider 3 biggest length in array
+				output << arr[arr.size() - i] + arr[arr.size() - i + 1] + arr[arr.size() - i + 2];
+				break;
+			}
+		}
+	}
+	/*-------------------------------------------------------------------------*/
 	void G_Wardrobe(std::istream& input, std::ostream& output) {
 		std::vector<int> arr = std::move(FillInputVectorInt(input));
 
@@ -294,6 +308,59 @@ namespace s3_problems {
 			output << arr[i];
 		}
 		output << '\n';
+	}
+	/*-------------------------------------------------------------------------*/
+	struct University {
+		University(int id, int stud_cnt)
+			:id(id), stud_cnt(stud_cnt) {
+		}
+		int id = 0;
+		int stud_cnt = 0;
+
+		bool operator < (const University& other) const {
+			return stud_cnt > other.stud_cnt;
+		}
+	};
+	
+	void I_ConferenceLovers(std::istream& input, std::ostream& output) {		
+		int cnt, max_id = 0;
+		input >> cnt;
+		std::vector<int> arr;
+		arr.reserve(cnt);
+		for (int i = 0; i < cnt; ++i) {
+			int num;			
+			input >> num;
+			if (num > max_id) {
+				max_id = num;
+			}
+			arr.push_back(num);
+		}
+
+		int univ_cnt;
+		input >> univ_cnt;
+
+		std::vector<int> count_sort_arr(max_id + 1);
+		for (size_t i = 0; i < arr.size(); ++i) {
+			++count_sort_arr[arr[i]];
+		}
+		
+		std::vector<University> res_vec;
+		for (size_t i = 0; i < count_sort_arr.size(); ++i) {
+			if (count_sort_arr[i] != 0) {
+				res_vec.push_back({ static_cast<int>(i), count_sort_arr[i] });
+			}
+		}
+		std::sort(res_vec.begin(), res_vec.end());		
+		bool f = false;
+		for (int i = 0; i < univ_cnt; ++i) {			
+			if (f) {
+				output << ' ';
+			}
+			else {
+				f = true;
+			}			
+			output << res_vec[i].id;
+		}
 	}
 	/*-------------------------------------------------------------------------*/
 	void InsertSort(std::istream& input, std::ostream& output) {
@@ -723,6 +790,29 @@ namespace s3_tests {
 		}
 	}
 	/*-------------------------------------------------------------------------*/
+	void F_TrianglePerimiter() {
+		{
+			std::stringstream input;
+			input << "4"s << '\n'
+				<< "6 3 3 2"s;
+			std::ostringstream output(std::ios_base::ate);
+			s3_problems::F_TrianglePerimeter(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "8"s;
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "6"s << '\n'
+				<< "5 3 7 2 8 3"s;
+			std::ostringstream output(std::ios_base::ate);
+			s3_problems::F_TrianglePerimeter(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "20"s;
+			assert(output.str() == res.str());
+		}
+	}
+	/*-------------------------------------------------------------------------*/
 	void G_Wardrobe() {
 		{
 			std::stringstream input;
@@ -843,6 +933,42 @@ namespace s3_tests {
 				<< "00010001000"s << '\n';
 			assert(output.str() == res.str());
 		}
+	}
+	/*-------------------------------------------------------------------------*/
+	void I_ConferenceLovers() {
+		{
+			std::stringstream input;
+			input << "18"s << '\n'
+				<< "1 1 1 2 2 2 2 3 3 3 4 4 4 4 5 5 5 5"s << '\n'
+				<< "4"s;
+			std::ostringstream output(std::ios_base::ate);
+			s3_problems::I_ConferenceLovers(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "2 4 5 1"s;
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "7"s << '\n'
+				<< "1 2 3 1 2 3 4"s << '\n'
+				<< "3"s;
+			std::ostringstream output(std::ios_base::ate);
+			s3_problems::I_ConferenceLovers(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "1 2 3"s;
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "6"s << '\n'
+				<< "1 1 1 2 2 3"s << '\n'
+				<< "1"s;
+			std::ostringstream output(std::ios_base::ate);
+			s3_problems::I_ConferenceLovers(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "1"s;
+			assert(output.str() == res.str());
+		}		
 	}
 	/*-------------------------------------------------------------------------*/
 	void J_Bubble() {

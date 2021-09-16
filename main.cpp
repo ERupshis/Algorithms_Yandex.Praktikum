@@ -49,8 +49,10 @@ int main()
     //s3_problems::C_Subsequence(input_file, output_file);
     //s3_problems::D_Cookies(input_file, output_file);
     //s3_problems::E_HouseBuying(input_file, output_file);
+    //s3_problems::F_TrianglePerimeter(input_file, output_file);
     //s3_problems::G_Wardrobe(input_file, output_file);
     //s3_problems::H_BigNumber(input_file, output_file);
+    //s3_problems::I_ConferenceLovers(input_file, output_file);
     //s3_problems::J_Bubble(input_file, output_file);
     
     //s3_problems::L_TwoBikes(input_file, output_file);
