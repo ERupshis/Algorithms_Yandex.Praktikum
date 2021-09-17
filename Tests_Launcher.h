@@ -55,5 +55,7 @@ void sprint3_tests() {
     s3_tests::L_TwoBikes();
     s3_tests::M_GoldMiddle();
     s3_tests::N_FlowerBeds();
+    s3_tests::O_TrashIndexesDifference();
+    s3_tests::P_PartialSorting();
     
 }

@@ -163,7 +163,6 @@ namespace s3_problems {
 		output << greed_arr.size() - not_satisfied_kids;
 	}
 	/*-------------------------------------------------------------------------*/
-
 	std::vector<int> E_Merge(std::vector<int>::const_iterator left_begin, std::vector<int>::const_iterator left_end, // self training to reproduce from memory
 		std::vector<int>::const_iterator right_begin, std::vector<int>::const_iterator right_end) {		
 		std::vector<int> res;
@@ -501,27 +500,27 @@ namespace s3_problems {
 			<< BinarySearchRecursion(input_array, 2 * cost, 0, input_array.size()) << '\n';
 
 	}
-	/*-------------------------------------------------------------------------*/	
+	/*-------------------------------------------------------------------------*/
 	double FindMedian(const std::vector<int>& arr_A, const std::vector<int>& arr_B, int n, int m) {
 		int left = 0, right = n; // borders of arr A
 		while (left <= right) {
 			int partition_A = (left + right) / 2;
 			int partition_B = (n + m + 1) / 2 - partition_A;
 
-			double max_left_A = INT_MIN;
+			double max_left_A = INT32_MIN; 
 			if (partition_A > 0) {
 				max_left_A = arr_A[partition_A - 1];
 			}
-			double min_right_A = INT_MAX;
+			double min_right_A = INT32_MAX;
 			if (partition_A < n) {
 				min_right_A = arr_A[partition_A];
 			}
 
-			double max_left_B = INT_MIN;
+			double max_left_B = INT32_MIN;
 			if (partition_B > 0) {
 				max_left_B = arr_B[partition_B - 1];
 			}
-			double min_right_B = INT_MAX;
+			double min_right_B = INT32_MAX;
 			if (partition_B < m) {
 				min_right_B = arr_B[partition_B];
 			}
@@ -646,6 +645,52 @@ namespace s3_problems {
 			}
 		}
 		output << start << ' ' << end << '\n';
+	}
+	/*-------------------------------------------------------------------------*/
+	void O_TrashIndexesDifference(std::istream& input, std::ostream& output) { // too big memory using
+		std::vector<int> arr = std::move(FillInputVectorInt(input));
+
+		std::vector<int> diff;
+		diff.reserve(arr.size() * arr.size() / 2); // reserve capacity (n^2)/2
+		for (size_t i = 0; i < arr.size() - 1; ++i) {
+			for (size_t j = i + 1; j < arr.size(); ++j) {
+				diff.push_back(std::abs(arr[i] - arr[j]));
+			}
+		}
+
+		E_MergeSort(diff.begin(), diff.end());
+
+		int k;
+		input >> k;
+		output << diff[k - 1];
+	}
+	/*-------------------------------------------------------------------------*/
+	void P_PartialSorting(std::istream& input, std::ostream& output) {
+		std::vector<int> arr = std::move(FillInputVectorInt(input));
+
+		int prev_max = -1;
+		int max = -1;
+		int cnt = 0;			
+
+		bool f = false;
+		int res = 0;
+		for (size_t i = 0; i < arr.size(); ++i) {	
+			cnt++;
+			if (!f) {
+				max = arr[i];
+				f = true;
+			}
+			if (max < arr[i]) {
+				max = arr[i];
+			}
+			if (arr[i] == i && cnt == 1 || max == i && max - prev_max == cnt) {
+				++res;
+				prev_max = i;
+				cnt = 0;
+				f = false;
+			}					
+		}
+		output << res;
 	}
 }
 
@@ -1283,6 +1328,95 @@ namespace s3_tests {
 			std::stringstream res;
 			res << "1 6"s << '\n'
 				<< "7 10"s << '\n';
+			assert(output.str() == res.str());
+		}
+	}
+	/*-------------------------------------------------------------------------*/	
+	void O_TrashIndexesDifference() {
+		{
+			std::stringstream input;
+			input << "3"s << '\n'
+				<< "2 3 4"s << '\n'
+				<< "2"s;
+			std::ostringstream output(std::ios_base::ate);
+			s3_problems::O_TrashIndexesDifference(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "1"s;
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "3"s << '\n'
+				<< "1 3 1"s << '\n'
+				<< "1"s;
+			std::ostringstream output(std::ios_base::ate);
+			s3_problems::O_TrashIndexesDifference(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "0"s;
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "3"s << '\n'
+				<< "1 3 5"s << '\n'
+				<< "3"s;
+			std::ostringstream output(std::ios_base::ate);
+			s3_problems::O_TrashIndexesDifference(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "4"s;
+			assert(output.str() == res.str());
+		}
+	}	
+	/*-------------------------------------------------------------------------*/
+	void P_PartialSorting() {
+		{
+			std::stringstream input;
+			input << "5"s << '\n'
+				<< "1 0 2 3 4"s;
+			std::ostringstream output(std::ios_base::ate);
+			s3_problems::P_PartialSorting(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "4"s;
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "8"s << '\n'
+				<< "3 6 7 4 1 5 0 2"s;
+			std::ostringstream output(std::ios_base::ate);
+			s3_problems::P_PartialSorting(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "1"s;
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "6"s << '\n'
+				<< "3 1 5 4 2 0"s;
+			std::ostringstream output(std::ios_base::ate);
+			s3_problems::P_PartialSorting(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "1"s;
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "5"s << '\n'
+				<< "0 1 3 4 2"s;
+			std::ostringstream output(std::ios_base::ate);
+			s3_problems::P_PartialSorting(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "3"s;
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "4"s << '\n'
+				<< "0 1 3 2"s;
+			std::ostringstream output(std::ios_base::ate);
+			s3_problems::P_PartialSorting(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "3"s;
 			assert(output.str() == res.str());
 		}
 	}

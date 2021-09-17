@@ -58,8 +58,7 @@ int main()
     //s3_problems::L_TwoBikes(input_file, output_file);
     //s3_problems::M_GoldMiddle(input_file, output_file);
     //s3_problems::N_FlowerBeds(input_file, output_file);
-
-    
-    
+    //s3_problems::O_TrashIndexesDifference(input_file, output_file);    
+    //s3_problems::P_PartialSorting(input_file, output_file);
 }
 
