@@ -53,6 +53,7 @@ void sprint3_tests() {
     s3_tests::J_Bubble();
     s3_tests::K_MergeSort();
     s3_tests::L_TwoBikes();
+    s3_tests::M_GoldMiddle();
     s3_tests::N_FlowerBeds();
     
 }

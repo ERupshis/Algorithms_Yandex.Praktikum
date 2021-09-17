@@ -56,6 +56,7 @@ int main()
     //s3_problems::J_Bubble(input_file, output_file);
     
     //s3_problems::L_TwoBikes(input_file, output_file);
+    //s3_problems::M_GoldMiddle(input_file, output_file);
     //s3_problems::N_FlowerBeds(input_file, output_file);
 
     

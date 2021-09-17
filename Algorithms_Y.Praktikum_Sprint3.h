@@ -109,13 +109,18 @@ namespace s3_problems {
 		output << "False"s;
 	}
 	/*-------------------------------------------------------------------------*/
-	std::vector<int> FillInputVectorInt(std::istream& input) {
-		int cnt;
-		input >> cnt;
-
+	std::vector<int> FillInputVectorInt(std::istream& input, int size = 0) {
 		std::vector<int> res;
-		res.reserve(cnt);
-		for (int i = 0; i < cnt; ++i) {
+		if (size == 0) {
+			int cnt;
+			input >> cnt;
+			res.reserve(cnt);
+		}
+		else {
+			res.reserve(size);
+		}
+		
+		for (size_t i = 0; i < res.capacity(); ++i) {
 			int num;
 			input >> num;
 			res.push_back(num);
@@ -497,6 +502,63 @@ namespace s3_problems {
 
 	}
 	/*-------------------------------------------------------------------------*/	
+	double FindMedian(const std::vector<int>& arr_A, const std::vector<int>& arr_B, int n, int m) {
+		int left = 0, right = n; // borders of arr A
+		while (left <= right) {
+			int partition_A = (left + right) / 2;
+			int partition_B = (n + m + 1) / 2 - partition_A;
+
+			double max_left_A = INT_MIN;
+			if (partition_A > 0) {
+				max_left_A = arr_A[partition_A - 1];
+			}
+			double min_right_A = INT_MAX;
+			if (partition_A < n) {
+				min_right_A = arr_A[partition_A];
+			}
+
+			double max_left_B = INT_MIN;
+			if (partition_B > 0) {
+				max_left_B = arr_B[partition_B - 1];
+			}
+			double min_right_B = INT_MAX;
+			if (partition_B < m) {
+				min_right_B = arr_B[partition_B];
+			}
+
+			if (max_left_A <= min_right_B && max_left_B <= min_right_A) {
+				if ((n + m) % 2 == 0) {
+					return (std::max(max_left_A, max_left_B) + std::min(min_right_A, min_right_B)) / 2.0;
+				}
+				else {
+					return std::max(max_left_A, max_left_B);
+				}
+			}
+			else if (max_left_A > max_left_B) {
+				right = partition_A - 1;
+			}
+			else {
+				left = partition_A + 1;
+			}
+		}
+		return -1;
+	}
+
+	void M_GoldMiddle(std::istream& input, std::ostream& output) {
+		int n, m;
+		input >> n >> m;
+
+		std::vector<int> n_arr = std::move(FillInputVectorInt(input, n));
+		std::vector<int> m_arr = std::move(FillInputVectorInt(input, m));
+
+		if (n > m) {
+			std::swap(n_arr, m_arr);
+			std::swap(n, m);
+		}
+
+		output << FindMedian(n_arr, m_arr, n, m);
+	}
+	/*-------------------------------------------------------------------------*/
 	std::vector<std::vector<int>> MergeSort(const std::vector<std::vector<int>>& arr) {
 		if (arr.size() == 1) { // base case of recursion
 			return arr;
@@ -1087,6 +1149,93 @@ namespace s3_tests {
 			s3_problems::L_TwoBikes(static_cast<std::iostream&>(input), output);
 			std::stringstream res;
 			res << "3 7"s << '\n';
+			assert(output.str() == res.str());
+		}
+	}
+	/*-------------------------------------------------------------------------*/
+	void M_GoldMiddle() {
+		{
+			std::stringstream input;
+			input << "3"s << '\n'
+				<< "5"s << '\n'
+				<< "2 2 2"s << '\n'
+				<< "1 1 1 1 1"s;
+			std::ostringstream output(std::ios_base::ate);
+			s3_problems::M_GoldMiddle(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "1"s;
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "3"s << '\n'
+				<< "5"s << '\n'
+				<< "1 1 1"s << '\n'
+				<< "2 2 3 4 5"s;
+			std::ostringstream output(std::ios_base::ate);
+			s3_problems::M_GoldMiddle(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "2"s;
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "5"s << '\n'
+				<< "3"s << '\n'
+				<< "2 2 3 4 5"s << '\n'
+				<< "1 1 1"s;
+			std::ostringstream output(std::ios_base::ate);
+			s3_problems::M_GoldMiddle(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "2"s;
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "5"s << '\n'
+				<< "3"s << '\n'
+				<< "1 1 2 2 3"s << '\n'
+				<< "4 5 6"s;
+			std::ostringstream output(std::ios_base::ate);
+			s3_problems::M_GoldMiddle(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "2.5"s;
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "2"s << '\n'
+				<< "1"s << '\n'
+				<< "1 3"s << '\n'
+				<< "2"s;
+			std::ostringstream output(std::ios_base::ate);
+			s3_problems::M_GoldMiddle(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "2"s;
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "2"s << '\n'
+				<< "2"s << '\n'
+				<< "1 2"s << '\n'
+				<< "3 4"s;
+			std::ostringstream output(std::ios_base::ate);
+			s3_problems::M_GoldMiddle(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "2.5"s;
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "8"s << '\n'
+				<< "10"s << '\n'
+				<< "0 0 0 1 3 3 5 10"s << '\n'
+				<< "4 4 5 7 7 7 8 9 9 10"s;
+			std::ostringstream output(std::ios_base::ate);
+			s3_problems::M_GoldMiddle(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "5"s;
 			assert(output.str() == res.str());
 		}
 	}
