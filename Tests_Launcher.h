@@ -60,5 +60,6 @@ void sprint3_tests() {
     s3_tests::P_PartialSorting();
 
     s3_exam_tests::A_BrokenSearch();
+    s3_exam_tests::B_EffectiveQuickSort();
     
 }

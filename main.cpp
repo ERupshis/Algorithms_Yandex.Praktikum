@@ -60,5 +60,8 @@ int main()
     //s3_problems::N_FlowerBeds(input_file, output_file);
     //s3_problems::O_TrashIndexesDifference(input_file, output_file);    
     //s3_problems::P_PartialSorting(input_file, output_file);
+
+    //s3_exam_problems::A_BrokenSearch(input_file, output_file);
+    //s3_exam_problems::B_EffectiveQuickSort(input_file, output_file);
 }
 
