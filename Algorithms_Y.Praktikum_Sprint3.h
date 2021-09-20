@@ -483,10 +483,10 @@ namespace s3_problems {
 			return mid + 1; // base case
 		}		 
 		else if (x <= array[mid]) {
-			BinarySearchRecursion(array, x, left, mid);  // recursion case
+			return BinarySearchRecursion(array, x, left, mid);  // recursion case
 		}
 		else {
-			BinarySearchRecursion(array, x, mid + 1, right); // recursion case
+			return BinarySearchRecursion(array, x, mid + 1, right); // recursion case
 		}
 	}	
 
@@ -547,15 +547,15 @@ namespace s3_problems {
 		int n, m;
 		input >> n >> m;
 
-		std::vector<int> n_arr = std::move(FillInputVectorInt(input, n));
-		std::vector<int> m_arr = std::move(FillInputVectorInt(input, m));
+std::vector<int> n_arr = std::move(FillInputVectorInt(input, n));
+std::vector<int> m_arr = std::move(FillInputVectorInt(input, m));
 
-		if (n > m) {
-			std::swap(n_arr, m_arr);
-			std::swap(n, m);
-		}
+if (n > m) {
+	std::swap(n_arr, m_arr);
+	std::swap(n, m);
+}
 
-		output << FindMedian(n_arr, m_arr, n, m);
+output << FindMedian(n_arr, m_arr, n, m);
 	}
 	/*-------------------------------------------------------------------------*/
 	std::vector<std::vector<int>> MergeSort(const std::vector<std::vector<int>>& arr) {
@@ -574,7 +574,7 @@ namespace s3_problems {
 			}
 			return lhs[0] < rhs[0]; };
 
-		size_t l = 0, r = 0, k = 0; 
+		size_t l = 0, r = 0, k = 0;
 		while (l < left.size() && r < right.size()) {
 			if (comp(left[l], right[r])) {
 				res[k] = left[l];
@@ -647,22 +647,34 @@ namespace s3_problems {
 		output << start << ' ' << end << '\n';
 	}
 	/*-------------------------------------------------------------------------*/
+	void O_ValueBinarySearchconst (std::vector<int>& arr, int left, int right, int& cnt, int& value, int& k) { // method perform just search in array
+		if (left >= right) {
+			++cnt;
+			if (cnt == k) {
+				value = arr[k - 1];
+			}
+			return;
+		}		
+		
+
+		size_t mid = (left + right) / 2;
+		O_ValueBinarySearchconst(arr, left, mid, cnt, value, k);  // recursion case
+		O_ValueBinarySearchconst(arr, mid + 1, right, cnt, value, k);  // recursion case
+
+
+	}
 	void O_TrashIndexesDifference(std::istream& input, std::ostream& output) { // too big memory using
 		std::vector<int> arr = std::move(FillInputVectorInt(input));
 
-		std::vector<int> diff;
-		diff.reserve(arr.size() * arr.size() / 2); // reserve capacity (n^2)/2
-		for (size_t i = 0; i < arr.size() - 1; ++i) {
-			for (size_t j = i + 1; j < arr.size(); ++j) {
-				diff.push_back(std::abs(arr[i] - arr[j]));
-			}
-		}
-
-		E_MergeSort(diff.begin(), diff.end());
-
+		E_MergeSort(arr.begin(), arr.end());
+		int cnt = 0;
+		int value = -1;
 		int k;
 		input >> k;
-		output << diff[k - 1];
+
+		O_ValueBinarySearchconst(arr, 0, arr.size(), cnt, value, k);
+		
+		output << value;
 	}
 	/*-------------------------------------------------------------------------*/
 	void P_PartialSorting(std::istream& input, std::ostream& output) {
@@ -1341,7 +1353,7 @@ namespace s3_tests {
 			std::ostringstream output(std::ios_base::ate);
 			s3_problems::O_TrashIndexesDifference(static_cast<std::iostream&>(input), output);
 			std::stringstream res;
-			res << "1"s;
+			res << "3"s;
 			assert(output.str() == res.str());
 		}
 		{

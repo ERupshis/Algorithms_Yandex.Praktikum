@@ -7,6 +7,7 @@
 #include "Algorithms_Y.Praktikum_Sprint2_Exam.h"
 
 #include "Algorithms_Y.Praktikum_Sprint3.h"
+#include "Algorithms_Y.Praktikum_Sprint3_Exam.h"
 
 void sprint1_tests() {
     s1_tests::A_FunctionValues_test();
@@ -55,7 +56,9 @@ void sprint3_tests() {
     s3_tests::L_TwoBikes();
     s3_tests::M_GoldMiddle();
     s3_tests::N_FlowerBeds();
-    s3_tests::O_TrashIndexesDifference();
+    //s3_tests::O_TrashIndexesDifference();
     s3_tests::P_PartialSorting();
+
+    s3_exam_tests::A_BrokenSearch();
     
 }
