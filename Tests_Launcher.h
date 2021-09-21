@@ -9,6 +9,8 @@
 #include "Algorithms_Y.Praktikum_Sprint3.h"
 #include "Algorithms_Y.Praktikum_Sprint3_Exam.h"
 
+#include "Algorithms_Y.Praktikum_Sprint4.h"
+
 void sprint1_tests() {
     s1_tests::A_FunctionValues_test();
     s1_tests::B_EvenAndOddNumbers_test();
@@ -62,4 +64,9 @@ void sprint3_tests() {
     s3_exam_tests::A_BrokenSearch();
     s3_exam_tests::B_EffectiveQuickSort();
     
+}
+
+void sprint4_tests() {
+
+    s4_tests::D_Cups();
 }

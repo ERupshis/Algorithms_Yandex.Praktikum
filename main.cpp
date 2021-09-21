@@ -8,6 +8,7 @@ void Test() {
     sprint1_tests();
     sprint2_tests();
     sprint3_tests();
+    sprint4_tests();
 }
 
 int main()
@@ -63,5 +64,7 @@ int main()
 
     //s3_exam_problems::A_BrokenSearch(input_file, output_file);
     //s3_exam_problems::B_EffectiveQuickSort(input_file, output_file);
+
+    //s4_problems::D_Cups(input_file, output_file);
 }
 

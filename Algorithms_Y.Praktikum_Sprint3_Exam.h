@@ -31,7 +31,7 @@ namespace s3_exam_problems {
 	// Time coplexity: O(log n)
 	// search range decreases in 2 times on every recursion call;
 	// 
-	// Space complexity: O(1)
+	// Space complexity: O(log n)
 	// space is required for mid (pivot) calculation;
 
 	int BinarySearch(const std::vector<int>& arr, int l, int r, int k) { // O(log n) due to we decrease search range in 2 times every recursion call	
@@ -153,8 +153,8 @@ namespace s3_exam_problems {
 	// on every recursion call n elements is going to be considered
 	// - O(n * n) - worst case, when pivot point will be border value (the less or the biggest one). In this case only pivot value will be excluded on the next recursion call
 	// Space complexity:
-	// - additional space is not requred, due to this variant of quick sort modify sorting array without memory allocation for temporary values storage,
-	// except three temporary fields - start, end, pivot
+	// - O(log n) additional space is not requred for array elements, due to this variant of quick sort modify sorting array without memory allocation for temporary values storage,
+	// except three temporary fields - start, end, pivot on every recursion call
 
 	void EffectiveQuickSort(std::vector<Participant>& arr, int l, int r) {
 		int start = l, end = r; // end border of current recursion call
