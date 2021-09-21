@@ -66,5 +66,6 @@ int main()
     //s3_exam_problems::B_EffectiveQuickSort(input_file, output_file);
 
     //s4_problems::D_Cups(input_file, output_file);
+    //s4_problems::G_Competition(input_file, output_file);
 }
 

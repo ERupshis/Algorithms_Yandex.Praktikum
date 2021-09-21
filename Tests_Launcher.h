@@ -69,4 +69,6 @@ void sprint3_tests() {
 void sprint4_tests() {
 
     s4_tests::D_Cups();
+
+    s4_tests::G_Competition();
 }
