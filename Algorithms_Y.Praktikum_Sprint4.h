@@ -9,6 +9,88 @@
 namespace s4_problems {
 	using namespace std::literals;
 
+	
+	void A_PolynomialHash(std::istream& input, std::ostream& output) {
+		int a, m;
+		std::string str;
+		input >> a >> m >> str;
+
+		uint64_t res = 0;
+		for (size_t i = 0; i < str.size(); ++i) {
+			if (i == str.size() - 1) {
+				res = (res + str[i]) % m;
+			}
+			else {
+				res = (((res + str[i]) % m) * (a % m)) % m;
+			}
+		}
+
+		output << res;
+	}
+	/*-------------------------------------------------------------------------*/
+	int64_t B_PolynomialHash(int a, int m, std::string_view str) {
+		uint64_t res = 0;
+		for (size_t i = 0; i < str.size(); ++i) {
+			if (i == str.size() - 1) {
+				res = (res + str[i]) % m;
+			}
+			else {
+				res = (((res + str[i]) % m) * (a % m)) % m;
+			}
+		}
+		return res;
+	}
+	
+	void B_BreakMe() {
+		//std::cout << B_PolynomialHash(1000, 123'987'123, "kijuhygtfrdews") << ' ' << B_PolynomialHash(1000, 123'987'123, "kijuhygtfrdew");
+		std::string in_str;
+		std::cin >> in_str;
+		std::unordered_map<int64_t, std::string> map;
+		int substr_size = 170;
+		while (substr_size > 5) {
+			for (size_t i = 0; i < in_str.size() - substr_size - 1; ++i) {
+				int64_t hash = B_PolynomialHash(1000, 123'987'123, in_str.substr(i, substr_size));				
+				if (!map.count(hash)) {					
+					map[hash] = in_str.substr(i, substr_size);
+				}
+				else if (map[hash] != in_str.substr(i, substr_size)) {
+					std::cout << in_str.substr(i, substr_size) << '\n' << map.at(hash);
+					return;
+				}
+			}
+			--substr_size;
+		}
+
+	}
+	/*-------------------------------------------------------------------------*/	
+	struct RangeHasher {		
+		size_t operator() (const std::pair<int, int> r) const {
+			return int_hash(r.first) + 37 * int_hash(r.second);
+		}
+		std::hash<int> int_hash;
+	};
+
+	void C_PrefixHashes(std::istream& input, std::ostream& output) {
+		int a, m, n;
+		std::string str;		
+		input >> a >> m >> str >> n;
+		std::string_view sv{ str };
+		std::unordered_map<std::pair<int, int>, int64_t, RangeHasher> map;
+		while (n > 0) {
+			int req_s, req_e;
+			input >> req_s >> req_e;
+			if (!map.count({ req_s, req_e })) {
+				int64_t hash = B_PolynomialHash(a, m, sv.substr(req_s - 1, req_e - req_s + 1));
+				map[{ req_s, req_e }] = hash;
+				output << hash << '\n';
+			}
+			else {
+				output << map.at({ req_s, req_e }) << '\n';
+			}
+			
+			--n;
+		}		
+	}
 	/*-------------------------------------------------------------------------*/
 	struct KeyValue {
 		std::string key = ""s;
@@ -85,11 +167,130 @@ namespace s4_problems {
 
 		output << max_length << '\n';
 	}
+	/*-------------------------------------------------------------------------*/
+	std::string H_Hash(const std::string& str) {
+		std::unordered_map<char, int> dict;
+
+		std::string res;
+		for (size_t i = 0; i < str.size(); ++i) {
+			if (!dict.count(str[i])) {
+				dict[str[i]] = dict.size();
+			}
+
+			res += std::to_string(dict[str[i]]);
+		}
+
+		return res;
+	}
+
+	std::vector<int> H_HashVector(const std::string& str) {
+		std::unordered_map<char, int> dict;
+		std::vector<int> res;
+		res.reserve(str.size());
+		for (size_t i = 0; i < str.size(); ++i) {
+			if (!dict.count(str[i])) {
+				dict[str[i]] = dict.size();
+			}
+
+			res.push_back(dict[str[i]]);
+		}
+
+		return res;
+	}
+
+	void H_StrangeComprasion(std::istream& input, std::ostream& output) {
+		std::string str1, str2;
+		input >> str1 >> str2;
+
+		//if (H_Hash(str1) == H_Hash(str2)) {
+		if (H_HashVector(str1) == H_HashVector(str2)) {
+			output << "YES"s;
+		}
+		else {
+			output << "NO"s;
+		}		
+	}
 }
 
 namespace s4_tests {
 	using namespace std::literals;
 
+	void A_PolynomialHash() {
+		{
+			std::stringstream input;
+			input << "123"s << '\n'
+				<< "100003"s << '\n'
+				<< "a"s;
+			std::ostringstream output(std::ios_base::ate);
+			s4_problems::A_PolynomialHash(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "97"s;
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "123"s << '\n'
+				<< "100003"s << '\n'
+				<< "hash"s;
+			std::ostringstream output(std::ios_base::ate);
+			s4_problems::A_PolynomialHash(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "6080"s;
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "123"s << '\n'
+				<< "100003"s << '\n'
+				<< "HaSH"s;
+			std::ostringstream output(std::ios_base::ate);
+			s4_problems::A_PolynomialHash(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "56156"s;
+			assert(output.str() == res.str());
+		}
+	}
+	/*-------------------------------------------------------------------------*/
+	void C_PrefixHashes() {
+		{
+			std::stringstream input;
+			input << "1000"s << '\n'
+				<< "1000009"s << '\n'
+				<< "abcdefgh"s << '\n'
+				<< "7"s << '\n'
+				<< "1 1"s << '\n'
+				<< "1 5"s << '\n'
+				<< "2 3"s << '\n'
+				<< "3 4"s << '\n'
+				<< "4 4"s << '\n'
+				<< "1 8"s << '\n'
+				<< "5 8"s;
+			std::ostringstream output(std::ios_base::ate);
+			s4_problems::C_PrefixHashes(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "97"s << '\n'
+				<< "225076"s << '\n'
+				<< "98099"s << '\n'
+				<< "99100"s << '\n'
+				<< "100"s << '\n'
+				<< "436420"s << '\n'
+				<< "193195"s << '\n';
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "100"s << '\n'
+				<< "10"s << '\n'
+				<< "a"s << '\n'
+				<< "1"s << '\n'
+				<< "1 1"s;
+			std::ostringstream output(std::ios_base::ate);
+			s4_problems::C_PrefixHashes(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "7"s << '\n';
+			assert(output.str() == res.str());
+		}
+	}
 	/*-------------------------------------------------------------------------*/
 	void D_Cups() {
 		{
@@ -145,6 +346,39 @@ namespace s4_tests {
 			s4_problems::G_Competition(static_cast<std::iostream&>(input), output);
 			std::stringstream res;
 			res << "2"s << '\n';
+			assert(output.str() == res.str());
+		}
+	}
+	/*-------------------------------------------------------------------------*/
+	void H_StrangeComprasion() {
+		{
+			std::stringstream input;
+			input << "mxyskaoghi"s << '\n'
+				<< "qodfrgmslc"s;
+			std::ostringstream output(std::ios_base::ate);
+			s4_problems::H_StrangeComprasion(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "YES"s;
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "agg"s << '\n'
+				<< "xdd"s;
+			std::ostringstream output(std::ios_base::ate);
+			s4_problems::H_StrangeComprasion(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "YES"s;
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "agg"s << '\n'
+				<< "xda"s;
+			std::ostringstream output(std::ios_base::ate);
+			s4_problems::H_StrangeComprasion(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "NO"s;
 			assert(output.str() == res.str());
 		}
 	}

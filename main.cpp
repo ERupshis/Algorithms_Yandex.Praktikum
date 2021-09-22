@@ -65,7 +65,11 @@ int main()
     //s3_exam_problems::A_BrokenSearch(input_file, output_file);
     //s3_exam_problems::B_EffectiveQuickSort(input_file, output_file);
 
+    //s4_problems::A_PolynomialHash(input_file, output_file);
+    //s4_problems::B_BreakMe();
+    //s4_problems::C_PrefixHashes(input_file, output_file);
     //s4_problems::D_Cups(input_file, output_file);
     //s4_problems::G_Competition(input_file, output_file);
+    //s4_problems::H_StrangeComprasion(input_file, output_file);
 }
 

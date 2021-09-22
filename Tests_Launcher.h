@@ -68,7 +68,11 @@ void sprint3_tests() {
 
 void sprint4_tests() {
 
+    s4_tests::A_PolynomialHash();
+
+    s4_tests::C_PrefixHashes();
     s4_tests::D_Cups();
 
     s4_tests::G_Competition();
+    s4_tests::H_StrangeComprasion();
 }
