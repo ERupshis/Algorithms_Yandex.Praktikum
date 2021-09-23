@@ -74,20 +74,31 @@ namespace s4_problems {
 		int a, m, n;
 		std::string str;		
 		input >> a >> m >> str >> n;
-		std::string_view sv{ str };
-		std::unordered_map<std::pair<int, int>, int64_t, RangeHasher> map;
+		
+		std::vector<int64_t> pref_hashes;
+		
+		pref_hashes.reserve(str.size());	
+		pref_hashes.push_back(0);
+		int64_t hash = 0;		
+		for (size_t i = 0; i < str.size(); ++i) {			
+			pref_hashes.push_back((pref_hashes[i] * a + str[i]) % m);
+		}
+
+		std::vector<int64_t> pow_of_a;
+		pow_of_a.reserve(str.size());
+		pow_of_a.push_back(1);
+		for (size_t i = 1; i <= str.size(); ++i) {			
+			pow_of_a.push_back(pow_of_a[i-1] * a % m);
+		}
+
 		while (n > 0) {
 			int req_s, req_e;
-			input >> req_s >> req_e;
-			if (!map.count({ req_s, req_e })) {
-				int64_t hash = B_PolynomialHash(a, m, sv.substr(req_s - 1, req_e - req_s + 1));
-				map[{ req_s, req_e }] = hash;
-				output << hash << '\n';
+			input >> req_s >> req_e;			
+			int64_t res = (pref_hashes[req_e] - pref_hashes[req_s - 1] * pow_of_a[req_e - req_s + 1]) % m;
+			if (res < 0) {
+				res += m;
 			}
-			else {
-				output << map.at({ req_s, req_e }) << '\n';
-			}
-			
+			output << res << '\n';
 			--n;
 		}		
 	}
