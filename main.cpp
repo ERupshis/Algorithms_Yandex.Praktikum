@@ -2,7 +2,7 @@
 //#include "Algorithms_Y.Praktikum_Sprint1_Exam.h"
 #include "Tests_Launcher.h"
 
-#include <fstream>
+
 
 void Test() {
     sprint1_tests();
@@ -10,6 +10,8 @@ void Test() {
     sprint3_tests();
     sprint4_tests();
 }
+
+#include <fstream>
 
 int main()
 {
@@ -69,7 +71,11 @@ int main()
     //s4_problems::B_BreakMe();
     //s4_problems::C_PrefixHashes(input_file, output_file);
     //s4_problems::D_Cups(input_file, output_file);
+    //s4_problems::E_SubStrs(input_file, output_file);
+    //s4_problems::F_AngagrammGrouping(input_file, output_file);
     //s4_problems::G_Competition(input_file, output_file);
     //s4_problems::H_StrangeComprasion(input_file, output_file);
+    //s4_problems::I_CommonSubArray(input_file, output_file);
+    //s4_problems::J_4Sum(input_file, output_file);
 }
 

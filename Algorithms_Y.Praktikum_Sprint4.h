@@ -4,7 +4,10 @@
 #include <iostream>
 #include <vector>
 #include <string_view>
+#include <algorithm>
 #include <unordered_map>
+#include <set>
+#include <unordered_set>
 
 namespace s4_problems {
 	using namespace std::literals;
@@ -122,8 +125,7 @@ namespace s4_problems {
 		arr.push_back({ key, 1 });
 	}
 
-	void D_Cups(std::istream& input, std::ostream& output) {
-		
+	void D_Cups(std::istream& input, std::ostream& output) { // not cups, but hobbies groups		
 		std::string num;
 		std::getline(input, num);
 		int n = std::stoi(num);		
@@ -140,6 +142,76 @@ namespace s4_problems {
 
 		for (KeyValue& pair : arr) {
 			output << pair.key << '\n';
+		}
+	}
+	/*-------------------------------------------------------------------------*/
+	void E_SubStrs(std::istream& input, std::ostream& output) {
+		std::string  str;
+		input >> str;
+
+		std::unordered_map<char, int> letters;
+		int start_p = 0;
+		int max_length = 1;
+
+		if (str.size() == 1) {
+			output << 1;
+			return;
+		}
+
+		for (size_t i = 0; i < str.size(); ++i) {
+			if (letters.count(str[i]) && letters[str[i]] >= start_p) { // symbol dublicate
+				if (i - start_p > max_length) {
+					max_length = i - start_p;
+				}
+				start_p = letters[str[i]] + 1;
+				letters[str[i]] = i;				
+			}
+			else {
+				letters[str[i]] = i;				
+			}
+		}
+		if (str.size() - start_p > max_length) {
+			output << str.size() - start_p;
+		}
+		else {
+			output << max_length;
+		}
+	}
+	/*-------------------------------------------------------------------------*/
+	void F_AngagrammGrouping(std::istream& input, std::ostream& output) {
+		int n;
+		input >> n;
+		std::unordered_map<std::string, std::vector<int>> map;
+
+		int i = 0;
+		while (i < n) {
+			std::string str;
+			input >> str;
+			std::string tmp_str(str);
+			std::sort(tmp_str.begin(), tmp_str.end());
+			map[tmp_str].push_back(i);
+			++i;
+		}
+
+		std::vector<std::vector<int>*> res;
+		for (auto& group : map) {
+			res.push_back(&group.second);
+		}
+		std::sort(res.begin(), res.end(), 
+			[](auto& lhs, auto& rhs) {return lhs[0] < rhs[0]; });
+
+		for (auto& group : res) {
+			bool f = false;
+			for (int elem : *group) {
+				if (f) {
+					output << ' ';
+				}
+				else {
+					f = true;
+				}
+				output << elem;
+			}
+			output << '\n';
 		}
 	}
 	/*-------------------------------------------------------------------------*/
@@ -219,6 +291,130 @@ namespace s4_problems {
 		}
 		else {
 			output << "NO"s;
+		}		
+	}
+	/*-------------------------------------------------------------------------*/
+	std::vector<int> FillInputVectorInt(std::istream& input, int size = 0) {
+		std::vector<int> res;
+		if (size == 0) {
+			int cnt;
+			input >> cnt;
+			res.reserve(cnt);
+		}
+		else {
+			res.reserve(size);
+		}
+
+		for (size_t i = 0; i < res.capacity(); ++i) {
+			int num;
+			input >> num;
+			res.push_back(num);
+		}
+
+		return res;
+	}
+
+	int CountSubArray(int i1, std::vector<int>& arr1, int i2, std::vector<int>& arr2) {
+		int res = 0;
+		while (i1 < arr1.size() && i2 < arr2.size() && arr1[i1] == arr2[i2]) {
+			++res;
+			++i1;
+			++i2;
+		}
+		return res;
+	}
+
+	void I_CommonSubArray(std::istream& input, std::ostream& output) {		
+		std::vector<int> arr1 = std::move(FillInputVectorInt(input));
+		std::vector<int> arr2 = std::move(FillInputVectorInt(input));
+
+		std::unordered_map<int, std::unordered_set<int>> map1;
+
+		for (size_t i = 0; i < arr1.size(); ++i) {
+			map1[arr1[i]].insert(i);
+		}
+				
+		int max_seq = 0;
+		for (size_t i = 0; i < arr2.size(); ++i) {
+			if (max_seq > arr2.size() - i) {
+				break;
+			}
+ 			if (map1.count(arr2[i])) {				
+				for (int ind : map1.at(arr2[i])) {
+					int len = CountSubArray(ind, arr1, i, arr2);
+					if (max_seq < len) {
+						max_seq = len;
+					}
+				}				
+			}
+		}
+
+		output << max_seq;
+	}
+	/*-------------------------------------------------------------------------*/
+	struct Hasher {
+		int operator () (std::pair<int, int> pair) const {
+			return pair.first * 37 + pair.second;
+		}
+	};
+
+	struct QuardHasher {
+		int operator () (std::tuple<int, int, int, int> tuple) const {
+			int a, b, c, d;
+			std::tie(a, b, c, d) = tuple;
+			return  (((a * 37 + b) * 37 + c) * 37 + d) % 100003;
+		}
+	};
+
+	void J_4Sum(std::istream& input, std::ostream& output) {
+		int n;
+		int64_t s;
+		input >> n >> s;
+
+		std::vector<int64_t> arr;
+		arr.reserve(n);
+		while (n > 0) {
+			int num;
+			input >> num;
+			arr.push_back(num);
+			--n;
+		}
+		std::sort(arr.begin(), arr.end());
+
+		std::set<std::vector<int64_t>> four_sum;
+
+		for (int i = 0; i < arr.size(); ++i) {
+			if (i != 0 && arr[i] == arr[i - 1]) {
+				continue;
+			}
+			for (int j = i + 1; j < arr.size(); ++j) {
+				if (j != i + 1 && arr[j] == arr[j - 1]) {
+					continue;
+				}
+
+				int k = j + 1;
+				int l = arr.size() - 1;
+
+				while (k < l) {
+					int64_t sum = arr[i] + arr[j] + arr[k] + arr[l];
+					
+					if (s - sum == 0) {
+						four_sum.insert({ arr[i], arr[j], arr[k], arr[l] });
+						++k;						
+					}
+					else if (sum < s) {
+						++k;
+					}
+					else {
+						--l;
+					}
+				}
+			}
+		}
+		
+		output << four_sum.size() << '\n';
+		for (auto& quard : four_sum) {			
+			output << quard[0] << ' ' << quard[1] << ' ' << quard[2] << ' ' << quard[3] << '\n';
 		}		
 	}
 }
@@ -328,6 +524,91 @@ namespace s4_tests {
 		}
 	}
 	/*-------------------------------------------------------------------------*/
+	void E_SubStrs() {
+		{
+			std::stringstream input;
+			input << "fprarfpoz"s;
+			std::ostringstream output(std::ios_base::ate);
+			s4_problems::E_SubStrs(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "6"s;
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "awe"s;
+			std::ostringstream output(std::ios_base::ate);
+			s4_problems::E_SubStrs(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "3"s;
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "abcabcbb"s;
+			std::ostringstream output(std::ios_base::ate);
+			s4_problems::E_SubStrs(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "3"s;
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "bbbbb"s;
+			std::ostringstream output(std::ios_base::ate);
+			s4_problems::E_SubStrs(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "1"s;
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "b"s;
+			std::ostringstream output(std::ios_base::ate);
+			s4_problems::E_SubStrs(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "1"s;
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "bbbbbbbbbbbacfb"s;
+			std::ostringstream output(std::ios_base::ate);
+			s4_problems::E_SubStrs(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "4"s;
+			assert(output.str() == res.str());
+		}
+
+	}
+	/*-------------------------------------------------------------------------*/
+	void F_AngagrammGrouping() {
+		{
+			std::stringstream input;
+			input << "3"s << '\n'
+				<< "ttt zzz aaa"s;
+			std::ostringstream output(std::ios_base::ate);
+			s4_problems::F_AngagrammGrouping(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "0"s << '\n'
+				<< "1"s << '\n'
+				<< "2"s << '\n';
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "6"s << '\n'
+				<< "tan eat tea ate nat bat"s;
+			std::ostringstream output(std::ios_base::ate);
+			s4_problems::F_AngagrammGrouping(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "0 4"s << '\n'
+				<< "1 2 3"s << '\n'
+				<< "5"s << '\n';
+			assert(output.str() == res.str());
+		}
+	}
+	/*-------------------------------------------------------------------------*/
 	void G_Competition() {
 		{
 			std::stringstream input;
@@ -390,6 +671,112 @@ namespace s4_tests {
 			s4_problems::H_StrangeComprasion(static_cast<std::iostream&>(input), output);
 			std::stringstream res;
 			res << "NO"s;
+			assert(output.str() == res.str());
+		}
+	}
+	/*-------------------------------------------------------------------------*/
+	void I_CommonSubArray() {
+		{
+			std::stringstream input;
+			input << "5"s << '\n'
+				<< "1 2 3 2 1"s << '\n'
+				<< "5"s << '\n'
+				<< "3 2 1 5 6"s;
+			std::ostringstream output(std::ios_base::ate);
+			s4_problems::I_CommonSubArray(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "3"s;
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "5"s << '\n'
+				<< "1 2 3 4 5"s << '\n'
+				<< "3"s << '\n'
+				<< "4 5 9"s;
+			std::ostringstream output(std::ios_base::ate);
+			s4_problems::I_CommonSubArray(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "2"s;
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "1"s << '\n'
+				<< "1"s << '\n'
+				<< "1"s << '\n'
+				<< "4"s;
+			std::ostringstream output(std::ios_base::ate);
+			s4_problems::I_CommonSubArray(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "0"s;
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "1"s << '\n'
+				<< "1"s << '\n'
+				<< "1"s << '\n'
+				<< "1"s;
+			std::ostringstream output(std::ios_base::ate);
+			s4_problems::I_CommonSubArray(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "1"s;
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "10"s << '\n'
+				<< "1 2 3 4 5 7 8 9 10 6"s << '\n'
+				<< "10"s << '\n'
+				<< "1 2 3 4 5 6 7 8 9 10"s;
+			std::ostringstream output(std::ios_base::ate);
+			s4_problems::I_CommonSubArray(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "5"s;
+			assert(output.str() == res.str());
+		}
+	}
+	/*-------------------------------------------------------------------------*/
+	void J_4Sum() {
+		{
+			std::stringstream input;
+			input << "8"s << '\n'
+				<< "10"s << '\n'
+				<< "2 3 2 4 1 10 3 0"s;
+			std::ostringstream output(std::ios_base::ate);
+			s4_problems::J_4Sum(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "3"s << '\n'
+				<< "0 3 3 4"s << '\n'
+				<< "1 2 3 4"s << '\n'
+				<< "2 2 3 3"s << '\n';
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "6"s << '\n'
+				<< "0"s << '\n'
+				<< "1 0 -1 0 2 -2"s;
+			std::ostringstream output(std::ios_base::ate);
+			s4_problems::J_4Sum(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "3"s << '\n'
+				<< "-2 -1 1 2"s << '\n'
+				<< "-2 0 0 2"s << '\n'
+				<< "-1 0 0 1"s << '\n';
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "5"s << '\n'
+				<< "4"s << '\n'
+				<< "1 1 1 1 1"s;
+			std::ostringstream output(std::ios_base::ate);
+			s4_problems::J_4Sum(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "1"s << '\n'
+				<< "1 1 1 1"s << '\n';
 			assert(output.str() == res.str());
 		}
 	}

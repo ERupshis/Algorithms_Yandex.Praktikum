@@ -72,7 +72,10 @@ void sprint4_tests() {
 
     s4_tests::C_PrefixHashes();
     s4_tests::D_Cups();
-
+    s4_tests::E_SubStrs();
+    s4_tests::F_AngagrammGrouping();
     s4_tests::G_Competition();
     s4_tests::H_StrangeComprasion();
+    s4_tests::I_CommonSubArray();
+    s4_tests::J_4Sum();
 }
