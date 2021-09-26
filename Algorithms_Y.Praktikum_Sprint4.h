@@ -8,6 +8,7 @@
 #include <unordered_map>
 #include <set>
 #include <unordered_set>
+#include <cmath>
 
 namespace s4_problems {
 	using namespace std::literals;
@@ -417,6 +418,124 @@ namespace s4_problems {
 			output << quard[0] << ' ' << quard[1] << ' ' << quard[2] << ' ' << quard[3] << '\n';
 		}		
 	}
+	/*-------------------------------------------------------------------------*/	
+	struct Coord {
+		Coord(int x_, int y_)
+			:x(x_), y(y_) {
+		};
+
+		int x = 0;
+		int y = 0;
+	};	
+
+	std::vector<Coord> FillCoordsVector(std::istream& input) {
+		int n;
+		input >> n;
+		std::vector<Coord> res;
+		res.reserve(n);
+		int i = 0;
+		while (i < n) {
+			int x, y;
+			input >> x >> y;
+			res.push_back({ x, y });
+			++i;
+		}
+		return res;
+	}	
+
+	bool IsCoordInArea(Coord& exit, Coord& stop) {		
+		int64_t dist = (exit.x - stop.x) * (exit.x - stop.x) + (exit.y - stop.y) * (exit.y - stop.y);
+		if (dist <= 400) {
+			return true;
+		}
+		return false;
+	}
+
+	void K_NearestStop(std::istream& input, std::ostream& output) {
+		std::vector<Coord> exits = std::move(FillCoordsVector(input));
+		std::vector<Coord> stops = std::move(FillCoordsVector(input));
+
+		std::unordered_map<int, std::unordered_set<int>> map_x;
+		std::vector<int> exits_count(exits.size());
+		for (size_t i = 0; i < stops.size(); ++i) {
+			map_x[stops[i].x].insert(stops[i].y);			
+		}
+
+		for (size_t i = 0; i < exits.size(); ++i) {
+			for (int j = -20; j <= +20; ++j) {
+				if (map_x.count(exits[i].x + j)) {
+					for (auto& vec_elem : map_x.at(exits[i].x + j)) {
+						Coord tmp{ exits[i].x + j, vec_elem };
+						if (IsCoordInArea(tmp, exits[i])) {
+							++exits_count[i];								
+						}						
+					}
+				}
+			}
+		}
+
+		int max_count = 0;
+		int max_ind = 0;
+		for (size_t i = 0; i < exits_count.size(); ++i) {
+			if (exits_count[i] > max_count) {
+				max_ind = i;
+				max_count = exits_count[i];
+			}
+		}
+
+		output << max_ind + 1;
+	}
+
+	
+	/*-------------------------------------------------------------------------*/
+	int64_t L_PolynomialHash(int64_t a, int64_t m, std::string_view str) {
+		uint64_t res = 0;
+		for (size_t i = 0; i < str.size(); ++i) {
+			if (i == str.size() - 1) {
+				res = (res + str[i]) % m;
+			}
+			else {
+				res = (((res + str[i]) % m) * (a % m)) % m;
+			}
+		}
+		return res;
+	}
+
+	void L_ManyGosha(std::istream& input, std::ostream& output) {
+		int n, k;
+		std::string str;
+		input >> n >> k >> str;
+		int a = 1'000'000'007;
+		int64_t pow_a_n = 1;
+		int64_t m = static_cast<int64_t>(std::pow(2, 36));
+		for (size_t i = 1; i < n; ++i) { // get pow(a, n - 1) for hash
+			pow_a_n = pow_a_n * a % m;
+		}
+
+		std::unordered_map<int64_t, std::vector<int>> res;
+		int64_t hash = L_PolynomialHash(a, m, str.substr(0, n));
+		res[hash].push_back(0);
+		for (int i = 1; i <= str.size() - n; ++i) {
+			hash = ((hash - str[i - 1] * pow_a_n % m) * a % m + str[i + n - 1]) % m;
+			if (hash < 0) {
+				hash += m;
+			}
+			res[hash].push_back(i);
+		}
+				
+		bool f = false;
+		for (auto& elem : res) {
+			if (elem.second.size() >= k) {
+				if (f) {
+					output << ' ';
+				}
+				else {
+					f = true;
+				}
+				output << elem.second.front();				
+			}
+		}		
+	}
 }
 
 namespace s4_tests {
@@ -778,6 +897,117 @@ namespace s4_tests {
 			res << "1"s << '\n'
 				<< "1 1 1 1"s << '\n';
 			assert(output.str() == res.str());
+		}
+	}
+	/*-------------------------------------------------------------------------*/	
+	void K_NearestStop() {
+		{
+			std::stringstream input;
+			input << "3"s << '\n'
+				<< "-1 0"s << '\n'
+				<< "1 0"s << '\n'
+				<< "2 5"s << '\n'
+				<< "3"s << '\n'
+				<< "10 0"s << '\n'
+				<< "20 0"s << '\n'
+				<< "22 5"s;
+			std::ostringstream output(std::ios_base::ate);
+			s4_problems::K_NearestStop(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "3"s;
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "3"s << '\n'
+				<< "-1 0"s << '\n'
+				<< "1 0"s << '\n'
+				<< "0 5"s << '\n'
+				<< "3"s << '\n'
+				<< "10 0"s << '\n'
+				<< "20 0"s << '\n'
+				<< "20 5"s;
+			std::ostringstream output(std::ios_base::ate);
+			s4_problems::K_NearestStop(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "2"s;
+			assert(output.str() == res.str());
+		}
+
+
+	}
+
+	/*-------------------------------------------------------------------------*/
+	void L_ManyGosha() {	// output is not sorted, may not pass test due to another indexes seq
+		{
+			std::stringstream input;
+			input << "2 2"s << '\n'
+				<< "axaxax"s;
+			std::ostringstream output(std::ios_base::ate);
+			s4_problems::L_ManyGosha(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "0 1"s;
+			//assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "4 4"s << '\n'
+				<< "axniaxaxaxniaxaxaxax"s;
+			std::ostringstream output(std::ios_base::ate);
+			s4_problems::L_ManyGosha(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "4"s;
+			//assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "10 2"s << '\n'
+				<< "gggggooooogggggoooooogggggssshaa"s;
+			std::ostringstream output(std::ios_base::ate);
+			s4_problems::L_ManyGosha(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "0 5"s;
+			//assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "3 4"s << '\n'
+				<< "allallallallalla"s;
+			std::ostringstream output(std::ios_base::ate);
+			s4_problems::L_ManyGosha(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "0 1 2"s;
+			//assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "2 4"s << '\n'
+				<< "gggggooooogggggoooooogggggssshaa"s;
+			std::ostringstream output(std::ios_base::ate);
+			s4_problems::L_ManyGosha(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "0 5"s;
+			//assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "1 10"s << '\n'
+				<< "gggggooooogggggoooooogggggssshaa"s;
+			std::ostringstream output(std::ios_base::ate);
+			s4_problems::L_ManyGosha(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "5 0"s;
+			//assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "2 1"s << '\n'
+				<< "gggggooooogggggoooooogggggssshaa"s;
+			std::ostringstream output(std::ios_base::ate);
+			s4_problems::L_ManyGosha(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "4 0 9 5 26 25 28 29"s;
+			//assert(output.str() == res.str());
 		}
 	}
 }

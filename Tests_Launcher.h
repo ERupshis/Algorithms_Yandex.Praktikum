@@ -78,4 +78,6 @@ void sprint4_tests() {
     s4_tests::H_StrangeComprasion();
     s4_tests::I_CommonSubArray();
     s4_tests::J_4Sum();
+    s4_tests::K_NearestStop();
+    s4_tests::L_ManyGosha();
 }

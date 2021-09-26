@@ -77,5 +77,7 @@ int main()
     //s4_problems::H_StrangeComprasion(input_file, output_file);
     //s4_problems::I_CommonSubArray(input_file, output_file);
     //s4_problems::J_4Sum(input_file, output_file);
+    //s4_problems::K_NearestStop(input_file, output_file);
+    //s4_problems::L_ManyGosha(input_file, output_file);
 }
 
