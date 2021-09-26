@@ -13,7 +13,7 @@
 namespace s4_problems {
 	using namespace std::literals;
 
-	
+
 	void A_PolynomialHash(std::istream& input, std::ostream& output) {
 		int a, m;
 		std::string str;
@@ -44,7 +44,7 @@ namespace s4_problems {
 		}
 		return res;
 	}
-	
+
 	void B_BreakMe() {
 		//std::cout << B_PolynomialHash(1000, 123'987'123, "kijuhygtfrdews") << ' ' << B_PolynomialHash(1000, 123'987'123, "kijuhygtfrdew");
 		std::string in_str;
@@ -53,8 +53,8 @@ namespace s4_problems {
 		int substr_size = 170;
 		while (substr_size > 5) {
 			for (size_t i = 0; i < in_str.size() - substr_size - 1; ++i) {
-				int64_t hash = B_PolynomialHash(1000, 123'987'123, in_str.substr(i, substr_size));				
-				if (!map.count(hash)) {					
+				int64_t hash = B_PolynomialHash(1000, 123'987'123, in_str.substr(i, substr_size));
+				if (!map.count(hash)) {
 					map[hash] = in_str.substr(i, substr_size);
 				}
 				else if (map[hash] != in_str.substr(i, substr_size)) {
@@ -66,8 +66,8 @@ namespace s4_problems {
 		}
 
 	}
-	/*-------------------------------------------------------------------------*/	
-	struct RangeHasher {		
+	/*-------------------------------------------------------------------------*/
+	struct RangeHasher {
 		size_t operator() (const std::pair<int, int> r) const {
 			return int_hash(r.first) + 37 * int_hash(r.second);
 		}
@@ -76,40 +76,40 @@ namespace s4_problems {
 
 	void C_PrefixHashes(std::istream& input, std::ostream& output) {
 		int a, m, n;
-		std::string str;		
+		std::string str;
 		input >> a >> m >> str >> n;
-		
+
 		std::vector<int64_t> pref_hashes;
-		
-		pref_hashes.reserve(str.size());	
+
+		pref_hashes.reserve(str.size());
 		pref_hashes.push_back(0);
-		int64_t hash = 0;		
-		for (size_t i = 0; i < str.size(); ++i) {			
+		int64_t hash = 0;
+		for (size_t i = 0; i < str.size(); ++i) {
 			pref_hashes.push_back((pref_hashes[i] * a + str[i]) % m);
 		}
 
 		std::vector<int64_t> pow_of_a;
 		pow_of_a.reserve(str.size());
 		pow_of_a.push_back(1);
-		for (size_t i = 1; i <= str.size(); ++i) {			
-			pow_of_a.push_back(pow_of_a[i-1] * a % m);
+		for (size_t i = 1; i <= str.size(); ++i) {
+			pow_of_a.push_back(pow_of_a[i - 1] * a % m);
 		}
 
 		while (n > 0) {
 			int req_s, req_e;
-			input >> req_s >> req_e;			
+			input >> req_s >> req_e;
 			int64_t res = (pref_hashes[req_e] - pref_hashes[req_s - 1] * pow_of_a[req_e - req_s + 1]) % m;
 			if (res < 0) {
 				res += m;
 			}
 			output << res << '\n';
 			--n;
-		}		
+		}
 	}
 	/*-------------------------------------------------------------------------*/
 	struct KeyValue {
 		std::string key = ""s;
-		int value = 0;		
+		int value = 0;
 
 		bool operator < (const KeyValue other) {
 			return key < other.key;
@@ -129,7 +129,7 @@ namespace s4_problems {
 	void D_Cups(std::istream& input, std::ostream& output) { // not cups, but hobbies groups		
 		std::string num;
 		std::getline(input, num);
-		int n = std::stoi(num);		
+		int n = std::stoi(num);
 
 		std::vector<KeyValue> arr;
 		arr.reserve(n);
@@ -165,10 +165,10 @@ namespace s4_problems {
 					max_length = i - start_p;
 				}
 				start_p = letters[str[i]] + 1;
-				letters[str[i]] = i;				
+				letters[str[i]] = i;
 			}
 			else {
-				letters[str[i]] = i;				
+				letters[str[i]] = i;
 			}
 		}
 		if (str.size() - start_p > max_length) {
@@ -198,7 +198,7 @@ namespace s4_problems {
 		for (auto& group : map) {
 			res.push_back(&group.second);
 		}
-		std::sort(res.begin(), res.end(), 
+		std::sort(res.begin(), res.end(),
 			[](auto& lhs, auto& rhs) {return lhs[0] < rhs[0]; });
 
 		for (auto& group : res) {
@@ -216,7 +216,7 @@ namespace s4_problems {
 		}
 	}
 	/*-------------------------------------------------------------------------*/
-	void G_Competition(std::istream& input, std::ostream& output) {		
+	void G_Competition(std::istream& input, std::ostream& output) {
 		int n;
 		input >> n;
 		std::vector<int> arr;
@@ -226,7 +226,7 @@ namespace s4_problems {
 			input >> num;
 			arr.push_back(num);
 		}
-		
+
 		for (size_t i = 0; i < arr.size(); ++i) {
 			arr[i] = (arr[i] == 0) ? -1 : 1; // replace 0 to -1. it will help to get sequence sum
 		}
@@ -292,7 +292,7 @@ namespace s4_problems {
 		}
 		else {
 			output << "NO"s;
-		}		
+		}
 	}
 	/*-------------------------------------------------------------------------*/
 	std::vector<int> FillInputVectorInt(std::istream& input, int size = 0) {
@@ -325,7 +325,7 @@ namespace s4_problems {
 		return res;
 	}
 
-	void I_CommonSubArray(std::istream& input, std::ostream& output) {		
+	void I_CommonSubArray(std::istream& input, std::ostream& output) {
 		std::vector<int> arr1 = std::move(FillInputVectorInt(input));
 		std::vector<int> arr2 = std::move(FillInputVectorInt(input));
 
@@ -334,19 +334,19 @@ namespace s4_problems {
 		for (size_t i = 0; i < arr1.size(); ++i) {
 			map1[arr1[i]].insert(i);
 		}
-				
+
 		int max_seq = 0;
 		for (size_t i = 0; i < arr2.size(); ++i) {
 			if (max_seq > arr2.size() - i) {
 				break;
 			}
- 			if (map1.count(arr2[i])) {				
+			if (map1.count(arr2[i])) {
 				for (int ind : map1.at(arr2[i])) {
 					int len = CountSubArray(ind, arr1, i, arr2);
 					if (max_seq < len) {
 						max_seq = len;
 					}
-				}				
+				}
 			}
 		}
 
@@ -398,10 +398,10 @@ namespace s4_problems {
 
 				while (k < l) {
 					int64_t sum = arr[i] + arr[j] + arr[k] + arr[l];
-					
+
 					if (s - sum == 0) {
 						four_sum.insert({ arr[i], arr[j], arr[k], arr[l] });
-						++k;						
+						++k;
 					}
 					else if (sum < s) {
 						++k;
@@ -412,13 +412,13 @@ namespace s4_problems {
 				}
 			}
 		}
-		
+
 		output << four_sum.size() << '\n';
-		for (auto& quard : four_sum) {			
+		for (auto& quard : four_sum) {
 			output << quard[0] << ' ' << quard[1] << ' ' << quard[2] << ' ' << quard[3] << '\n';
-		}		
+		}
 	}
-	/*-------------------------------------------------------------------------*/	
+	/*-------------------------------------------------------------------------*/
 	struct Coord {
 		Coord(int x_, int y_)
 			:x(x_), y(y_) {
@@ -426,7 +426,21 @@ namespace s4_problems {
 
 		int x = 0;
 		int y = 0;
-	};	
+
+		bool operator == (const Coord& other) const {
+			return x == other.x && y == other.y;
+		}
+
+		Coord operator + (const Coord& other) {
+			return { x + other.x, y + other.y };
+		}
+	};
+
+	struct CoordHasher {
+		int operator () (const Coord& coord) const {
+			return  (coord.x * 37 + coord.y) % 100003;
+		}
+	};
 
 	std::vector<Coord> FillCoordsVector(std::istream& input) {
 		int n;
@@ -441,9 +455,9 @@ namespace s4_problems {
 			++i;
 		}
 		return res;
-	}	
+	}
 
-	bool IsCoordInArea(Coord& exit, Coord& stop) {		
+	bool IsCoordInArea(Coord& exit, Coord& stop) {
 		int64_t dist = (exit.x - stop.x) * (exit.x - stop.x) + (exit.y - stop.y) * (exit.y - stop.y);
 		if (dist <= 400) {
 			return true;
@@ -451,29 +465,41 @@ namespace s4_problems {
 		return false;
 	}
 
+	int FindInd(int coord) {
+		int res = coord / 20;
+		if (res * 20 > coord) {
+			res -= 1;
+		}
+		return res;
+	}
+
 	void K_NearestStop(std::istream& input, std::ostream& output) {
 		std::vector<Coord> exits = std::move(FillCoordsVector(input));
 		std::vector<Coord> stops = std::move(FillCoordsVector(input));
 
-		std::unordered_map<int, std::unordered_set<int>> map_x;
+		std::unordered_map<Coord, std::vector<Coord>, CoordHasher> map;
 		std::vector<int> exits_count(exits.size());
 		for (size_t i = 0; i < stops.size(); ++i) {
-			map_x[stops[i].x].insert(stops[i].y);			
+			map[{FindInd(stops[i].x), FindInd(stops[i].y)}].push_back(stops[i]);			
 		}
 
+		std::vector<int> x_shift{ -1, 0, 1, -1, 0, 1, -1, 0, 1 };
+		std::vector<int> y_shift{ 1, 1, 1, 0, 0, 0, -1, -1, -1 };
+
 		for (size_t i = 0; i < exits.size(); ++i) {
-			for (int j = -20; j <= +20; ++j) {
-				if (map_x.count(exits[i].x + j)) {
-					for (auto& vec_elem : map_x.at(exits[i].x + j)) {
-						Coord tmp{ exits[i].x + j, vec_elem };
-						if (IsCoordInArea(tmp, exits[i])) {
-							++exits_count[i];								
-						}						
+			Coord exit_coord{ FindInd(exits[i].x), FindInd(exits[i].y) };
+			for (size_t j = 0; j < x_shift.size(); ++j) {
+				Coord indent{ x_shift[j], y_shift[j] };
+				if (map.count(exit_coord + indent)) {
+					for (auto& vec_elem : map.at(exit_coord + indent)) {
+						if (IsCoordInArea(vec_elem, exits[i])) {
+							++exits_count[i];
+						}
 					}
 				}
 			}
 		}
-
+			
 		int max_count = 0;
 		int max_ind = 0;
 		for (size_t i = 0; i < exits_count.size(); ++i) {
@@ -485,7 +511,6 @@ namespace s4_problems {
 
 		output << max_ind + 1;
 	}
-
 	
 	/*-------------------------------------------------------------------------*/
 	int64_t L_PolynomialHash(int64_t a, int64_t m, std::string_view str) {
@@ -917,6 +942,42 @@ namespace s4_tests {
 			res << "3"s;
 			assert(output.str() == res.str());
 		}
+		{
+			std::stringstream input;
+			input << "10"s << '\n'
+				<< "-54 -23"s << '\n'
+				<< "-63 -26"s << '\n'
+				<< "15 -47"s << '\n'
+				<< "-12 -29"s << '\n'
+				<< "-60 -21"s << '\n'
+				<< "67 -106"s << '\n'
+				<< "66 -99"s << '\n'
+				<< "48 -96"s << '\n'
+				<< "9 -60"s << '\n'
+				<< "-51 -60"s << '\n'
+				<< "15"s << '\n'
+				<< "-32 -40"s << '\n'
+				<< "57 -114"s << '\n'
+				<< "58 -99"s << '\n'
+				<< "10 -26"s << '\n'
+				<< "64 -82"s << '\n'
+				<< "-44 -34"s << '\n'
+				<< "62 -80"s << '\n'
+				<< "62 -113"s << '\n'
+				<< "56 -112"s << '\n'
+				<< "6 -20"s << '\n'
+				<< "60 -119"s << '\n'
+				<< "29 -91"s << '\n'
+				<< "12 -47"s << '\n'
+				<< "25 -88"s << '\n'
+				<< "-6 -50"s;
+			std::ostringstream output(std::ios_base::ate);
+			s4_problems::K_NearestStop(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "7"s;
+			assert(output.str() == res.str());
+		}
+		
 		{
 			std::stringstream input;
 			input << "3"s << '\n'
