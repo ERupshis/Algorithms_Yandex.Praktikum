@@ -532,7 +532,7 @@ namespace s4_problems {
 		input >> n >> k >> str;
 		int a = 1'000'000'007;
 		int64_t pow_a_n = 1;
-		int64_t m = static_cast<int64_t>(std::pow(2, 36));
+		int64_t m = static_cast<int64_t>(std::pow(2, 40));
 		for (size_t i = 1; i < n; ++i) { // get pow(a, n - 1) for hash
 			pow_a_n = pow_a_n * a % m;
 		}

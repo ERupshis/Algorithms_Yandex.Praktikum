@@ -10,6 +10,7 @@
 #include "Algorithms_Y.Praktikum_Sprint3_Exam.h"
 
 #include "Algorithms_Y.Praktikum_Sprint4.h"
+#include "Algorithms_Y.Praktikum_Sprint4_Exam.h"
 
 void sprint1_tests() {
     s1_tests::A_FunctionValues_test();
@@ -80,4 +81,6 @@ void sprint4_tests() {
     s4_tests::J_4Sum();
     s4_tests::K_NearestStop();
     s4_tests::L_ManyGosha();
+
+    s4_exam_tests::A_SearchServer();
 }

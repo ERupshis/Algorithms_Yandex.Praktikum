@@ -79,5 +79,7 @@ int main()
     //s4_problems::J_4Sum(input_file, output_file);
     //s4_problems::K_NearestStop(input_file, output_file);
     //s4_problems::L_ManyGosha(input_file, output_file);
+
+    s4_exam_problems::A_SearchServer(input_file, output_file);
 }
 
