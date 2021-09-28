@@ -9,6 +9,7 @@
 #include <string_view>
 #include <algorithm>
 #include <cassert>
+#include <list>
 
 
 namespace s4_exam_problems {
@@ -174,8 +175,111 @@ namespace s4_exam_problems {
 	}
 
 	/*-------------------------------------------------------------------------*/
-	//SEND ID: ???
+	//SEND ID: 53622145
 
+	// HashMap - associative array with chain method colission resolving.
+	// database container consist of default vector with list as values inside. List's value - pair of an integer key and integer value
+	// Max size of HashMap was choosen according problem task - a little bit higher odd number than maximum possible values in HashMap (100'003)
+	// All three methods get access to the bucket of array by taking module from key. Main condition is executed - key range at least should be 
+	// higher than size of array. Thank to it, values in HashMap will be split evenly in all array's buckets.
+	// I suppose that Time complexity of Chain Method and Open Adressing Method is equal due to we have to check all value where hash of key points us
+	// Time Complexity:
+	//	- Put() - O(N) on Average where N is a number of elements in considering bucket at the current moment. Best Case - O(1) means that this new 
+	//	{key, value} pair will be the first in designation bucket. If seeking key exists and is located somewhere in the middle of list in list than N will be less than bucket's size.
+	//	- Get() - O(N) on Average where N is a number of elements in considering bucket at the current moment. Best Case - O(1) means that seeking pair
+	//	is in head of bucket's list. If seeking key exists and is located somewhere in the middle of list than N will be less than bucket's size. 
+	//	- Delete() - O(N) on Average where N is a number of elements in considering bucket at the current moment. Best Case - O(1) means that seeking pair
+	//	is in head of bucket's list. If seeking key exists and is located somewhere in the middle of list than N will be less than bucket's size. 
+	// Space Complexity:
+	//  - Constant required space - O(N), where N is a number of unique pairs (all pairs have different keys). Size of array was choosen acording problem task
+	//  In the task key may have unsigned int value up to 10^9. In case of evenly distribution of pairs through all buckets, every bucket will contain 
+	//  10^4 pairs inside. Buckets quantity may be increased for current task. In this way time complexity of methods will be reduced.
+	//	- Temporary required space - O(1) for all methods. 
+
+	class HashMap {
+	public:
+		explicit HashMap(size_t size) {
+			db_.resize(size);
+		}
+
+		void Put(int key, int value) {			
+			std::list<Pair>& bucket = db_[key % db_.size()];
+			for (auto it = bucket.begin(); it != bucket.end(); ++it) {
+				if (key == it->key) {
+					it->value = value;
+					return;
+				}
+			}
+			bucket.push_front({ key, value });
+		}
+
+		int Get(int key) const { // -1 means that element was not found
+			const std::list<Pair>& bucket = db_[key % db_.size()];
+			int res = -1;
+			for (auto it = bucket.begin(); it != bucket.end(); ++it) {
+				if (key == it->key) {
+					res = it->value;	
+					break;
+				}
+			}
+			return res;
+		}
+
+		int Delete(int key) {
+			int res = -1;
+			std::list<Pair>& bucket = db_[key % db_.size()];			
+			for (auto it = bucket.begin(); it != bucket.end(); ++it) {
+				if (key == it->key) {
+					res = it->value;
+					bucket.erase(it);
+					break;
+				}
+			}
+			return res;
+		}
+
+
+	private:
+		struct Pair {
+			int key = -1;
+			int value = -1;
+		};
+
+		std::vector<std::list<Pair>> db_;
+	};
+
+	void ResToOutStream(std::ostream& output, int res) {
+		if (res == -1) {
+			output << "None"s << '\n';
+		}
+		else {
+			output << res << '\n';
+		}
+	}
+
+	void B_HashTable(std::istream& input, std::ostream& output) {
+		HashMap map(100'003);
+		int n = 0;
+		input >> n;
+		
+		for (int i = 0; i < n; ++i) {
+			std::string req;
+			input >> req;
+			int key = -1, value = -1;
+			if (req == "put"s) {
+				input >> key >> value;
+				map.Put(key, value);
+			}
+			else if (req == "get"s) {
+				input >> key;
+				ResToOutStream(output, map.Get(key));
+			}
+			else if (req == "delete"s) {
+				input >> key;
+				ResToOutStream(output, map.Delete(key));
+			}
+		}		
+	}
 }
 
 namespace s4_exam_tests {
@@ -219,5 +323,74 @@ namespace s4_exam_tests {
 	}
 
 	/*-------------------------------------------------------------------------*/
+	void B_HashTable() {
+		{
+			std::stringstream input;
+			input << "7"s << '\n'
+				<< "put 1 10"s << '\n'
+				<< "get 1"s << '\n'
+				<< "put 1 20"s << '\n'
+				<< "get 1"s << '\n'
+				<< "get 2"s << '\n'
+				<< "delete 1"s << '\n'
+				<< "get 1"s;
+			std::ostringstream output(std::ios_base::ate);
+			s4_exam_problems::B_HashTable(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "10"s << '\n'
+				<< "20"s << '\n'
+				<< "None"s << '\n'
+				<< "20"s << '\n'
+				<< "None"s << '\n';
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "10"s << '\n'
+				<< "get 1"s << '\n'
+				<< "put 1 10"s << '\n'
+				<< "put 2 4"s << '\n'
+				<< "get 1"s << '\n'
+				<< "get 2"s << '\n'
+				<< "delete 2"s << '\n'
+				<< "get 2"s << '\n'
+				<< "put 1 5"s << '\n'
+				<< "get 1"s << '\n'
+				<< "delete 2"s;
+			std::ostringstream output(std::ios_base::ate);
+			s4_exam_problems::B_HashTable(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "None"s << '\n'
+				<< "10"s << '\n'
+				<< "4"s << '\n'
+				<< "4"s << '\n'
+				<< "None"s << '\n'
+				<< "5"s << '\n'
+				<< "None"s << '\n';
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "8"s << '\n'
+				<< "get 9"s << '\n'
+				<< "delete 9"s << '\n'
+				<< "put 9 1"s << '\n'
+				<< "get 9"s << '\n'
+				<< "put 9 2"s << '\n'
+				<< "get 9"s << '\n'
+				<< "put 9 3"s << '\n'				
+				<< "get 9"s;
+			std::ostringstream output(std::ios_base::ate);
+			s4_exam_problems::B_HashTable(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "None"s << '\n'
+				<< "None"s << '\n'
+				<< "1"s << '\n'
+				<< "2"s << '\n'
+				<< "3"s << '\n';
+			assert(output.str() == res.str());
+		}
+
+	}
 
 }

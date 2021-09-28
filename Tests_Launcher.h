@@ -83,4 +83,5 @@ void sprint4_tests() {
     s4_tests::L_ManyGosha();
 
     s4_exam_tests::A_SearchServer();
+    s4_exam_tests::B_HashTable();
 }
