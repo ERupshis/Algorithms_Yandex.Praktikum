@@ -9,6 +9,7 @@ void Test() {
     sprint2_tests();
     sprint3_tests();
     sprint4_tests();
+    sprint5_tests();
 }
 
 #include <fstream>

@@ -12,6 +12,8 @@
 #include "Algorithms_Y.Praktikum_Sprint4.h"
 #include "Algorithms_Y.Praktikum_Sprint4_Exam.h"
 
+#include "Algorithms_Y.Praktikum_Sprint5.h"
+
 void sprint1_tests() {
     s1_tests::A_FunctionValues_test();
     s1_tests::B_EvenAndOddNumbers_test();
@@ -63,14 +65,12 @@ void sprint3_tests() {
     s3_tests::P_PartialSorting();
 
     s3_exam_tests::A_BrokenSearch();
-    s3_exam_tests::B_EffectiveQuickSort();
-    
+    s3_exam_tests::B_EffectiveQuickSort();    
 }
 
 void sprint4_tests() {
-
     s4_tests::A_PolynomialHash();
-
+    // B - makefile
     s4_tests::C_PrefixHashes();
     s4_tests::D_Cups();
     s4_tests::E_SubStrs();
@@ -84,4 +84,8 @@ void sprint4_tests() {
 
     s4_exam_tests::A_SearchServer();
     s4_exam_tests::B_HashTable();
+}
+
+void sprint5_tests() {
+    s5_tests::A_Lamps();
 }
