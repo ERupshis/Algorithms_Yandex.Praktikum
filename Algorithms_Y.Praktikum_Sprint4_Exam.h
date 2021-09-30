@@ -6,7 +6,6 @@
 #include <vector>
 #include <unordered_map>
 #include <unordered_set>
-#include <string_view>
 #include <algorithm>
 #include <cassert>
 #include <list>
@@ -179,7 +178,7 @@ namespace s4_exam_problems {
 
 	// HashMap - associative array with chain method colission resolving.
 	// database container consist of default vector with list as values inside. List's value - pair of an integer key and integer value
-	// Max size of HashMap was choosen according problem task - a little bit higher odd number than maximum possible values in HashMap (100'003)
+	// Max size of HashMap was choosen according problem task - a little bit lower prime number than maximum possible values in HashMap (99'991)
 	// All three methods get access to the bucket of array by taking module from key. Main condition is executed - key range at least should be 
 	// higher than size of array. Thank to it, values in HashMap will be split evenly in all array's buckets.
 	// I suppose that Time complexity of Chain Method and Open Adressing Method is equal due to we have to check all value where hash of key points us
@@ -202,8 +201,8 @@ namespace s4_exam_problems {
 			db_.resize(size);
 		}
 
-		void Put(int key, int value) {			
-			std::list<Pair>& bucket = db_[key % db_.size()];
+		void Put(int key, int value) {
+			std::list<Pair>& bucket = db_[FindBucketNumber(key)];
 			for (auto it = bucket.begin(); it != bucket.end(); ++it) {
 				if (key == it->key) {
 					it->value = value;
@@ -214,11 +213,11 @@ namespace s4_exam_problems {
 		}
 
 		int Get(int key) const { // -1 means that element was not found
-			const std::list<Pair>& bucket = db_[key % db_.size()];
+			const std::list<Pair>& bucket = db_[FindBucketNumber(key)];
 			int res = -1;
 			for (auto it = bucket.begin(); it != bucket.end(); ++it) {
 				if (key == it->key) {
-					res = it->value;	
+					res = it->value;
 					break;
 				}
 			}
@@ -227,7 +226,7 @@ namespace s4_exam_problems {
 
 		int Delete(int key) {
 			int res = -1;
-			std::list<Pair>& bucket = db_[key % db_.size()];			
+			std::list<Pair>& bucket = db_[FindBucketNumber(key)];
 			for (auto it = bucket.begin(); it != bucket.end(); ++it) {
 				if (key == it->key) {
 					res = it->value;
@@ -245,6 +244,10 @@ namespace s4_exam_problems {
 			int value = -1;
 		};
 
+		const int FindBucketNumber(int key) const {
+			return (key * 8700 + 30713) % db_.size();
+		}
+
 		std::vector<std::list<Pair>> db_;
 	};
 
@@ -258,10 +261,10 @@ namespace s4_exam_problems {
 	}
 
 	void B_HashTable(std::istream& input, std::ostream& output) {
-		HashMap map(100'003);
+		HashMap map(99'991);
 		int n = 0;
 		input >> n;
-		
+
 		for (int i = 0; i < n; ++i) {
 			std::string req;
 			input >> req;
@@ -278,7 +281,7 @@ namespace s4_exam_problems {
 				input >> key;
 				ResToOutStream(output, map.Delete(key));
 			}
-		}		
+		}
 	}
 }
 
