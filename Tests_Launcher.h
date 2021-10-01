@@ -88,4 +88,7 @@ void sprint4_tests() {
 
 void sprint5_tests() {
     s5_tests::A_Lamps();
+
+    s5_tests::E_SearchTree();
+    s5_tests::I_CountBST();
 }

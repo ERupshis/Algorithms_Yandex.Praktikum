@@ -17,7 +17,7 @@ void Test() {
 int main()
 {
     Test();
-    std::ifstream input_file("17");
+    std::ifstream input_file("input.txt");
     std::ofstream output_file("output.txt");
 
     //s1_problems::A_FunctionValues(input_file, output_file);
@@ -83,5 +83,7 @@ int main()
 
     //s4_exam_problems::A_SearchServer(input_file, output_file);
     //s4_exam_problems::B_HashTable(input_file, output_file);
+
+    s5_problems::I_CountBST(input_file, output_file);
 }
 
