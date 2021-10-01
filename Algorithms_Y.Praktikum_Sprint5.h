@@ -21,6 +21,12 @@ namespace s5_problems {
 		const Node* right = nullptr;
 	};
 
+	struct nNode {		
+		nNode* left = nullptr;
+		nNode* right = nullptr;
+		int value;
+	};
+
 	const int INF = -1e9;
 	//problem A_Lamps
 	int A_Solution(const Node* root) {
@@ -92,6 +98,7 @@ namespace s5_problems {
 		return IsSearchTree(root);
 	}
 	/*-------------------------------------------------------------------------*/
+	// I_DifferentTrees
 	int CountTrees(int n) {
 		// Consider that each value could be the root
 		// Recursively find the size of the left and right subtrees
@@ -120,6 +127,73 @@ namespace s5_problems {
 		int n;
 		input >> n;
 		output << CountTrees(n);
+	}
+	/*-------------------------------------------------------------------------*/
+	// J_InsertNode
+	nNode* insert(nNode* root, int key) {
+		if (key < root->value) {
+			if (root->left == nullptr) {
+				root->left = new nNode({ nullptr, nullptr, key });
+			}
+			else {
+				insert(root->left, key);
+			}
+		}
+		else { // key >= root->value
+			if (root->right == nullptr) {
+				root->right = new nNode({ nullptr, nullptr, key });
+			}
+			else {
+				insert(root->right, key);
+			}
+			
+		}	
+		return root;
+	}
+	/*-------------------------------------------------------------------------*/
+	// K_PrintRange
+	void PrintLMR(const Node* root) {
+		if (root->left != nullptr) {
+			PrintLMR(root->left);
+		}
+		
+		std::cout << root->value << '\n';
+
+		if (root->right != nullptr) {
+			PrintLMR(root->right);
+		}
+	}
+
+	void FindElement(const Node* root, int val) {		
+		if (root->value < val) { // check right subtree due to seeking node located in right side	
+			if (root->right != nullptr) {
+				FindElement(root->right, val);
+			}
+		}
+		else  {			
+			if (root->left != nullptr) {
+				FindElement(root->left, val);
+			}
+			std::cout << root->value;
+		}
+		
+	}
+
+	void print_range(const Node* root, int start, int end) {
+		if (root->left != nullptr) {
+			print_range(root->left, start, end);
+		}
+
+		if (start <= root->value && root->value <= end) {
+			std::cout << root->value;
+		}
+		else if (root->value > end) {
+			return;
+		}
+
+		if (root->right != nullptr) {
+			print_range(root->right, start, end);
+		}
 	}
 }
 
@@ -183,6 +257,41 @@ namespace s5_tests {
 			std::stringstream res;
 			res << "14"s;
 			assert(output.str() == res.str());
+		}
+	}
+	/*-------------------------------------------------------------------------*/
+	void J_InsertNode() {
+		{			
+			s5_problems::nNode node1({ nullptr, nullptr, 7 });
+			s5_problems::nNode node2({ &node1, nullptr, 8 });
+			s5_problems::nNode node3({ nullptr, &node2, 7 });
+			s5_problems::nNode* newHead = s5_problems::insert(&node3, 6);
+			assert(newHead->left->value == 6);
+			assert(newHead == &node3);			
+		}
+		{
+			s5_problems::nNode node1({ nullptr, nullptr, 7 });
+			s5_problems::nNode node2({ &node1, nullptr, 8 });
+			s5_problems::nNode node3({ nullptr, &node2, 7 });
+			s5_problems::nNode* newHead = s5_problems::insert(&node3, 7);
+			assert(newHead->right->left->right->value == 7);
+			assert(newHead == &node3);
+		}
+	}
+	/*-------------------------------------------------------------------------*/
+	void K_PrintRange() {
+		{
+			s5_problems::Node node1({ 2, nullptr, nullptr });
+			s5_problems::Node node2({ 1, nullptr, &node1 });
+			s5_problems::Node node3({ 8, nullptr, nullptr });
+			s5_problems::Node node4({ 8, nullptr, &node3 });
+			s5_problems::Node node5({ 9, &node4, nullptr });
+			s5_problems::Node node6({ 10, &node5, nullptr });
+			s5_problems::Node node7({5,  &node2, &node6 });
+			//s5_problems::PrintLMR(&node7);
+			//s5_problems::FindElement(&node7, 10);
+			//s5_problems::print_range(&node7, 2, 8);
+			// expected output: 2 5 8 8
 		}
 	}
 }
