@@ -4,6 +4,7 @@
 #include <cassert>
 #include <iostream>
 #include <cmath>
+#include <vector>
 
 /* for problem A
 //#include "solution_tree.h"
@@ -52,6 +53,36 @@ namespace s5_problems {
 
 
 	}	
+	/*-------------------------------------------------------------------------*/
+	//B Balanced Tree
+
+	bool IsBalancedTree(const Node* root, int* h = nullptr) {
+		int l = 0, r = 0;
+		if (root->left != nullptr) {
+			if (!IsBalancedTree(root->left, &l)) {
+				return false;
+			}
+		}
+		if (root->right != nullptr) {
+			if (!IsBalancedTree(root->right, &r)) {
+				return false;
+			}
+		}
+
+		if (std::abs(l - r) > 1) {
+			return false;
+		}
+
+		*h = 1 + std::max(l, r);
+
+		return true;
+	}
+
+	bool B_Solution(const Node* root) {
+		int h = 0;
+		return IsBalancedTree(root, &h);
+	}
+
 	/*-------------------------------------------------------------------------*/
 	bool IsTreeLess(const Node* root, int max) {
 		if (root == nullptr) {
@@ -195,6 +226,63 @@ namespace s5_problems {
 			print_range(root->right, start, end);
 		}
 	}
+	/*-------------------------------------------------------------------------*/
+	// L Binary Heap SiftDown
+	int siftDown(std::vector<int>& heap, int idx) {
+		int l_idx = 2 * idx;
+		int r_idx = 2 * idx + 1;
+		int size = heap.size() - 1;
+
+		if (size < l_idx) {
+			return idx;
+		}
+
+		int largest_idx = -1;
+		if (r_idx <= size && heap[l_idx] < heap[r_idx]) {
+			largest_idx = r_idx;
+		}
+		else {
+			largest_idx = l_idx;
+		}
+
+		if (heap[idx] < heap[largest_idx]) {
+			std::swap(heap[idx], heap[largest_idx]);
+			return siftDown(heap, largest_idx);
+		}
+		return idx;
+	}
+
+	int pop_max(std::vector<int>& heap) {
+		int res = heap[1];
+		heap[1] = heap[heap.size()];
+
+		heap.pop_back();
+		siftDown(heap, 1);
+		return res;
+	}
+
+	/*-------------------------------------------------------------------------*/
+	// M Binary Heap SiftUP
+	int siftUp(std::vector<int>& heap, int idx) {
+		if (idx == 1) {
+			return 1;
+		}
+		int parent_idx = idx / 2;
+		if (heap[parent_idx] < heap[idx]) {
+			std::swap(heap[parent_idx], heap[idx]);
+			return siftUp(heap, parent_idx);
+		}
+		return idx;
+
+	}
+
+	void heap_add(std::vector<int>& heap, int key) {
+		int idx = heap.size();
+		heap.push_back(key);		
+		siftUp(heap, idx);
+	}
+	/*-------------------------------------------------------------------------*/
+	
 }
 
 namespace s5_tests {
@@ -208,8 +296,27 @@ namespace s5_tests {
 		assert(s5_problems::A_Solution(&node4) == 3);
 	}
 	/*-------------------------------------------------------------------------*/
-
-
+	void B_BalancedTree() {
+		{
+			s5_problems::Node node1({ 1, nullptr, nullptr });
+			s5_problems::Node node2({ -5, nullptr, nullptr });
+			s5_problems::Node node3({ 3, &node1, &node2 });
+			s5_problems::Node node4({ 10, nullptr, nullptr });
+			s5_problems::Node node5({ 2, &node3, &node4 });
+			assert(s5_problems::B_Solution(&node5));
+		}
+		{
+			s5_problems::Node node1({ 1, nullptr, nullptr });
+			s5_problems::Node node2({ 5, nullptr, nullptr });
+			s5_problems::Node node3({ 3, &node1, &node2 });
+			assert(s5_problems::B_Solution(&node3) == true);
+			s5_problems::Node node4({ 10, &node3, nullptr });
+			assert(s5_problems::B_Solution(&node4) == false);
+			s5_problems::Node node5({ 30, nullptr, nullptr });
+			s5_problems::Node node6({ 20, &node4, &node5 });
+			assert(s5_problems::B_Solution(&node6) == false);
+		}
+	}
 	/*-------------------------------------------------------------------------*/
 	void E_SearchTree() {
 		{
@@ -293,5 +400,17 @@ namespace s5_tests {
 			//s5_problems::print_range(&node7, 2, 8);
 			// expected output: 2 5 8 8
 		}
+	}
+	/*-------------------------------------------------------------------------*/
+	void L_BinaryHeap_SiftDown() {		
+		{
+			std::vector<int> sample = { -1, 12, 1, 8, 3, 4, 7 };
+			assert(s5_problems::siftDown(sample, 2) == 5);
+		}
+	}
+	/*-------------------------------------------------------------------------*/
+	void M_BinaryHeap_SiftUp() {
+		std::vector<int> sample = { -1, 12, 6, 8, 3, 15, 7 };
+		assert(s5_problems::siftUp(sample, 5) == 1);
 	}
 }

@@ -88,8 +88,11 @@ void sprint4_tests() {
 
 void sprint5_tests() {
     s5_tests::A_Lamps();
+    s5_tests::B_BalancedTree();
     
     s5_tests::E_SearchTree();
     s5_tests::I_CountBST();
     s5_tests::K_PrintRange();
+    s5_tests::L_BinaryHeap_SiftDown();
+    s5_tests::M_BinaryHeap_SiftUp();
 }
