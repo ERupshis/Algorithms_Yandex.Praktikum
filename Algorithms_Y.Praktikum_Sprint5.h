@@ -5,6 +5,7 @@
 #include <iostream>
 #include <cmath>
 #include <vector>
+#include <cstdint>
 
 /* for problem A
 //#include "solution_tree.h"
@@ -55,7 +56,6 @@ namespace s5_problems {
 	}	
 	/*-------------------------------------------------------------------------*/
 	//B Balanced Tree
-
 	bool IsBalancedTree(const Node* root, int* h = nullptr) {
 		int l = 0, r = 0;
 		if (root->left != nullptr) {
@@ -82,7 +82,57 @@ namespace s5_problems {
 		int h = 0;
 		return IsBalancedTree(root, &h);
 	}
+	/*-------------------------------------------------------------------------*/
+	// C_Anagram trees
+	void TraversalLMR(const Node* root, std::vector<int>& vec) {
+		if (root->left != nullptr) {
+			TraversalLMR(root->left, vec);
+		}
+		vec.push_back(root->value);
+		if (root->right != nullptr) {
+			TraversalLMR(root->right, vec);
+		}
+	}
+	void TraversalRML(const Node* root, std::vector<int>& vec) {
+		if (root->right != nullptr) {
+			TraversalRML(root->right, vec);
+		}
+		vec.push_back(root->value);
+		if (root->left != nullptr) {
+			TraversalRML(root->left, vec);
+		}
+	}
 
+	bool C_Solution(const Node* root) {
+		if (root->left != nullptr && root->right != nullptr) {
+			std::vector<int> left, right;
+			TraversalLMR(root->left, left);
+			TraversalRML(root->right, right);
+			return left == right;
+		}
+		else if (root->left == nullptr && root->right == nullptr) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+	/*-------------------------------------------------------------------------*/
+	// D Twin Trees
+	bool D_Solution(const Node* root1, const Node* root2) {
+		if (root1 != nullptr && root2 != nullptr) {
+			std::vector<int> first, second;
+			TraversalLMR(root1, first);
+			TraversalLMR(root2, second);
+			return first == second;
+		}
+		else if (root1 == nullptr && root2 == nullptr) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
 	/*-------------------------------------------------------------------------*/
 	bool IsTreeLess(const Node* root, int max) {
 		if (root == nullptr) {
@@ -128,6 +178,70 @@ namespace s5_problems {
 	bool E_Solution(const Node* root) {
 		return IsSearchTree(root);
 	}
+	/*-------------------------------------------------------------------------*/
+	// F Max Depth
+	int FindTreeHeight(const Node* root) {
+		if (root == nullptr) { // terminal node case
+			return 0;
+		}
+
+		return 1 + std::max(FindTreeHeight(root->left), FindTreeHeight(root->right));
+	}
+
+
+	int F_Solution(const Node* root) {
+		return FindTreeHeight(root);
+	}
+	/*-------------------------------------------------------------------------*/
+	// G Max Path
+	int FindMaxPath(const Node* root, int* max_len) {
+		if (root == nullptr) {
+			return 0;
+		}
+
+		int left_path = FindMaxPath(root->left, max_len);
+		int right_path = FindMaxPath(root->right, max_len);
+		int subtree_path = root->value + ((left_path > 0) ? left_path : 0) + ((right_path > 0) ? right_path : 0);
+		if (*max_len < subtree_path) {
+			*max_len = subtree_path;
+		}
+
+		return root->value + ((std::max(left_path, right_path) > 0) ? std::max(left_path, right_path) : 0);
+	}
+
+	int G_Solution(const Node* root) {
+		int max_length = INT32_MIN;
+		if (root != nullptr) {
+			FindMaxPath(root, &max_length);
+			return max_length;
+		}
+		else {
+			return 0;
+		}
+	}
+	/*-------------------------------------------------------------------------*/
+	// H_NumberPaths	
+	void SumNumberPaths(const Node* root, int* res, int path_sum = 0) {
+		int merged_num = path_sum * 10 + root->value;
+		if (root->left == nullptr && root->right == nullptr) {
+			*res += merged_num;
+		}
+		else {			
+			if (root->left != nullptr) { // base case
+				SumNumberPaths(root->left, res, merged_num);
+			}
+			if (root->right != nullptr) {
+				SumNumberPaths(root->right, res, merged_num);
+			}
+		}
+	}
+
+	int H_Solution(const Node* root) {
+		int res = 0;
+		SumNumberPaths(root, &res);
+		return res;
+	}
+
 	/*-------------------------------------------------------------------------*/
 	// I_DifferentTrees
 	int CountTrees(int n) {
@@ -287,53 +401,181 @@ namespace s5_problems {
 
 namespace s5_tests {
 	using namespace std::literals;
+	using namespace s5_problems;
 
 	void A_Lamps() {
-		s5_problems::Node node1({ 1, nullptr, nullptr });
-		s5_problems::Node node2({ -5, nullptr, nullptr });
-		s5_problems::Node node3({ 3, &node1, &node2 });
-		s5_problems::Node node4({ 2, &node3, nullptr });
-		assert(s5_problems::A_Solution(&node4) == 3);
+		{
+			Node node1({ 1, nullptr, nullptr });
+			Node node2({ -5, nullptr, nullptr });
+			Node node3({ 3, &node1, &node2 });
+			Node node4({ 2, &node3, nullptr });
+			assert(A_Solution(&node4) == 3);
+		}
 	}
 	/*-------------------------------------------------------------------------*/
 	void B_BalancedTree() {
 		{
-			s5_problems::Node node1({ 1, nullptr, nullptr });
-			s5_problems::Node node2({ -5, nullptr, nullptr });
-			s5_problems::Node node3({ 3, &node1, &node2 });
-			s5_problems::Node node4({ 10, nullptr, nullptr });
-			s5_problems::Node node5({ 2, &node3, &node4 });
-			assert(s5_problems::B_Solution(&node5));
+			Node node1({ 1, nullptr, nullptr });
+			Node node2({ -5, nullptr, nullptr });
+			Node node3({ 3, &node1, &node2 });
+			Node node4({ 10, nullptr, nullptr });
+			Node node5({ 2, &node3, &node4 });
+			assert(B_Solution(&node5));
 		}
 		{
-			s5_problems::Node node1({ 1, nullptr, nullptr });
-			s5_problems::Node node2({ 5, nullptr, nullptr });
-			s5_problems::Node node3({ 3, &node1, &node2 });
-			assert(s5_problems::B_Solution(&node3) == true);
-			s5_problems::Node node4({ 10, &node3, nullptr });
-			assert(s5_problems::B_Solution(&node4) == false);
-			s5_problems::Node node5({ 30, nullptr, nullptr });
-			s5_problems::Node node6({ 20, &node4, &node5 });
-			assert(s5_problems::B_Solution(&node6) == false);
+			Node node1({ 1, nullptr, nullptr });
+			Node node2({ 5, nullptr, nullptr });
+			Node node3({ 3, &node1, &node2 });
+			assert(B_Solution(&node3) == true);
+			Node node4({ 10, &node3, nullptr });
+			assert(B_Solution(&node4) == false);
+			Node node5({ 30, nullptr, nullptr });
+			Node node6({ 20, &node4, &node5 });
+			assert(B_Solution(&node6) == false);
+		}
+	}
+	/*-------------------------------------------------------------------------*/
+	void C_AnagramTrees() {
+		{
+			Node node8({ 0, nullptr, nullptr });
+			Node node7({ 1, nullptr, nullptr });
+			Node node6({ 1, nullptr, nullptr });
+			Node node5({ 0, nullptr, nullptr });
+			Node node4({ 3, &node7, &node8 });
+			Node node3({ 3, &node5, &node6 });
+			Node node2({ 2, nullptr, &node4 });
+			Node node1({ 2, &node3, nullptr });
+			Node node0({ 0, &node1, &node2 });
+			assert(C_Solution(&node0));
+		}
+		{
+			Node node1({ 3, nullptr, nullptr });
+			Node node2({ 4, nullptr, nullptr });
+			Node node3({ 4, nullptr, nullptr });
+			Node node4({ 3, nullptr, nullptr });
+			Node node5({ 2, &node1, &node2 });
+			Node node6({ 2, &node3, &node4 });
+			Node node7({ 1, &node5, &node6 });
+			assert(C_Solution(&node7));
+		}		
+	}
+	/*-------------------------------------------------------------------------*/
+	void D_TwinTrees() {
+		{
+			Node node1({ 1, nullptr, nullptr });
+			Node node2({ 2, nullptr, nullptr });
+			Node node3({ 3, &node1, &node2 });
+
+			Node node4({ 1, nullptr, nullptr });
+			Node node5({ 2, nullptr, nullptr });
+			Node node6({ 3, &node4, &node5 });
+			assert(D_Solution(&node3, &node6));
 		}
 	}
 	/*-------------------------------------------------------------------------*/
 	void E_SearchTree() {
 		{
-			s5_problems::Node node1({ 1, nullptr, nullptr });
-			s5_problems::Node node2({ 4, nullptr, nullptr });
-			s5_problems::Node node3({ 3, &node1, &node2 });
-			s5_problems::Node node4({ 8, nullptr, nullptr });
-			s5_problems::Node node5({ 5, &node3, &node4 });
-			assert(s5_problems::E_Solution(&node5));
+			Node node1({ 1, nullptr, nullptr });
+			Node node2({ 4, nullptr, nullptr });
+			Node node3({ 3, &node1, &node2 });
+			Node node4({ 8, nullptr, nullptr });
+			Node node5({ 5, &node3, &node4 });
+			assert(E_Solution(&node5));
 		}
 		{
-			s5_problems::Node node1({ 1, nullptr, nullptr });
-			s5_problems::Node node2({ 5, nullptr, nullptr });
-			s5_problems::Node node3({ 3, &node1, &node2 });
-			s5_problems::Node node4({ 8, nullptr, nullptr });
-			s5_problems::Node node5({ 5, &node3, &node4 });
-			assert(!s5_problems::E_Solution(&node5));
+			Node node1({ 1, nullptr, nullptr });
+			Node node2({ 5, nullptr, nullptr });
+			Node node3({ 3, &node1, &node2 });
+			Node node4({ 8, nullptr, nullptr });
+			Node node5({ 5, &node3, &node4 });
+			assert(!E_Solution(&node5));
+		}
+	}
+	/*-------------------------------------------------------------------------*/
+	void F_MaxDepth() {
+		{
+			Node node1({ 1, nullptr, nullptr });
+			Node node2({ 4, nullptr, nullptr });
+			Node node3({ 3, &node1, &node2 });
+			Node node4({ 8, nullptr, nullptr });
+			Node node5({ 5, &node3, &node4 });
+			assert(F_Solution(&node5) == 3);
+		}
+	}
+	/*-------------------------------------------------------------------------*/
+	void G_MaxPath() {
+		{
+			Node node1({ -1, nullptr, nullptr });			
+			assert(G_Solution(&node1) == -1);
+		}
+		{
+			Node node1({ -2, nullptr, nullptr });
+			Node node2({ 3, nullptr, nullptr });
+			Node node3({ 1, &node1, &node2 });			
+			assert(G_Solution(&node3) == 4);
+		}
+		{
+			Node node1({ -2, nullptr, nullptr });
+			Node node2({ -3, nullptr, nullptr });
+			Node node3({ 1, &node1, &node2 });
+			assert(G_Solution(&node3) == 1);
+		}
+		{
+			Node node1({ -2, nullptr, nullptr });
+			Node node2({ -3, nullptr, nullptr });
+			Node node3({ -1, &node1, &node2 });
+			assert(G_Solution(&node3) == -1);
+		}
+		{
+			Node node1({ -6, nullptr, nullptr });
+			Node node2({ 9, nullptr, nullptr });
+			Node node3({ -1, nullptr, nullptr });
+			Node node4({ 0, nullptr, nullptr });
+			Node node5({ 4, nullptr, nullptr });
+			Node node6({ 3, &node2, &node1 });
+			Node node7({ 7, &node3, nullptr });
+			Node node8({ 3, &node5, &node4 });
+			Node node9({ 2, &node7, &node6 });
+			Node node10({ -1, &node9, &node8 });
+			assert(G_Solution(&node10) == 21);
+		}
+		{
+			Node node1({ 5, nullptr, nullptr });
+			Node node2({ 1, nullptr, nullptr });
+			Node node3({ -3, &node2, &node1 });
+			Node node4({ 2, nullptr, nullptr });
+			Node node5({ 2, &node4, &node3 });
+			assert(G_Solution(&node5) == 6);
+		}
+	}
+	/*-------------------------------------------------------------------------*/
+	void H_NumberPaths() {
+		{
+			Node node1({ 9, nullptr, nullptr });
+			Node node2({ 8, &node1, nullptr });
+			Node node3({ 7, nullptr, nullptr });
+			Node node4({ 6, nullptr, nullptr });
+			Node node5({ 2, nullptr, nullptr });
+			Node node6({ 4, &node3, &node2 });
+			Node node7({ 3, &node5, &node4 });
+			Node node8({ 2, nullptr, &node6 });
+			Node node9({ 1, &node7, nullptr });
+			Node node10({ 1, &node9, &node8 });
+			assert(H_Solution(&node10) == 16004);
+		}
+		{
+			Node node1({ 5, nullptr, nullptr });
+			Node node2({ 3, nullptr, nullptr });
+			Node node3({ 1, &node2, &node1 });			
+			assert(H_Solution(&node3) == 28);
+		}
+		{
+			Node node1({ 1, nullptr, nullptr });
+			Node node2({ 2, nullptr, nullptr });
+			Node node3({ 3, &node2, &node1 });
+			Node node4({ 2, nullptr, nullptr });
+			Node node5({ 1, &node4, &node3 });
+			assert(H_Solution(&node5) == 275);
 		}
 	}
 	/*-------------------------------------------------------------------------*/
@@ -369,18 +611,18 @@ namespace s5_tests {
 	/*-------------------------------------------------------------------------*/
 	void J_InsertNode() {
 		{			
-			s5_problems::nNode node1({ nullptr, nullptr, 7 });
-			s5_problems::nNode node2({ &node1, nullptr, 8 });
-			s5_problems::nNode node3({ nullptr, &node2, 7 });
-			s5_problems::nNode* newHead = s5_problems::insert(&node3, 6);
+			nNode node1({ nullptr, nullptr, 7 });
+			nNode node2({ &node1, nullptr, 8 });
+			nNode node3({ nullptr, &node2, 7 });
+			nNode* newHead = insert(&node3, 6);
 			assert(newHead->left->value == 6);
 			assert(newHead == &node3);			
 		}
 		{
-			s5_problems::nNode node1({ nullptr, nullptr, 7 });
-			s5_problems::nNode node2({ &node1, nullptr, 8 });
-			s5_problems::nNode node3({ nullptr, &node2, 7 });
-			s5_problems::nNode* newHead = s5_problems::insert(&node3, 7);
+			nNode node1({ nullptr, nullptr, 7 });
+			nNode node2({ &node1, nullptr, 8 });
+			nNode node3({ nullptr, &node2, 7 });
+			nNode* newHead = insert(&node3, 7);
 			assert(newHead->right->left->right->value == 7);
 			assert(newHead == &node3);
 		}
@@ -388,16 +630,16 @@ namespace s5_tests {
 	/*-------------------------------------------------------------------------*/
 	void K_PrintRange() {
 		{
-			s5_problems::Node node1({ 2, nullptr, nullptr });
-			s5_problems::Node node2({ 1, nullptr, &node1 });
-			s5_problems::Node node3({ 8, nullptr, nullptr });
-			s5_problems::Node node4({ 8, nullptr, &node3 });
-			s5_problems::Node node5({ 9, &node4, nullptr });
-			s5_problems::Node node6({ 10, &node5, nullptr });
-			s5_problems::Node node7({5,  &node2, &node6 });
-			//s5_problems::PrintLMR(&node7);
-			//s5_problems::FindElement(&node7, 10);
-			//s5_problems::print_range(&node7, 2, 8);
+			Node node1({ 2, nullptr, nullptr });
+			Node node2({ 1, nullptr, &node1 });
+			Node node3({ 8, nullptr, nullptr });
+			Node node4({ 8, nullptr, &node3 });
+			Node node5({ 9, &node4, nullptr });
+			Node node6({ 10, &node5, nullptr });
+			Node node7({5,  &node2, &node6 });
+			//PrintLMR(&node7);
+			//FindElement(&node7, 10);
+			//print_range(&node7, 2, 8);
 			// expected output: 2 5 8 8
 		}
 	}
@@ -405,12 +647,12 @@ namespace s5_tests {
 	void L_BinaryHeap_SiftDown() {		
 		{
 			std::vector<int> sample = { -1, 12, 1, 8, 3, 4, 7 };
-			assert(s5_problems::siftDown(sample, 2) == 5);
+			assert(siftDown(sample, 2) == 5);
 		}
 	}
 	/*-------------------------------------------------------------------------*/
 	void M_BinaryHeap_SiftUp() {
 		std::vector<int> sample = { -1, 12, 6, 8, 3, 15, 7 };
-		assert(s5_problems::siftUp(sample, 5) == 1);
+		assert(siftUp(sample, 5) == 1);
 	}
 }
