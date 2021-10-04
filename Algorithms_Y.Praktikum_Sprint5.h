@@ -29,6 +29,13 @@ namespace s5_problems {
 		int value;
 	};
 
+	struct sNode {
+		sNode* left;
+		sNode* right;
+		int value;
+		int size;
+	};
+
 	const int INF = -1e9;
 	//problem A_Lamps
 	int A_Solution(const Node* root) {
@@ -396,6 +403,43 @@ namespace s5_problems {
 		siftUp(heap, idx);
 	}
 	/*-------------------------------------------------------------------------*/
+	// N Split tree
+	int FindKth(sNode* root, int k) {
+		int leftsize = ((root->left == nullptr) ? 0 : root->left->size);
+
+		if (leftsize == k) { // base case
+			return root->value;
+		}
+		if (leftsize < k) {
+			return FindKth(root->right, k);
+		}
+		return FindKth(root->left, k);
+	}
+
+	int GetRootSize(sNode* root) {
+		return ((root == nullptr) ? 0 : root->size);
+	}
+
+
+	std::pair<sNode*, sNode*> N_split(sNode* root, int k) {
+		if (root == nullptr) {
+			return { nullptr, nullptr };
+		}
+
+		if (GetRootSize(root->left) + 1 <= k) {
+			int k_fixed = k - (1 + GetRootSize(root->left));
+			std::pair<sNode*, sNode*> split_trees = N_split(root->right, k_fixed);
+			root->right = split_trees.first;
+			root->size -= GetRootSize(split_trees.second);
+			return { root, split_trees.second };
+		}
+		else {
+			std::pair<sNode*, sNode*> split_trees = N_split(root->left, k);
+			root->left = split_trees.second;
+			root->size -= GetRootSize(split_trees.first);
+			return { split_trees.first, root };
+		}
+	}
 	
 }
 
@@ -654,5 +698,28 @@ namespace s5_tests {
 	void M_BinaryHeap_SiftUp() {
 		std::vector<int> sample = { -1, 12, 6, 8, 3, 15, 7 };
 		assert(siftUp(sample, 5) == 1);
+	}
+	/*-------------------------------------------------------------------------*/
+	void N_SplitTree() {
+		{
+			sNode node1({ nullptr, nullptr, 3, 1 });
+			sNode node2({ nullptr, nullptr, 2, 1 });
+			sNode node3({ &node1,  &node2, 8, 3 });
+			
+			std::pair<sNode*, sNode*> res = N_split(&node3, 1);
+			assert(res.first->size == 1);
+			assert(res.second->size == 2);
+		}
+		{
+			sNode node1({ nullptr, nullptr, 3, 1 });
+			sNode node2({ nullptr, &node1, 2, 2 });
+			sNode node3({ nullptr, nullptr, 8, 1 });
+			sNode node4({ nullptr, nullptr, 11, 1 });
+			sNode node5({ &node3, &node4, 10, 3 });
+			sNode node6({ &node2, &node5, 5, 6 });
+			std::pair<sNode*, sNode*> res = N_split(&node6, 4);
+			assert(res.first->size == 4);
+			assert(res.second->size == 2);
+		}
 	}
 }

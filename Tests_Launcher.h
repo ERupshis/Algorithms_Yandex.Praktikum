@@ -99,4 +99,5 @@ void sprint5_tests() {
     s5_tests::K_PrintRange();
     s5_tests::L_BinaryHeap_SiftDown();
     s5_tests::M_BinaryHeap_SiftUp();
+    s5_tests::N_SplitTree();
 }
