@@ -11,7 +11,7 @@
 namespace s5_exam_problems {
 	using namespace std::literals;
 
-	//SEND ID: ???
+	//SEND ID: 53959566
 
 	struct Participant {
 		std::string name = ""s;
@@ -67,11 +67,31 @@ namespace s5_exam_problems {
 		return output;
 	}
 
+
+	// Class MinHeap - class with std::vector as a storage. Using vector as a storage helps to access to heap 'nodes' 
+	//    with O(1) time complexity without using excess memory. This can be achieved thanks to heap tree property - it's a full binary tree.
+	//    It means that all edges on the levels 0 ... h - 2 has both childs. Only level h - 1 nodes children may be missing. It corresponds to 
+	//    property of AVL binary tree - search reduces twice on every recursion level and search of any key can be done by O(h) time complexity.
+	//    (difference between left subtree and right subgtree heights doesn't exceeds 1)
+	// Time complexity: see below
+	// Space complexity: O(N) - N is a number of elemnets in heap
+	//
+	// Method Add() - inserts new element to the end of vector and move it in correct position in tree. It's achieved by comprasioning new value with its 
+	//    parent and if parent is bigger that new element then they should be swaped.
+	// Time complexity: O(logN) or O(h), where's N - number of elements in heap, h - height of tree
+	// Space complexity: O(logN) is used for definition of parent index on every recursion level
+	//
+	// Method Pop() - extract lowest element from heap (first (root) element in heap). It's achieved by swapping last and first element in heap.
+	//    And after that new root value(that was last element before) should be placed in correct node. Behavior of this action is similar to part of Add(),
+	//    but direction of checking is opposite
+	// Time complexity: O(logN) or O(h), where's N - number of elements in heap, h - height of tree 
+	// Space complexity: O(logN) is used for definition of child indexes on every recursion level
+
 	class MinHeap {
 	public:
-		void Add(const Participant& member) {
-			int idx = heap_.size(); // get index of new member. It's equal to vec.size() - 1, when element was already inserted
+		void Add(const Participant& member) {			
 			heap_.push_back(member);
+			int idx = Size(); // get index of new member. It's equal to vec.size() - 1, when element was already inserted
 			SiftUp(idx); // launch new member positioning in heap
 		}
 
@@ -136,6 +156,12 @@ namespace s5_exam_problems {
 		}
 	};
 
+
+	// HeapSort() - sorting function that uses heap as a sort method. It's achieved by main heap property - every parent is less that its children
+	//    This guarantee that root of heap will be the lowest element in heap all the time
+	//
+	// Time complexity: O(N*logN) - N is a number of elemnts in array
+	// Space complexity: O(N)
 	void A_HeapSort(std::istream& input, std::ostream& output) {
 		std::vector<Participant> arr = std::move(FillVectorOfParticipants(input));
 
@@ -154,6 +180,8 @@ namespace s5_exam_problems {
 	/*-------------------------------------------------------------------------*/
 	// remove node from BST
 	//#include "solution.h"
+
+	//SEND ID: 53975526
 	struct Node {
 		Node* left;
 		Node* right;
@@ -165,6 +193,12 @@ namespace s5_exam_problems {
 		LEFT,
 		RIGHT
 	};
+
+	// FindNodes() method that returns pointer to ode with value Key and pointer to parent of this node with definition which child 
+	//    of parent this node is (left or right). It's a recursion method.
+	//
+	// Time colpexity: O(logN) or O(h) - N is a number of elements in BST, h - height of BST
+	// Space compoexity: O(1)
 
 	std::tuple<Node*, Node*, ChildSide> FindNodes(Node* root, int key) {
 		if (root == nullptr) { //base case - element was not found
@@ -190,32 +224,45 @@ namespace s5_exam_problems {
 		}		
 	}
 
-	std::tuple<Node*, Node*> FindLeftBiggestNodes(Node* root) {
+	// FindBiggestNodes() - method that finds biggest element in tree. (name of method is not yet correct because biggest node will be p, 
+	//    parent of p may be not the first before p due to p can have child less itself)
+	//    This method return two pointers: to the rightest element in tree and to its parent
+	//    It's a recursion method
+	// 
+	// Time complexity: O(logN) or O(h) - N is a number of nodes in tree, h - height of tree. Actually it can handle for O(h-1) because we check
+	//    child of current node on the biggest value condition in tree
+	// Space complexity: O(1)
+
+	std::tuple<Node*, Node*> FindBiggestNodes(Node* root) {
 		if (root->right == nullptr) { //base case when there's no right node in left subtree of d. Just need to 										
 			return { nullptr, root }; //reconnect whole left subtree directly to d_par
 		}
 
 		if (root->right->right != nullptr) { //recursion case of chain with 3 or more right subtrees
-			return FindLeftBiggestNodes(root->right);
+			return FindBiggestNodes(root->right);
 		}
 		else { // base case p_par -> p chain is found
 			return { root, root->right };
 		}
 	}
 
+	// ReplaceDnodebyPnode() - method that disconnect links to node that should be deleted and link biggest node from d->left instead of d
+	//
+	// Time complexity: O(logN) or O(h) - N is a number of nodes in left subtree, h - height of left subtree. 
+	//    Actually it can handle for O(h-1) because we check
+	//    child of current node on the biggest value condition in left subtree
+	// Space complexity: O(1)
+
 	Node* ReplaceDnodebyPnode(Node* d) {
 		Node* p_par;
 		Node* p;		
-		std::tie(p_par, p) = FindLeftBiggestNodes(d->left);
-		if (p_par == nullptr) { // case when d->left has only one node in tree or d->left->left != nullptr
-			p->right = d->right;
-		}
-		else {
+		std::tie(p_par, p) = FindBiggestNodes(d->left);
+		if (p_par != nullptr) { //  opposite case when d->left has only one node in tree or d->left->left != nullptr		
 			if (p->left == nullptr) { // case when biggest right sub tree in d->left doesn't have left subtree.
-				p_par->right == nullptr;
+				p_par->right = nullptr;
 			}
 			else {// case when biggest right sub tree in d->left HAS left subtree.
-				p_par->right == p->left;
+				p_par->right = p->left;
 			}
 			p->left = d->left;
 		}
@@ -223,6 +270,11 @@ namespace s5_exam_problems {
 
 		return p;
 	}
+
+	// ConnectNodeToParent() - method that link new node to the parent of deleted node
+	//
+	// Time complexity: O(1)
+	// Space complexity: O(1)
 
 	void ConnectNodeToParent(Node* parent, Node* child, ChildSide conn_side) {
 		if (conn_side == ChildSide::LEFT) {
@@ -233,20 +285,22 @@ namespace s5_exam_problems {
 		}
 	}
 	
+	// remove() - method that removes node with value equal to key.
+	//    
+	// Time complexity: O(logN) or O(h) - N is a number of nodes in tree, h - height of tree
+	// Space complexity: O(1)
+
 	Node* remove(Node* root, int key) {
-		if (root == nullptr) { 
+		if (root == nullptr) { // empty tree
 			return nullptr;
 		}
 
 		Node* d_par; 
 		Node* d;
 		ChildSide d_side;
-		std::tie(d_par, d, d_side) = FindNodes(root, key);
+		std::tie(d_par, d, d_side) = FindNodes(root, key); // seek element to remove
 
-		if (d_par == nullptr && d == nullptr) { // element was not found. stop execution
-			return root;
-		}
-		else if (d_par == nullptr) { // tree root should be removed
+		if (d_par == nullptr && d != nullptr) { // tree root should be removed
 			if (d->left == nullptr) {
 				return d->right;
 			}
@@ -254,15 +308,16 @@ namespace s5_exam_problems {
 				return ReplaceDnodebyPnode(d);
 			}
 		}
-
-		if (d->left == nullptr) { // d->left is missing, just connect d->right to d_par
-			ConnectNodeToParent(d_par, d->right, d_side);			
-		}
-		else {			
-			ConnectNodeToParent(d_par, ReplaceDnodebyPnode(d), d_side);
+		else if (d_par != nullptr && d != nullptr) { // element is found
+			if (d->left == nullptr) { // d->left is missing, just connect d->right to d_par
+				ConnectNodeToParent(d_par, d->right, d_side);
+			}
+			else {
+				ConnectNodeToParent(d_par, ReplaceDnodebyPnode(d), d_side);
+			}
 		}
 			
-		return root;
+		return root; // if element was not found no action to do, otherwise return root of updated tree
 	}
 }
 
@@ -397,13 +452,7 @@ namespace s5_exam_tests {
 		}			
 	}
 	/*-------------------------------------------------------------------------*/
-	void B_RemoveNodeFromBST() {
-		{
-			Node node2({ nullptr, nullptr, 2 });
-			Node node1({ nullptr, &node2, 1 });
-			Node* newHead = remove(&node1, 1);
-			assert(newHead->value == 2);			
-		}
+	void B_RemoveNodeFromBST() {		
 		{			
 			Node node10({ nullptr, nullptr, 99 });
 			Node node9({ nullptr, nullptr, 72 });
@@ -419,6 +468,12 @@ namespace s5_exam_tests {
 			assert(newHead->value == 32);
 			assert(newHead->right == &node3);
 			assert(newHead->left == &node2);
+		}
+		{
+			Node node2({ nullptr, nullptr, 2 });
+			Node node1({ nullptr, &node2, 1 });
+			Node* newHead = remove(&node1, 1);
+			assert(newHead->value == 2);
 		}
 		{
 			Node node1({ nullptr, nullptr, 2 });
