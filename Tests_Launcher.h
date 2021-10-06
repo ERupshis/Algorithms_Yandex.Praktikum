@@ -13,6 +13,7 @@
 #include "Algorithms_Y.Praktikum_Sprint4_Exam.h"
 
 #include "Algorithms_Y.Praktikum_Sprint5.h"
+#include "Algorithms_Y.Praktikum_Sprint5_Exam.h"
 
 void sprint1_tests() {
     s1_tests::A_FunctionValues_test();
@@ -100,4 +101,7 @@ void sprint5_tests() {
     s5_tests::L_BinaryHeap_SiftDown();
     s5_tests::M_BinaryHeap_SiftUp();
     s5_tests::N_SplitTree();
+
+    s5_exam_tests::A_HeapSort();
+    s5_exam_tests::B_RemoveNodeFromBST();
 }
