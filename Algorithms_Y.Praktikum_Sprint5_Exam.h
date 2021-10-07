@@ -11,7 +11,7 @@
 namespace s5_exam_problems {
 	using namespace std::literals;
 
-	//SEND ID: 53959566
+	//SEND ID: 54101199
 
 	struct Participant {
 		std::string name = ""s;
@@ -91,38 +91,38 @@ namespace s5_exam_problems {
 	public:
 		void Add(const Participant& member) {			
 			heap_.push_back(member);
-			int idx = Size(); // get index of new member. It's equal to vec.size() - 1, when element was already inserted
+			int idx = heap_.size() - 1; // get index of new member. It's equal to vec.size() - 1, when element was already inserted
 			SiftUp(idx); // launch new member positioning in heap
 		}
 
 		Participant Pop() {
 			Participant res;
-			if (heap_.size() == 2) { // case when heap has 1 member, recursion SiftDown is not needed
-				res = heap_[1];
+			if (heap_.size() == 1) { // case when heap has 1 member, recursion SiftDown is not needed
+				res = heap_[0];
 				heap_.pop_back();	// just remove this member form heap			
-			} else if(heap_.size() > 2) {
-				res = heap_[1]; // head value to extract
-				heap_[1] = heap_[Size()]; // rewrite last member in top idx
+			} else if(heap_.size() > 1) {
+				res = heap_[0]; // head value to extract
+				heap_[0] = heap_[heap_.size() - 1]; // rewrite last member in top idx
 
 				heap_.pop_back(); // remove last argument
-				SiftDown(1); // move down last elem if neeeded				
+				SiftDown(0); // move down last elem if neeeded				
 			}
 			return res; // return empty member if heap is empty;			
 		}
 
-		size_t Size() {
-			return heap_.size() - 1;
+		size_t Size() const {
+			return heap_.size();
 		}
 
 	private:
-		std::vector<Participant> heap_ = { {} }; // first value [0] is not operational
+		std::vector<Participant> heap_ = {}; // first value [0] is not operational
 
 		int SiftUp(int idx) {
-			if (idx == 1) { // first value in heap
-				return 1;
+			if (idx == 0) { // first value in heap
+				return 0;
 			}
 
-			int parent_idx = idx / 2;
+			int parent_idx = (idx - 1) / 2;
 
 			if (heap_[idx] < heap_[parent_idx]) { // level up new member in heap
 				std::swap(heap_[parent_idx], heap_[idx]);
@@ -133,15 +133,15 @@ namespace s5_exam_problems {
 		}
 
 		int SiftDown(int idx) {
-			int l_idx = 2 * idx;
-			int r_idx = 2 * idx + 1;			
+			int l_idx = 2 * idx + 1;
+			int r_idx = 2 * idx + 2;			
 
-			if (Size() < l_idx) { // idx doesn't have child nodes;
+			if (heap_.size() - 1 < l_idx) { // idx doesn't have child nodes;
 				return idx;
 			}
 
 			int lowest_idx = -1;
-			if (Size() >= r_idx && heap_[r_idx] < heap_[l_idx]) { // define which child is lowest. 
+			if (heap_.size() - 1 >= r_idx && heap_[r_idx] < heap_[l_idx]) { // define which child is lowest. 
 				lowest_idx = r_idx;								// It guarantees that another branch will be synchronized with new root member
 			}
 			else {
@@ -187,12 +187,7 @@ namespace s5_exam_problems {
 		Node* right;
 		int value;
 	};
-
-	enum class ChildSide {
-		NONE,
-		LEFT,
-		RIGHT
-	};
+		
 
 	// FindNodes() method that returns pointer to ode with value Key and pointer to parent of this node with definition which child 
 	//    of parent this node is (left or right). It's a recursion method.
@@ -200,28 +195,25 @@ namespace s5_exam_problems {
 	// Time colpexity: O(logN) or O(h) - N is a number of elements in BST, h - height of BST
 	// Space compoexity: O(1)
 
-	std::tuple<Node*, Node*, ChildSide> FindNodes(Node* root, int key) {
-		if (root == nullptr) { //base case - element was not found
-			return { nullptr, nullptr,ChildSide::NONE };
+	std::tuple<Node*, Node*> FindNodes(Node* root, int key) {
+		while (root != nullptr) {
+			if (root->value == key) { // base case - tree root should be removed
+				return { nullptr, root };
+			} 
+			else if (root->left != nullptr && root->left->value == key) {	// base case when key was found;
+				return { root, root->left };
+			}
+			else if (root->right != nullptr && root->right->value == key) { // base case when key was found;
+				return { root, root->right };
+			} 
+			else if (key < root->value) {
+				root = root->left;
+			}
+			else if (key > root->value) {
+				root = root->right;
+			}
 		}
-
-		if (root->value == key) { // base case - tree root should be removed
-			return { nullptr, root, ChildSide::NONE };
-		}
-
-		if (root->left != nullptr && root->left->value == key) {	// base case when key was found;
-			return { root, root->left, ChildSide::LEFT };
-		}
-		else if (root->right != nullptr && root->right->value == key) { // base case when key was found;
-			return { root, root->right, ChildSide::RIGHT };
-		}
-
-		if (key < root->value) {
-			return FindNodes(root->left, key);
-		}
-		else if (key > root->value) {
-			return FindNodes(root->right, key);
-		}		
+		return { nullptr, nullptr };
 	}
 
 	// FindBiggestNodes() - method that finds biggest element in tree. (name of method is not yet correct because biggest node will be p, 
@@ -233,17 +225,15 @@ namespace s5_exam_problems {
 	//    child of current node on the biggest value condition in tree
 	// Space complexity: O(1)
 
-	std::tuple<Node*, Node*> FindBiggestNodes(Node* root) {
-		if (root->right == nullptr) { //base case when there's no right node in left subtree of d. Just need to 										
+	std::tuple<Node*, Node*> GetRightmostNode(Node* root) {
+		if (root->right == nullptr) { //case when there's no right node in left subtree of d. Just need to 										
 			return { nullptr, root }; //reconnect whole left subtree directly to d_par
 		}
 
-		if (root->right->right != nullptr) { //recursion case of chain with 3 or more right subtrees
-			return FindBiggestNodes(root->right);
+		while (root->right->right != nullptr) { //case of chain with 3 or more right subtrees
+			root = root->right;
 		}
-		else { // base case p_par -> p chain is found
-			return { root, root->right };
-		}
+		return { root, root->right };  // case when p_par -> p chain is found
 	}
 
 	// ReplaceDnodebyPnode() - method that disconnect links to node that should be deleted and link biggest node from d->left instead of d
@@ -256,7 +246,7 @@ namespace s5_exam_problems {
 	Node* ReplaceDnodebyPnode(Node* d) {
 		Node* p_par;
 		Node* p;		
-		std::tie(p_par, p) = FindBiggestNodes(d->left);
+		std::tie(p_par, p) = GetRightmostNode(d->left);
 		if (p_par != nullptr) { //  opposite case when d->left has only one node in tree or d->left->left != nullptr		
 			if (p->left == nullptr) { // case when biggest right sub tree in d->left doesn't have left subtree.
 				p_par->right = nullptr;
@@ -276,8 +266,8 @@ namespace s5_exam_problems {
 	// Time complexity: O(1)
 	// Space complexity: O(1)
 
-	void ConnectNodeToParent(Node* parent, Node* child, ChildSide conn_side) {
-		if (conn_side == ChildSide::LEFT) {
+	void ConnectNodeToParent(Node* parent, Node* child, Node* old_child) {
+		if (old_child == parent->left) {
 			parent->left = child;
 		}
 		else {
@@ -296,9 +286,8 @@ namespace s5_exam_problems {
 		}
 
 		Node* d_par; 
-		Node* d;
-		ChildSide d_side;
-		std::tie(d_par, d, d_side) = FindNodes(root, key); // seek element to remove
+		Node* d;		
+		std::tie(d_par, d) = FindNodes(root, key); // seek element to remove
 
 		if (d_par == nullptr && d != nullptr) { // tree root should be removed
 			if (d->left == nullptr) {
@@ -310,13 +299,14 @@ namespace s5_exam_problems {
 		}
 		else if (d_par != nullptr && d != nullptr) { // element is found
 			if (d->left == nullptr) { // d->left is missing, just connect d->right to d_par
-				ConnectNodeToParent(d_par, d->right, d_side);
+				ConnectNodeToParent(d_par, d->right, d);
 			}
 			else {
-				ConnectNodeToParent(d_par, ReplaceDnodebyPnode(d), d_side);
+				ConnectNodeToParent(d_par, ReplaceDnodebyPnode(d), d);
 			}
 		}
-			
+		//delete d;
+		d = 0;
 		return root; // if element was not found no action to do, otherwise return root of updated tree
 	}
 }
