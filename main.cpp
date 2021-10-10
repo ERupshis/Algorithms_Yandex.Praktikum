@@ -5,11 +5,12 @@
 
 
 void Test() {
-    sprint1_tests();
-    sprint2_tests();
-    sprint3_tests();
-    sprint4_tests();
-    sprint5_tests();
+    //sprint1_tests();
+    //sprint2_tests();
+    //sprint3_tests();
+    //sprint4_tests();
+    //sprint5_tests();
+    sprint6_tests();
 }
 
 #include <fstream>
@@ -88,5 +89,9 @@ int main()
     //s5_problems::I_CountBST(input_file, output_file);
 
     //s5_exam_problems::A_HeapSort(input_file, output_file);
+
+    //s6_problems::A_BuildAdjacencyList(input_file, output_file);
+    //s6_problems::B_ConvertEdgesListToAdjacencyMatrix(input_file, output_file);
+    //s6_problems::C_DFS(input_file, output_file);
 }
 

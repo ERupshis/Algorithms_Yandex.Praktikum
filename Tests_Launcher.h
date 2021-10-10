@@ -15,6 +15,8 @@
 #include "Algorithms_Y.Praktikum_Sprint5.h"
 #include "Algorithms_Y.Praktikum_Sprint5_Exam.h"
 
+#include "Algorithms_Y.Praktikum_Sprint6.h"
+/*
 void sprint1_tests() {
     s1_tests::A_FunctionValues_test();
     s1_tests::B_EvenAndOddNumbers_test();
@@ -104,4 +106,10 @@ void sprint5_tests() {
 
     s5_exam_tests::A_HeapSort();
     s5_exam_tests::B_RemoveNodeFromBST();
+}
+*/
+void sprint6_tests() {
+    s6_tests::A_BuildAdjacencyList();
+    s6_tests::B_ConvertEdgesListToAdjacencyMatrix();
+    s6_tests::C_DFS();
 }
