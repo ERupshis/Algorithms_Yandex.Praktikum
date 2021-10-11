@@ -93,5 +93,7 @@ int main()
     //s6_problems::A_BuildAdjacencyList(input_file, output_file);
     //s6_problems::B_ConvertEdgesListToAdjacencyMatrix(input_file, output_file);
     //s6_problems::C_DFS(input_file, output_file);
+    //s6_problems::H_TimeToExit(input_file, output_file);
+    //s6_problems::J_TopologySort(input_file, output_file);
 }
 

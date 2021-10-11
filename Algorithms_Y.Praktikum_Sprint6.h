@@ -91,11 +91,13 @@ namespace s6_problems {
 		return out;
 	}
 
-	matrix GetAdjacencyList(int n, std::vector<Edge>& input) { // not oriented
+	matrix GetAdjacencyList(int n, std::vector<Edge>& input, bool oriented = false) { // not oriented
 		matrix adj_list(n);				
 		for (Edge elem : input) {
 			adj_list[elem.from - 1].push_back(elem.to);
-			adj_list[elem.to - 1].push_back(elem.from);
+			if (!oriented) {
+				adj_list[elem.to - 1].push_back(elem.from);
+			}
 		}
 
 		for (std::vector<int>& vert_list : adj_list) {
@@ -212,6 +214,138 @@ namespace s6_problems {
 		output << res;
 	}
 	*/
+
+	/*-------------------------------------------------------------------------*/
+	struct Time {
+		int entry = -1;
+		int leave = -1;		
+	};
+
+	std::ostream& operator << (std::ostream& out, Time& time) {
+		out << time.entry << ' ' << time.leave << '\n';
+		return out;
+	}
+
+	// recursion way
+	void H_DFSRec(const matrix& adj_list, std::vector<char>& vert_color, std::vector<Time>& vert_visit_time, int& time, int vert_idx, std::vector<int>& res) {
+		vert_visit_time[vert_idx].entry = time;
+		time++;
+		vert_color[vert_idx] = 'g';
+		res.push_back(vert_idx + 1);
+		for (int i = 0; i < adj_list[vert_idx].size(); ++i) {
+			if (vert_color[adj_list[vert_idx][i] - 1] == 'w') {
+				H_DFSRec(adj_list, vert_color, vert_visit_time,  time, adj_list[vert_idx][i] - 1, res);
+			}
+		}
+		vert_color[vert_idx] = 'b';
+		vert_visit_time[vert_idx].leave = time;
+		time++;
+	}
+
+	void H_DFS(const matrix& adj_list, std::vector<char>& vert_color, std::vector<Time>& vert_visit_time, int& time, int vert_idx, std::vector<int>& res) {
+		std::stack<int> stack;
+		stack.push(vert_idx);
+		while (!stack.empty()) {
+			int v = stack.top();
+			stack.pop();
+			if (vert_color[v] == 'w') {
+				vert_visit_time[v].entry = time;
+				++time;
+				vert_color[v] = 'g';
+				res.push_back(v + 1);
+				stack.push(v);
+
+				for (int i = adj_list[v].size() - 1; i >= 0; --i) {
+					if (vert_color[adj_list[v][i] - 1] == 'w') {
+						stack.push(adj_list[v][i] - 1);
+					}
+				}
+			}
+			else if (vert_color[v] == 'g') {
+				vert_visit_time[v].leave = time;
+				++time;
+				vert_color[v] = 'b';
+			}
+		}
+	}
+
+	void H_MainDFS(const matrix& adj_list, std::vector<char>& vert_color, std::vector<Time>& vert_visit_time, int start_idx, std::vector<int>& res) {
+		int time = 0;
+		H_DFS(adj_list, vert_color, vert_visit_time, time, start_idx - 1, res); // cycle
+		//H_DFSRec(adj_list, vert_color, vert_visit_time, time, start_idx - 1, res); // recursion
+	}
+
+	void H_TimeToExit(std::istream& input, std::ostream& output) {
+		int n, start;  // n - count of vertecies (1 <= n <= 100'000)
+		input >> n;
+		std::vector<Edge> in(FillEdgesList(input));
+		matrix adj_list(GetAdjacencyList(n, in, true));
+		
+		std::vector<char> vert_color(n, 'w'); // white, black, grey
+		std::vector<Time> vert_visit_time(n);
+
+		std::vector<int> res;
+		H_MainDFS(adj_list, vert_color, vert_visit_time, 1, res);
+
+
+		for (Time time : vert_visit_time) {
+			output << time;
+		}
+	}
+	/*-------------------------------------------------------------------------*/
+	void J_DFS(const matrix& adj_list, std::vector<char>& vert_color, int vert_idx, std::stack<int>& res) {
+		std::stack<int> stack;
+		stack.push(vert_idx);
+		while (!stack.empty()) {
+			int v = stack.top();
+			stack.pop();
+			if (vert_color[v] == 'w') {				
+				vert_color[v] = 'g';				
+				stack.push(v);
+				for (int i = 0; i < adj_list[v].size(); ++i) {
+					if (vert_color[adj_list[v][i] - 1] == 'w') {
+						stack.push(adj_list[v][i] - 1);
+					}
+				}
+			}
+			else if (vert_color[v] == 'g') {
+				res.push(v + 1);
+				vert_color[v] = 'b';
+			}
+		}
+	}
+
+	void J_MainDFS(const matrix& adj_list, std::vector<char>& vert_color, std::stack<int>& res) {
+		for (int i = vert_color.size() - 1; i >= 0; --i) {
+			if (vert_color[i] == 'w') {
+				J_DFS(adj_list, vert_color, i, res); // cycle
+			}
+		}		
+	}
+
+	void J_TopologySort(std::istream& input, std::ostream& output) {
+		int n;  // n - count of vertecies (1 <= n <= 100'000)
+		input >> n;
+		std::vector<Edge> in(FillEdgesList(input));
+		matrix adj_list(GetAdjacencyList(n, in, true));
+
+		std::vector<char> vert_color(n, 'w'); // white, black, grey		
+		std::stack<int> res;
+		J_MainDFS(adj_list, vert_color, res);
+
+		bool f = false;
+		while (res.size() > 0) {
+			if (f) {
+				output << ' ';
+			}
+			else {
+				f = true;
+			}
+			output << res.top();
+			res.pop();
+		}
+		output << '\n';		 
+	}
 }
 
 
@@ -292,6 +426,80 @@ namespace s6_tests {
 			s6_problems::C_DFS(static_cast<std::iostream&>(input), output);
 			std::stringstream res;
 			res << "1"s << '\n';
+			assert(output.str() == res.str());
+		}
+	}
+	/*-------------------------------------------------------------------------*/
+	void H_TimeToExit() {
+		{
+			std::stringstream input;
+			input << "6 8"s << '\n'
+				<< "2 6"s << '\n'
+				<< "1 6"s << '\n'
+				<< "3 1"s << '\n'
+				<< "2 5"s << '\n'
+				<< "4 3"s << '\n'
+				<< "3 2"s << '\n'
+				<< "1 2"s << '\n'
+				<< "1 4"s;
+			std::ostringstream output(std::ios_base::ate);
+			s6_problems::H_TimeToExit(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "0 11"s << '\n'
+				<< "1 6"s << '\n'
+				<< "8 9"s << '\n'
+				<< "7 10"s << '\n'
+				<< "2 3"s << '\n'
+				<< "4 5"s << '\n';
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "3 2"s << '\n'
+				<< "1 2"s << '\n'
+				<< "2 3"s;
+			std::ostringstream output(std::ios_base::ate);
+			s6_problems::H_TimeToExit(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "0 5"s << '\n'
+				<< "1 4"s << '\n'
+				<< "2 3"s << '\n';
+			assert(output.str() == res.str());
+		}
+	}
+	/*-------------------------------------------------------------------------*/
+	void J_TopologySort() {
+		{
+			std::stringstream input;
+			input << "5 3"s << '\n'
+				<< "3 2"s << '\n'
+				<< "3 4"s << '\n'
+				<< "2 5"s;
+			std::ostringstream output(std::ios_base::ate);
+			s6_problems::J_TopologySort(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "1 3 2 4 5"s << '\n';
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "6 3"s << '\n'
+				<< "6 4"s << '\n'
+				<< "4 1"s << '\n'
+				<< "5 1"s;
+			std::ostringstream output(std::ios_base::ate);
+			s6_problems::J_TopologySort(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "2 3 5 6 4 1"s << '\n';
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "4 0"s;
+			std::ostringstream output(std::ios_base::ate);
+			s6_problems::J_TopologySort(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "1 2 3 4"s << '\n';
 			assert(output.str() == res.str());
 		}
 	}

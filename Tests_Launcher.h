@@ -112,4 +112,6 @@ void sprint6_tests() {
     s6_tests::A_BuildAdjacencyList();
     s6_tests::B_ConvertEdgesListToAdjacencyMatrix();
     s6_tests::C_DFS();
+    s6_tests::H_TimeToExit();
+    s6_tests::J_TopologySort();
 }
