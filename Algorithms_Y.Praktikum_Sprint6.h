@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <iostream>
 #include <stack>
+#include <queue>
 
 namespace s6_problems {
 	using namespace std::literals;
@@ -215,7 +216,58 @@ namespace s6_problems {
 	}
 	*/
 	/*-------------------------------------------------------------------------*/
+	std::queue<int> D_BFS(const matrix& adj_list, int idx) {
+		std::vector<char> color(adj_list.size(), 'w'); // white, black, grey	
+		std::queue<int> planned;
+		std::queue<int> res;
+		planned.push(idx);
+		color[idx] = 'g';
+		while (planned.size() > 0) {
+			int u = planned.front();
+			planned.pop();
+			
+			for (int i = 0; i < adj_list[u].size(); ++i) {
+				if (color[adj_list[u][i] - 1] == 'w') {
+					color[adj_list[u][i] - 1] = 'g';
+					planned.push(adj_list[u][i] - 1);
+				}
+			}
+			color[u] = 'b';
+			res.push(u + 1); // fill return
+		}
+		return res;
+	}
 
+	std::queue<int> D_MainBFS(const matrix& adj_list, int idx) {	
+		return D_BFS(adj_list, idx - 1);
+	}
+
+
+	void D_BFS(std::istream& input, std::ostream& output) {
+		int n;  // n - count of vertecies (1 <= n <= 100'000)
+		input >> n;
+		std::vector<Edge> in(FillEdgesList(input));
+		matrix adj_list(GetAdjacencyList(n, in));
+		int start_idx;
+		input >> start_idx;
+					
+		std::queue<int> res(D_MainBFS(adj_list, start_idx));	
+
+		bool f = false;
+		while (res.size() > 0) {
+			if (f) {
+				output << ' ';
+			}
+			else {
+				f = true;
+			}
+			output << res.front();
+			res.pop();
+		}
+		output << '\n';
+	}
+
+	/*-------------------------------------------------------------------------*/
 	void E_DFS(const matrix& adj_list, std::vector<int>& vert_color, int idx, int& component_count) {
 		std::stack<int> stack;
 		stack.push(idx);
@@ -270,6 +322,49 @@ namespace s6_problems {
 			output << res[i];
 		}
 
+	}
+	/*-------------------------------------------------------------------------*/
+	int G_BFS(const matrix& adj_list, int idx) {
+		std::vector<char> color(adj_list.size(), 'w'); // white, black, grey	
+		std::queue<int> planned;
+		std::vector<int> distance(adj_list.size(), 0);
+		int max_dist = 0;
+		planned.push(idx);
+		color[idx] = 'g';
+		while (planned.size() > 0) {
+			int u = planned.front();
+			planned.pop();
+
+			for (int i = 0; i < adj_list[u].size(); ++i) {
+				int v = adj_list[u][i] - 1;
+				if (color[v] == 'w') {
+					color[v] = 'g';
+					planned.push(v);
+					distance[v] = distance[u] + 1;
+					if (distance[v] > max_dist) {
+						max_dist = distance[v];
+					}
+				}
+			}
+			color[u] = 'b';
+			
+		}
+		return max_dist;
+	}
+
+	int G_MainBFS(const matrix& adj_list, int idx) {
+		return G_BFS(adj_list, idx - 1);
+	}
+
+	void G_MaxDist(std::istream& input, std::ostream& output) {
+		int n;  // n - count of vertecies (1 <= n <= 100'000)
+		input >> n;
+		std::vector<Edge> in(FillEdgesList(input));
+		matrix adj_list(GetAdjacencyList(n, in));
+		int start_idx;
+		input >> start_idx;
+
+		output << G_MainBFS(adj_list, start_idx) << '\n';
 	}
 	/*-------------------------------------------------------------------------*/
 	struct Time {
@@ -486,6 +581,35 @@ namespace s6_tests {
 		}
 	}
 	/*-------------------------------------------------------------------------*/
+	void D_BFS() {
+		{
+			std::stringstream input;
+			input << "4 4"s << '\n'
+				<< "1 2"s << '\n'
+				<< "2 3"s << '\n'
+				<< "3 4"s << '\n'
+				<< "1 4"s << '\n'
+				<< "3"s;
+			std::ostringstream output(std::ios_base::ate);
+			s6_problems::D_BFS(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "3 2 4 1"s << '\n';
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "2 1"s << '\n'
+				<< "2 1"s << '\n'				
+				<< "1"s;
+			std::ostringstream output(std::ios_base::ate);
+			s6_problems::D_BFS(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "1 2"s << '\n';
+			assert(output.str() == res.str());
+		}
+	}
+
+	/*-------------------------------------------------------------------------*/
 	void E_ConnectivityComponents() {
 		{
 			std::stringstream input;
@@ -526,6 +650,55 @@ namespace s6_tests {
 				<< "1 2 3 4"s << '\n';
 			assert(output.str() == res.str());
 		}
+	}
+	/*-------------------------------------------------------------------------*/
+	void G_MaxDist() {
+		{
+			std::stringstream input;
+			input << "5 4"s << '\n'
+				<< "2 1"s << '\n'
+				<< "4 5"s << '\n'
+				<< "4 3"s << '\n'
+				<< "3 2"s << '\n'
+				<< "2"s;
+			std::ostringstream output(std::ios_base::ate);
+			s6_problems::G_MaxDist(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "3"s << '\n';
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "3 3"s << '\n'
+				<< "3 1"s << '\n'
+				<< "1 2"s << '\n'
+				<< "2 3"s << '\n'				
+				<< "1"s;
+			std::ostringstream output(std::ios_base::ate);
+			s6_problems::G_MaxDist(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "1"s << '\n';
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "6 8"s << '\n'
+				<< "6 1"s << '\n'
+				<< "1 3"s << '\n'
+				<< "5 1"s << '\n'
+				<< "3 5"s << '\n'
+				<< "3 4"s << '\n'
+				<< "6 5"s << '\n'
+				<< "5 2"s << '\n'
+				<< "6 2"s << '\n'
+				<< "4"s;
+			std::ostringstream output(std::ios_base::ate);
+			s6_problems::G_MaxDist(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "3"s << '\n';
+			assert(output.str() == res.str());
+		}
+		
 	}
 	/*-------------------------------------------------------------------------*/
 	void H_TimeToExit() {
