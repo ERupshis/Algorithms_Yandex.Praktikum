@@ -214,7 +214,63 @@ namespace s6_problems {
 		output << res;
 	}
 	*/
+	/*-------------------------------------------------------------------------*/
 
+	void E_DFS(const matrix& adj_list, std::vector<int>& vert_color, int idx, int& component_count) {
+		std::stack<int> stack;
+		stack.push(idx);
+
+		while (stack.size() != 0) {
+			int v = stack.top();
+			stack.pop();
+			if (vert_color[v] == -1) {
+				vert_color[v] = 0;
+				stack.push(v);
+				for (int i = 0; i < adj_list[v].size(); ++i) {
+					if (vert_color[adj_list[v][i] - 1] == -1) {
+						stack.push(adj_list[v][i] - 1);
+					}
+				}
+			}
+			else if (vert_color[v] == 0) {
+				vert_color[v] = component_count;
+			}
+		}
+		++component_count;
+	}
+	
+	int E_MainDFS(const matrix& adj_list, std::vector<int>& vert_color) {
+		int component_count = 1;
+		for (int i = 0; i < adj_list.size(); ++i) {
+			if (vert_color[i] == -1) {
+				E_DFS(adj_list, vert_color, i, component_count);
+			}
+		}
+
+		return component_count - 1;
+	}
+
+	void E_ConnectivityComponents(std::istream& input, std::ostream& output) {
+		int n;  // n - count of vertecies (1 <= n <= 100'000)
+		input >> n;
+		std::vector<Edge> in(FillEdgesList(input));
+		matrix adj_list(GetAdjacencyList(n, in));
+
+		std::vector<int> vert_color(n, -1); // white, black, grey				
+		int component_count = E_MainDFS(adj_list, vert_color);
+
+		std::vector<std::vector<int>> res(component_count);
+
+		for (int i = 0; i < vert_color.size(); ++i) {
+			res[vert_color[i] - 1].push_back(i + 1);
+		}
+
+		output << component_count << '\n';
+		for (int i = 0; i < res.size(); ++i) {
+			output << res[i];
+		}
+
+	}
 	/*-------------------------------------------------------------------------*/
 	struct Time {
 		int entry = -1;
@@ -426,6 +482,48 @@ namespace s6_tests {
 			s6_problems::C_DFS(static_cast<std::iostream&>(input), output);
 			std::stringstream res;
 			res << "1"s << '\n';
+			assert(output.str() == res.str());
+		}
+	}
+	/*-------------------------------------------------------------------------*/
+	void E_ConnectivityComponents() {
+		{
+			std::stringstream input;
+			input << "6 3"s << '\n'
+				<< "1 2"s << '\n'
+				<< "6 5"s << '\n'
+				<< "2 3"s;
+			std::ostringstream output(std::ios_base::ate);
+			s6_problems::E_ConnectivityComponents(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "3"s << '\n'
+				<< "1 2 3"s << '\n'
+				<< "4"s << '\n'
+				<< "5 6"s << '\n';
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "2 0"s;
+			std::ostringstream output(std::ios_base::ate);
+			s6_problems::E_ConnectivityComponents(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "2"s << '\n'
+				<< "1"s << '\n'
+				<< "2"s << '\n';
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "4 3"s << '\n'
+				<< "2 3"s << '\n'
+				<< "2 1"s << '\n'
+				<< "4 3"s;
+			std::ostringstream output(std::ios_base::ate);
+			s6_problems::E_ConnectivityComponents(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "1"s << '\n'
+				<< "1 2 3 4"s << '\n';
 			assert(output.str() == res.str());
 		}
 	}
