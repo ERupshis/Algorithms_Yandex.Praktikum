@@ -95,8 +95,11 @@ int main()
     //s6_problems::C_DFS(input_file, output_file);
     //s6_problems::D_BFS(input_file, output_file);
     //s6_problems::E_ConnectivityComponents(input_file, output_file);
+    //s6_problems::F_VerticiesDistance(input_file, output_file);
     //s6_problems::G_MaxDist(input_file, output_file);
     //s6_problems::H_TimeToExit(input_file, output_file);
     //s6_problems::J_TopologySort(input_file, output_file);
     //s6_problems::K_Sightseeings(input_file, output_file);
+    //s6_problems::L_FullGraphAdjMap(input_file, output_file);
+    //s6_problems::M_CheckBipartite(input_file, output_file);
 }

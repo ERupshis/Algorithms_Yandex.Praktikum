@@ -114,8 +114,11 @@ void sprint6_tests() {
     s6_tests::C_DFS();
     s6_tests::D_BFS();
     s6_tests::E_ConnectivityComponents();
+    s6_tests::F_VerticiesDistance();
     s6_tests::G_MaxDist();
     s6_tests::H_TimeToExit();
     s6_tests::J_TopologySort();   
     s6_tests::K_Sightseeings();
+    s6_tests::L_FullGraph();
+    s6_tests::M_CheckBipartite();
 }

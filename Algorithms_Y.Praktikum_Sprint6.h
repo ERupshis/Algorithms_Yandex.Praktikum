@@ -9,6 +9,8 @@
 #include <queue>
 #include <cassert>
 #include <unordered_map>
+#include <unordered_set>
+#include <fstream>
 
 namespace s6_problems {
 	using namespace std::literals;
@@ -319,6 +321,49 @@ namespace s6_problems {
 
 	}
 	/*-------------------------------------------------------------------------*/
+	int F_BFS(const matrix& adj_list, int from, int to) {
+		if (from == to) {
+			return 0;
+		}
+		std::vector<char> color(adj_list.size(), 'w');
+		std::queue<int> planned;
+		std::vector<int> distance(adj_list.size(), 0);
+
+		planned.push(from);
+		color[from] = 'g';
+		while (planned.size() > 0) {
+			int u = planned.front();
+			planned.pop();
+			
+			for (int i = 0; i < adj_list[u].size(); ++i) {
+				int v = adj_list[u][i] - 1;
+				if (color[v] == 'w') {
+					color[v] = 'g';
+					planned.push(v);
+					distance[v] = distance[u] + 1;
+					if (v == to) {
+						return distance[v];
+					}
+				}
+			}
+						
+			color[u] = 'b';			
+		}
+		return -1;
+	}
+
+	void F_VerticiesDistance(std::istream& input, std::ostream& output) {
+		int n;
+		input >> n;
+		std::vector<Edge> in(FillEdgesList(input));
+		matrix adj_list(GetAdjacencyList(n, in));
+
+		int from, to;
+		input >> from >> to;
+		
+		output << F_BFS(adj_list, from - 1, to - 1) << '\n';
+	}
+	/*-------------------------------------------------------------------------*/
 	int G_BFS(const matrix& adj_list, int idx) {
 		std::vector<char> color(adj_list.size(), 'w'); // white, black, grey	
 		std::queue<int> planned;
@@ -610,7 +655,7 @@ namespace s6_problems {
 		}
 		return dist;
 	}
-
+	
 	void K_Sightseeings(std::istream& input, std::ostream& output) {
 		int n, m;  // n - count of vertecies (1 <= n <= 100'000)
 		input >> n >> m;
@@ -642,6 +687,127 @@ namespace s6_problems {
 			output << '\n';
 		}
 	}
+	/*-------------------------------------------------------------------------*/
+	using VerteciesMap = std::unordered_map<int, std::unordered_set<int>>;
+	VerteciesMap GetVerteciesMap(std::istream& input) {
+		int m; // m - count of edges
+		input >> m;
+
+		std::unordered_map<int, std::unordered_set<int>> res;		
+		for (int i = 0; i < m; ++i) {
+			int f, t;
+			input >> f >> t;
+			if (f != t) {
+				res[f].insert(t);
+				res[t].insert(f);
+			}
+		}
+
+		return res;
+	}
+
+	void L_FullGraphAdjMap(std::istream& input, std::ostream& output) {
+		int n;  // n - count of vertecies (1 <= n <= 100'000)
+		input >> n;
+		VerteciesMap vert_map(GetVerteciesMap(input));
+
+		for (auto elem : vert_map) {
+			if (elem.second.size() != n - 1) {
+				output << "NO"s << '\n';
+				return;
+			}
+		}
+
+		output << "YES"s << '\n';
+	}
+
+	std::vector<std::unordered_set<int>> GetAdjListOnSet(int n, const std::vector<Edge>& edges) {
+		std::vector<std::unordered_set<int>> res(n);
+
+		for (int i = 0; i < edges.size(); ++i) {
+			if (edges[i].from != edges[i].to) {
+				res[edges[i].from - 1].insert(edges[i].to);
+				res[edges[i].to - 1].insert(edges[i].from);
+			}
+		}
+		return res;
+	}
+
+
+	void L_FullGraphAdjListOnSet(std::istream& input, std::ostream& output) { // better time 
+		int n;  // n - count of vertecies (1 <= n <= 100'000)
+		input >> n;
+		std::vector<Edge> in(FillEdgesList(input));
+		std::vector<std::unordered_set<int>> adj_list(GetAdjListOnSet(n, in));
+
+		for (int i = 0; i < adj_list.size(); ++i) {
+			if (adj_list[i].size() < n - 1) {
+				output << "NO"s << '\n';
+				return;
+			}
+		}
+		output << "YES"s << '\n';
+	}
+	/*-------------------------------------------------------------------------*/
+	char OppositeColor(char color) {
+		if (color == 'b') {
+			return 'r';
+		}
+		else {
+			return 'b';
+		}
+	}
+
+	void M_CheckBipartite(std::istream& input, std::ostream& output) {
+		int n;  // n - count of vertecies (1 <= n <= 100'000)
+		input >> n;
+		std::vector<Edge> in(FillEdgesList(input));
+		std::vector<std::vector<int>> adj_list(GetAdjacencyList(n, in));
+
+		std::vector<char> color(n, 'w');
+		std::queue<int> blue;
+		std::queue<int> red;
+
+		for (int i = 0; i < adj_list.size(); ++i) {
+			if (adj_list[i].size() > 0 && color[i] == 'w') {
+				blue.push(i);
+				color[i] = 'b';
+
+				while (blue.size() > 0 || red.size() > 0) {
+					int u = -1;
+					if (blue.size() > 0) {
+						u = blue.front();
+						blue.pop();
+					}
+					else {
+						u = red.front();
+						red.pop();
+					}
+
+					for (int i = 0; i < adj_list[u].size(); ++i) {
+						int v = adj_list[u][i] - 1;
+						if (color[u] == color[v]) {
+							output << "NO"s << '\n';
+							return;
+						}
+						else if (color[v] == 'w') {
+							char col = OppositeColor(color[u]);
+							color[v] = col;
+							if (color[v] == 'b') {
+								blue.push(v);
+							}
+							else {
+								red.push(v);
+							}
+						}
+					}
+
+				}
+			}
+		}
+		output << "YES"s << '\n';
+	}
+
 }
 
 
@@ -793,6 +959,49 @@ namespace s6_tests {
 			std::stringstream res;
 			res << "1"s << '\n'
 				<< "1 2 3 4"s << '\n';
+			assert(output.str() == res.str());
+		}
+	}
+	/*-------------------------------------------------------------------------*/
+	void F_VerticiesDistance() {
+		{
+			std::stringstream input;
+			input << "5 5"s << '\n'
+				<< "2 4"s << '\n'
+				<< "3 5"s << '\n'
+				<< "2 1"s << '\n'
+				<< "2 3"s << '\n'
+				<< "2 3"s << '\n'
+				<< "4 5"s << '\n'
+				<< "1 5"s;
+			std::ostringstream output(std::ios_base::ate);
+			s6_problems::F_VerticiesDistance(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "3"s << '\n';
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "4 3"s << '\n'
+				<< "2 3"s << '\n'
+				<< "4 3"s << '\n'
+				<< "2 4"s << '\n'
+				<< "1 3"s;
+			std::ostringstream output(std::ios_base::ate);
+			s6_problems::F_VerticiesDistance(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "-1"s << '\n';
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "2 1"s << '\n'
+				<< "2 1"s << '\n'
+				<< "1 1"s;
+			std::ostringstream output(std::ios_base::ate);
+			s6_problems::F_VerticiesDistance(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "0"s << '\n';
 			assert(output.str() == res.str());
 		}
 	}
@@ -958,6 +1167,72 @@ namespace s6_tests {
 			std::stringstream res;
 			res << "0 -1"s << '\n'
 				<< "-1 0"s << '\n';
+			assert(output.str() == res.str());
+		}
+	}
+	/*-------------------------------------------------------------------------*/
+	void L_FullGraph() {
+		{
+			std::stringstream input;
+			input << "4 6"s << '\n'
+				<< "1 2"s << '\n'
+				<< "2 2"s << '\n'
+				<< "2 3"s << '\n'
+				<< "2 4"s << '\n'
+				<< "3 4"s << '\n'
+				<< "4 3"s;
+			std::ostringstream output(std::ios_base::ate);
+			s6_problems::L_FullGraphAdjMap(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "NO"s << '\n';
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "3 5"s << '\n'
+				<< "1 2"s << '\n'
+				<< "2 1"s << '\n'
+				<< "3 1"s << '\n'
+				<< "2 3"s << '\n'
+				<< "3 3"s;
+			std::ostringstream output(std::ios_base::ate);
+			s6_problems::L_FullGraphAdjMap(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "YES"s << '\n';
+			assert(output.str() == res.str());
+		}		
+	}
+	/*-------------------------------------------------------------------------*/
+	void M_CheckBipartite() {
+		{
+			std::ifstream input("input.txt"s);
+			std::ostringstream output(std::ios_base::ate);
+			s6_problems::M_CheckBipartite(input, output);
+			std::stringstream res;
+			res << "NO"s << '\n';
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "3 2"s << '\n'
+				<< "1 2"s << '\n'
+				<< "2 3"s;
+			std::ostringstream output(std::ios_base::ate);
+			s6_problems::M_CheckBipartite(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "YES"s << '\n';
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "3 3"s << '\n'
+				<< "1 2"s << '\n'
+				<< "1 3"s << '\n'
+				<< "2 3"s;
+			std::ostringstream output(std::ios_base::ate);
+			s6_problems::M_CheckBipartite(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "NO"s << '\n';
 			assert(output.str() == res.str());
 		}
 	}
