@@ -59,7 +59,7 @@ int main()
     //s3_problems::H_BigNumber(input_file, output_file);
     //s3_problems::I_ConferenceLovers(input_file, output_file);
     //s3_problems::J_Bubble(input_file, output_file);
-    
+
     //s3_problems::L_TwoBikes(input_file, output_file);
     //s3_problems::M_GoldMiddle(input_file, output_file);
     //s3_problems::N_FlowerBeds(input_file, output_file);
@@ -85,7 +85,7 @@ int main()
     //s4_exam_problems::A_SearchServer(input_file, output_file);
     //s4_exam_problems::B_HashTable(input_file, output_file);
 
-    
+
     //s5_problems::I_CountBST(input_file, output_file);
 
     //s5_exam_problems::A_HeapSort(input_file, output_file);
@@ -93,9 +93,8 @@ int main()
     //s6_problems::A_BuildAdjacencyList(input_file, output_file);
     //s6_problems::B_ConvertEdgesListToAdjacencyMatrix(input_file, output_file);
     //s6_problems::C_DFS(input_file, output_file);
+    //s6_problems::D_BFS(input_file, output_file);
     //s6_problems::E_ConnectivityComponents(input_file, output_file);
     //s6_problems::H_TimeToExit(input_file, output_file);
     //s6_problems::J_TopologySort(input_file, output_file);
-    //s6_problems::K_Sightseeings(input_file, output_file);
 }
-
