@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <iostream>
 #include <stack>
+#include <unordered_map>
 
 namespace s6_problems {
 	using namespace std::literals;
@@ -402,6 +403,156 @@ namespace s6_problems {
 		}
 		output << '\n';		 
 	}
+	/*-------------------------------------------------------------------------*/
+	class Graph {
+	public:
+		Graph(int n, bool oriented = false) 
+			:adj_list_(std::vector<std::vector<int>>(n)), oriented_(oriented)
+		{
+		}
+
+		void AddEdge(int from, int to, int weight) {
+			if (edges_.count({ from, to }) || edges_.count({ to, from })) {
+				return;
+			}
+			adj_list_[from].push_back(to);			
+			edges_[{from, to}] = weight;
+			if (!oriented_) {
+				adj_list_[to].push_back(from);
+				edges_[{to, from}] = weight;
+			}
+		}
+
+		void SortAdjLists() {
+			for (int i = 0; i < adj_list_.size(); ++i) {
+				std::sort(adj_list_[i].begin(), adj_list_[i].end());
+			}
+		}
+
+		const std::vector<int>& operator[](int idx) const {
+			return adj_list_[idx];
+		}
+
+		int operator[](Edge edge) const {
+			return edges_.at(edge);
+		}
+
+	private:
+		struct Edge {
+			Edge(int from, int to) {
+				start = from;
+				end = to;
+			}
+			Edge(s6_problems::Edge other) {
+				start = other.from;
+				end = other.to;
+			}
+						
+			bool operator==(const Edge& other) const {
+				return start == other.start && end == other.end;
+			}
+
+			int start = -1;
+			int end = -1;
+		};
+
+		struct EdgeHasher {			
+			size_t operator() (const Edge& edge) const {
+				return int_hash(edge.start) + 37 * int_hash(edge.end);
+			}
+			std::hash<int> int_hash;
+		};
+
+		bool oriented_ = false;
+		std::unordered_map<Edge, int, EdgeHasher> edges_{};
+		std::vector<std::vector<int>> adj_list_{};
+	};
+
+	void UpdMinNeighbDist(const Graph& graph, std::vector<int>& dist, std::vector<int>& prev, int idx) {
+		for (int i = 0; i < graph[idx].size(); ++i) {
+			dist[graph[idx][i]] = dist[idx] + graph[{idx, graph[idx][i]}];
+			prev[graph[idx][i]] = idx;
+		}
+	}
+
+	int GetMinDistNotVisited(std::vector<bool>& visited, std::vector<int>& dist) {
+		int cur_min = INT32_MAX;
+		int cur_min_idx = -1;
+		for (int i = 1; i < visited.size(); ++i) {
+			if (!visited[i] && dist[i] < cur_min) {
+				cur_min = dist[i];
+				cur_min_idx = i;
+			}
+		}
+		return cur_min_idx;
+	}
+
+	void Relax(std::vector<int>& dist, std::vector<int>& prev, int u, int v, int weight) {
+		if (dist[v] > dist[u] + weight) {
+			dist[v] = dist[u] + weight;
+			prev[v] = u;
+		}
+	}
+
+	std::vector<int> Dijkstra(const Graph& graph, int idx, int n) {
+		std::vector<bool> visited(n + 1, 0);
+		std::vector<int> dist(n + 1, INT32_MAX);
+		std::vector<int> prev(n + 1, -1);
+
+		dist[idx] = 0;		
+		UpdMinNeighbDist(graph, dist, prev, idx);
+		while (true) {
+			int u = GetMinDistNotVisited(visited, dist);
+
+			if (u == -1) {
+				break;
+			}
+
+			visited[u] = true;
+			for (int i = 0; i < graph[u].size(); ++i) {
+				int v = graph[u][i];
+				Relax(dist, prev, u, v, graph[{u, v}]);
+			}
+		}
+		for (int i = 0; i < dist.size(); ++i) {
+			if (dist[i] == INT32_MAX) {
+				dist[i] = -1;
+			}
+		}
+		return dist;
+	}
+
+	void K_Sightseeings(std::istream& input, std::ostream& output) {
+		int n, m;  // n - count of vertecies (1 <= n <= 100'000)
+		input >> n >> m;
+		Graph graph(n + 1);
+		for (int i = 0; i < m; ++i) {
+			int f, t, w;
+			input >> f >> t >> w;
+			graph.AddEdge(f, t, w);
+		}
+		graph.SortAdjLists();
+
+		std::vector<std::vector<int>> res(n + 1, std::vector<int>(n + 1));
+
+		for (int i = 1; i <= n; ++i) {			
+			res[i] = Dijkstra(graph, i, n);
+		}
+		
+		for (int i = 1; i < res.size(); ++i) {
+			bool f = false;
+			for (int j = 1; j < res[i].size(); ++j) {
+				if (f) {
+					output << ' ';
+				}
+				else {
+					f = true;
+				}
+				output << res[i][j];
+			}
+			output << '\n';
+		}
+	}
 }
 
 
@@ -598,6 +749,48 @@ namespace s6_tests {
 			s6_problems::J_TopologySort(static_cast<std::iostream&>(input), output);
 			std::stringstream res;
 			res << "1 2 3 4"s << '\n';
+			assert(output.str() == res.str());
+		}
+	}
+	/*-------------------------------------------------------------------------*/
+	void K_Sightseeings() {
+		{
+			std::stringstream input;
+			input << "4 4"s << '\n'
+				<< "1 2 1"s << '\n'
+				<< "2 3 3"s << '\n'
+				<< "3 4 5"s << '\n'
+				<< "1 4 2"s;
+			std::ostringstream output(std::ios_base::ate);
+			s6_problems::K_Sightseeings(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "0 1 4 2"s << '\n'
+				<< "1 0 3 3"s << '\n'
+				<< "4 3 0 5"s << '\n'
+				<< "2 3 5 0"s << '\n';
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "3 2"s << '\n'
+				<< "1 2 1"s << '\n'
+				<< "1 2 2"s;
+			std::ostringstream output(std::ios_base::ate);
+			s6_problems::K_Sightseeings(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "0 1 -1"s << '\n'
+				<< "1 0 -1"s << '\n'
+				<< "-1 -1 0"s << '\n';
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "2 0"s;
+			std::ostringstream output(std::ios_base::ate);
+			s6_problems::K_Sightseeings(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "0 -1"s << '\n'
+				<< "-1 0"s << '\n';
 			assert(output.str() == res.str());
 		}
 	}

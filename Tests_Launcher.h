@@ -114,5 +114,6 @@ void sprint6_tests() {
     s6_tests::C_DFS();
     s6_tests::E_ConnectivityComponents();
     s6_tests::H_TimeToExit();
-    s6_tests::J_TopologySort();
+    s6_tests::J_TopologySort(); 
+    s6_tests::K_Sightseeings();
 }
