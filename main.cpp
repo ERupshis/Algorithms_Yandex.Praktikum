@@ -102,4 +102,6 @@ int main()
     //s6_problems::K_Sightseeings(input_file, output_file);
     //s6_problems::L_FullGraphAdjMap(input_file, output_file);
     //s6_problems::M_CheckBipartite(input_file, output_file);
+
+    s6_exam_problems::A_ExpensiveNetwork(input_file, output_file);
 }

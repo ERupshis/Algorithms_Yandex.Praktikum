@@ -16,6 +16,7 @@
 #include "Algorithms_Y.Praktikum_Sprint5_Exam.h"
 
 #include "Algorithms_Y.Praktikum_Sprint6.h"
+#include "Algorithms_Y.Praktikum_Sprint6_Exam.h"
 /*
 void sprint1_tests() {
     s1_tests::A_FunctionValues_test();
@@ -121,4 +122,6 @@ void sprint6_tests() {
     s6_tests::K_Sightseeings();
     s6_tests::L_FullGraph();
     s6_tests::M_CheckBipartite();
+
+    s6_exam_tests::A_ExpensiveNetwork();
 }
