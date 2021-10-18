@@ -124,4 +124,5 @@ void sprint6_tests() {
     s6_tests::M_CheckBipartite();
 
     s6_exam_tests::A_ExpensiveNetwork();
+    s6_exam_tests::B_RailRoads();
 }
