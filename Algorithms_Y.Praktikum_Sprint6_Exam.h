@@ -11,7 +11,7 @@
 namespace s6_exam_problems {
 	using namespace std::literals;
 
-	//SEND ID: 54903905	
+	//SEND ID: 55499294	
 
 	//A_Graph - class that represents a graph. It has methods that finds SpanningTree of graph.
 	//Graph should be not oriented and with one adjacency component, otherwise it's not possible to create 
@@ -23,7 +23,7 @@ namespace s6_exam_problems {
 	//   This method check of vertecies in cycle and find biggest edge and add end-vertex of this edge in span. tree.
 	//   This operation repeats while all vertecies will not be added in spanning tree. If some vertices where not added 
 	//   in span. tree, than this graph has more than one adjacency component.			
-	//	 Search of biggest outcome edges - O(1) - thanks to priority queue.
+	//	 Search of biggest outcome edges - O(logV),where's V - count of vertecies - thanks to priority queue.
 	//	 Adding of vertex's outcome edges - O(E * LogV), where's V - count of vertecies. This method go through all edges that 
 	//	 outcome form considering vertex O(E) and add adjacency vertex only it was not added in span tree before (LogV - complexity of priority_queue's 'push') 
 	//   
@@ -31,8 +31,8 @@ namespace s6_exam_problems {
 	//   - Graph - O(V) + O(2*E). There's no need to keep adjacency info in matrix because  2E less than V^2
 	//   - AddEdge() - O(1) of additional space
 	//   - AddVertexInSpanningTree() - O(1) of additional space
-	//   - GetMaxSpanningTree() - O(V) + O(N) + O(E) where's V - count of vertices (added + not_added unord_sets), 
-	//   N - count of vertices in result span. tree,  E - count of considering edges in priority_queue.
+	//   - GetMaxSpanningTree() - O(V) + O(V) + O(E) where's V - count of vertices (added + not_added unord_sets), 
+	//   V - count of vertices in result span. tree,  E - count of considering edges in priority_queue.
 	
 	class A_Graph {
 	public:
@@ -72,8 +72,8 @@ namespace s6_exam_problems {
 			}			
 		}		
 
-		std::optional<std::vector<Edge>> GetMaxSpanningTree() const {
-			std::vector<Edge> res;
+		std::optional<int> GetMaxSpanningTreeWeight() const {			
+			int res = 0;
 			std::unordered_set<int> added; // already added in span
 			std::unordered_set<int> not_added(vertices_); // should be added
 			std::priority_queue<Edge> edges; // edges that go out from span
@@ -85,8 +85,8 @@ namespace s6_exam_problems {
 				Edge e = edges.top(); // extract max weighted edge
 				edges.pop();
 
-				if (not_added.count(e.to)) { //if end vertex of this edges is not added in spaning tree
-					res.push_back(e); //add this edge
+				if (not_added.count(e.to)) { //if end vertex of this edges is not added in spaning tree					
+					res += e.weight; //add this edge weight to result
 					AddVertexInSpanningTree(added, not_added, edges, e.to); // add end vertex and outcome edges
 				}
 			}
@@ -133,14 +133,10 @@ namespace s6_exam_problems {
 
 		AddEdgesInGraph(input, graph);	
 
-		std::optional<std::vector<A_Graph::Edge>> max_spanning_tree(graph.GetMaxSpanningTree());
+		std::optional<int> max_spanning_tree(graph.GetMaxSpanningTreeWeight());
 
-		if (max_spanning_tree) {
-			int spanning_tree_length = 0;
-			for (const auto& elem : *max_spanning_tree) {
-				spanning_tree_length += elem.weight;
-			}
-			output << spanning_tree_length << '\n';
+		if (max_spanning_tree) {			
+			output << max_spanning_tree.value() << '\n';
 		}
 		else {
 			output << "Oops! I did it again\n"s;
@@ -148,7 +144,7 @@ namespace s6_exam_problems {
 	}
 	/*-------------------------------------------------------------------------*/	
 
-	//SEND ID: 55420607
+	//SEND ID: 55499524
 
 	//Class B_Graph - class that represents graph. Interface allows to initialize graph by list
 	//of edges and check cycles inside. Edges may be only oriented because checking of cycles in not oriented graph is useless.
@@ -178,16 +174,16 @@ namespace s6_exam_problems {
 			R
 		};
 		explicit B_Graph(int n)
-			:matrix_(n + 1, std::vector<int>(n + 1, 0))
+			:adj_lists_(n + 1)
 		{			
 		}
 
 		void AddEdge(int from, int to, EdgeType type) {			
 			if (type == EdgeType::B) { // front direction edge
-				matrix_[from][to] = 1;				
+				adj_lists_[from].push_back(to);				
 			}
 			else { // opposite direction edge
-				matrix_[to][from] = 1; 
+				adj_lists_[to].push_back(from);
 			}
 		}
 
@@ -196,35 +192,42 @@ namespace s6_exam_problems {
 		}
 
 	private:				
-		std::vector<std::vector<int>> matrix_;		
+		std::vector<std::vector<int>> adj_lists_;	
+
+		enum class Color {
+			WHITE,
+			GRAY,
+			BLACK
+		};
 
 		bool DFS_Cycles() {
-			int n = matrix_.size() - 1; // num of vertecies
-			std::vector<char> color(n + 1, 'w'); // mark all vertecies as white - not visited
+			int n = adj_lists_.size() - 1; // num of vertecies
+			std::vector<Color> color(n + 1, Color::WHITE); // mark all vertecies as white - not visited
 			std::stack<int> stack;
 
 			for (int i = 1; i < n; ++i) { // we have to check all vertices because  all verticies may not be reachable by B edges from first edge.
-				if (color[i] == 'w') {
+				if (color[i] == Color::WHITE) {
 					stack.push(i); // stack of verticies to check
 					while (stack.size() > 0) {
 						int v = stack.top();
 						stack.pop();
 
-						if (color[v] == 'w') { // check if vertex was not handled before
-							color[v] = 'g';
+						if (color[v] == Color::WHITE) { // check if vertex was not handled before
+							color[v] = Color::GRAY;
 							stack.push(v);
 							
-							for (int j = 1; j < matrix_[v].size(); ++j) { // check all edges that incident to 'v' vertex
-								if (matrix_[v][j] && color[j] == 'w') { // add adjacency vertex for checking
-									stack.push(j);
+							for (int j = 0; j < adj_lists_[v].size(); ++j) { // check all edges that incident to 'v' vertex
+								int u = adj_lists_[v][j];
+								if (color[u] == Color::WHITE) { // add adjacency vertex for checking
+									stack.push(u);
 								}
-								else if (matrix_[v][j] && color[j] == 'g') { // cycle is found. No need to check farther
+								else if (color[u] == Color::GRAY) { // cycle is found. No need to check farther
 									return false;
 								}
 							}
 						}
 						else { // move out handled vertex. It has gray (g) color
-							color[v] = 'b';
+							color[v] = Color::BLACK;
 						}
 					}
 				}
