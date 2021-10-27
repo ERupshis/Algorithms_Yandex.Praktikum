@@ -10,7 +10,8 @@ void Test() {
     //sprint3_tests();
     //sprint4_tests();
     //sprint5_tests();
-    sprint6_tests();
+    //sprint6_tests();
+    sprint7_tests();
 }
 
 #include <fstream>
@@ -104,5 +105,9 @@ int main()
     //s6_problems::M_CheckBipartite(input_file, output_file);
 
     //s6_exam_problems::A_ExpensiveNetwork(input_file, output_file);
-    s6_exam_problems::B_RailRoads(input_file, output_file);
+    //s6_exam_problems::B_RailRoads(input_file, output_file);
+
+    //s7_problems::A_StockMarket(input_file, output_file);
+    //s7_problems::B_TimeSchedule(input_file, output_file);
+    s7_problems::C_GoldRush(input_file, output_file);
 }

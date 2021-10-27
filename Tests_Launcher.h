@@ -17,6 +17,9 @@
 
 #include "Algorithms_Y.Praktikum_Sprint6.h"
 #include "Algorithms_Y.Praktikum_Sprint6_Exam.h"
+
+#include "Algorithms_Y.Praktikum_Sprint7.h"
+
 /*
 void sprint1_tests() {
     s1_tests::A_FunctionValues_test();
@@ -108,7 +111,7 @@ void sprint5_tests() {
     s5_exam_tests::A_HeapSort();
     s5_exam_tests::B_RemoveNodeFromBST();
 }
-*/
+
 void sprint6_tests() {
     s6_tests::A_BuildAdjacencyList();
     s6_tests::B_ConvertEdgesListToAdjacencyMatrix();
@@ -125,4 +128,12 @@ void sprint6_tests() {
 
     s6_exam_tests::A_ExpensiveNetwork();
     s6_exam_tests::B_RailRoads();
+}
+*/
+
+void sprint7_tests() {
+    s7_tests::A_StockMarket();
+    s7_tests::B_TimeSchedule();
+    s7_tests::C_GoldRush();
+    
 }
