@@ -135,5 +135,10 @@ void sprint7_tests() {
     s7_tests::A_StockMarket();
     s7_tests::B_TimeSchedule();
     s7_tests::C_GoldRush();
+
+    s7_tests::F_JumpsOnStair();
+
+    s7_tests::H_FLowerField();
+    s7_tests::I_DifficultFlowerField();
     
 }

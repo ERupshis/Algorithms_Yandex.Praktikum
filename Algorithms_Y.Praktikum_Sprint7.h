@@ -5,6 +5,7 @@
 #include <cassert>
 #include <vector>
 #include <algorithm>
+#include <stack>
 
 
 namespace s7_problems {
@@ -123,6 +124,95 @@ namespace s7_problems {
 		}
 		output << res << '\n';
 	}
+	/*-------------------------------------------------------------------------*/
+	/*-------------------------------------------------------------------------*/
+	void F_JumpsOnStair(std::istream& input, std::ostream& output) {
+		int n, k;
+		input >> n >> k;
+		int mod = 1'000'000'007;
+
+		std::vector<int> vec(n + 1);
+		vec[1] = 1;
+		for (int i = 1; i < vec.size(); ++i) {
+			for (int j = 1; j <= k && (i + j) < vec.size(); ++j) {
+				vec[i + j] = (vec[i + j] + vec[i]) % mod;				
+			}
+		}
+		output << vec[n] << '\n';
+	}
+	/*-------------------------------------------------------------------------*/
+	/*-------------------------------------------------------------------------*/
+	void H_FlowerField(std::istream& input, std::ostream& output) {
+		int n, m;
+		input >> n >> m;
+		std::vector<std::vector<int>> field(n + 1, std::vector<int>(m + 1, 0));
+		int count = n * m;
+		for (int i = n; i >= 1; --i) {
+			std::string row;
+			input >> row;
+			for (int j = 1; j <= m; ++j) {
+				field[i][j] += static_cast<int>(row[j - 1]) - 48;				
+			}
+		}
+		
+		for (int i = 1; i <= n; ++i) {
+			for (int j = 1; j <= m; ++j) {
+				field[i][j] += std::max(field[i - 1][j], field[i][j - 1]);
+			}
+		}
+
+		output << field[n][m] << '\n';
+	}
+	/*-------------------------------------------------------------------------*/
+	void I_DifficultFlowerField(std::istream& input, std::ostream& output) {
+		int n, m;
+		input >> n >> m;
+		std::vector<std::vector<int>> field(n + 1, std::vector<int>(m + 1, 0));
+		int count = n * m;
+		for (int i = n; i >= 1; --i) {
+			std::string row;
+			input >> row;
+			for (int j = 1; j <= m; ++j) {
+				field[i][j] += static_cast<int>(row[j - 1]) - 48;
+			}
+		}
+
+		for (int i = 1; i <= n; ++i) {
+			for (int j = 1; j <= m; ++j) {
+				field[i][j] += std::max(field[i - 1][j], field[i][j - 1]);
+			}
+		}
+
+		std::stack<char> res;
+		int i = n, j = m;
+		while (i != 1 && j != 1) {
+			if (field[i - 1][j] > field[i][j - 1]) {
+				res.push('U');
+				--i;
+			}
+			else if (j > 0) {
+				res.push('R');
+				--j;
+			}		
+		}
+
+		while (i > 1) {
+			res.push('U');
+			--i;
+		}
+		while (j > 1) {
+			res.push('R');
+			--j;
+		}
+		
+		output << field[n][m] << '\n';
+		while (res.size() > 0) {
+			output << res.top();
+			res.pop();
+		}
+		output << '\n';
+	}
+	/*-------------------------------------------------------------------------*/
 }
 
 
@@ -243,4 +333,89 @@ namespace s7_tests {
 		}		
 	}
 	/*-------------------------------------------------------------------------*/
+	void F_JumpsOnStair() {
+		{
+			std::stringstream input;
+			input << "6 3"s;
+			std::ostringstream output(std::ios_base::ate);
+			s7_problems::F_JumpsOnStair(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "13"s << '\n';
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "7 7"s;
+			std::ostringstream output(std::ios_base::ate);
+			s7_problems::F_JumpsOnStair(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "32"s << '\n';
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "2 2"s;
+			std::ostringstream output(std::ios_base::ate);
+			s7_problems::F_JumpsOnStair(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "1"s << '\n';
+			assert(output.str() == res.str());
+		}
+	}
+	/*-------------------------------------------------------------------------*/
+	void H_FLowerField() {
+		{
+			std::stringstream input;
+			input << "3 3"s << '\n'
+				<< "100"s << '\n'
+				<< "110"s << '\n'
+				<< "001"s;
+			std::ostringstream output(std::ios_base::ate);
+			s7_problems::H_FlowerField(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "2"s << '\n';
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "2 3"s << '\n'
+				<< "101"s << '\n'
+				<< "110"s;
+			std::ostringstream output(std::ios_base::ate);
+			s7_problems::H_FlowerField(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "3"s << '\n';
+			assert(output.str() == res.str());
+		}		
+	}
+	/*-------------------------------------------------------------------------*/
+	void I_DifficultFlowerField() {
+		{
+			std::stringstream input;
+			input << "3 3"s << '\n'
+				<< "100"s << '\n'
+				<< "110"s << '\n'
+				<< "001"s;
+			std::ostringstream output(std::ios_base::ate);
+			s7_problems::I_DifficultFlowerField(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "2"s << '\n'
+				<< "UURR"s << '\n';
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "2 3"s << '\n'
+				<< "101"s << '\n'
+				<< "110"s;
+			std::ostringstream output(std::ios_base::ate);
+			s7_problems::I_DifficultFlowerField(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "3"s << '\n'
+				<< "URR"s << '\n';
+			assert(output.str() == res.str());
+		}
+	}
+	/*-------------------------------------------------------------------------*/
+
 }
