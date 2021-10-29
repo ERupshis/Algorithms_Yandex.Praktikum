@@ -213,6 +213,119 @@ namespace s7_problems {
 		output << '\n';
 	}
 	/*-------------------------------------------------------------------------*/
+
+	/*-------------------------------------------------------------------------*/
+	void PrintSpace(std::ostream& output, bool& f) {
+		if (!f) {
+			f = true;
+		}
+		else {
+			output << ' ';
+		}
+	}
+
+	void K_Horoscopes(std::istream& input, std::ostream& output) {
+		int n, m;
+		input >> n;
+		std::vector<int> seq1, seq2;
+		for (int i = 0; i < n; ++i) {
+			int tmp;
+			input >> tmp;
+			seq1.push_back(tmp);
+		}
+		input >> m;
+		for (int i = 0; i < m; ++i) {
+			int tmp;
+			input >> tmp;
+			seq2.push_back(tmp);
+		}
+
+		std::vector<std::vector<int>> dp(n + 1, std::vector<int>(m + 1, 0));
+
+		for (int i = 1; i <= n; ++i) {
+			for (int j = 1; j <= m; ++j) {
+				if (seq1[i - 1] == seq2[j - 1]) {
+					dp[i][j] = dp[i - 1][j - 1] + 1;
+				}
+				else {
+					dp[i][j] = std::max(dp[i - 1][j], dp[i][j - 1]);
+				}
+			}
+		}
+
+		std::vector<std::stack<int>> ans(2);
+		int i = n, j = m;
+		while (i != 0 && j != 0) {
+			if (seq1[i - 1] == seq2[j - 1]) {
+				ans[0].push(i);
+				ans[1].push(j);
+				--i;
+				--j;
+			}
+			else {
+				if (dp[i][j] == dp[i - 1][j]) {
+					--i;
+				}
+				else if (dp[i][j] == dp[i][j - 1]) {
+					--j;
+				}
+			}
+		}
+		output << dp[n][m] << '\n';		
+		if (dp[n][m] != 0) {
+			for (auto& seq : ans) {
+				bool f = false;
+				while (seq.size() > 0) {
+					PrintSpace(output, f);
+					output << seq.top();
+					seq.pop();
+				}
+				output << '\n';
+			}
+		}
+	}
+	/*-------------------------------------------------------------------------*/
+	void L_LeprekonsGold(std::istream& input, std::ostream& output) {
+		int n, m;
+		input >> n >> m;
+
+
+		std::vector<int> weight;
+		int i = 0;
+		while (i < n) {
+			int tmp;
+			input >> tmp;
+			weight.push_back(tmp);
+			++i;
+		}
+		/*std::vector<std::vector<int>> dp(n + 1, std::vector<int>(m + 1));
+
+		for (int i = 1; i <= n; ++i) {
+			for (int j = 1; j <= m; ++j) {
+				if (j - weight[i - 1] >= 0) {
+					dp[i][j] = std::max(dp[i - 1][j], weight[i - 1] + dp[i - 1][j - weight[i - 1]]);
+				}
+				else {
+					dp[i][j] = std::max(dp[i - 1][j], 0);
+				}
+			}
+		}*/
+
+		std::vector<int> dp_vec(m + 1);
+		for (int i = 0; i < n; ++i) {
+			std::vector<int> tmp_vec(m + 1);
+			for (int j = 1; j <= m; ++j) {
+				if (j - weight[i] >= 0) {
+					tmp_vec[j] = std::max(dp_vec[j], weight[i] + dp_vec[j - weight[i]]);
+				}
+				else {
+					tmp_vec[j] = std::max(dp_vec[j], 0);
+				}
+			}
+			dp_vec = tmp_vec;
+		}
+		output << dp_vec[m] << '\n';
+	}
 }
 
 
@@ -418,4 +531,70 @@ namespace s7_tests {
 	}
 	/*-------------------------------------------------------------------------*/
 
+	/*-------------------------------------------------------------------------*/
+	void K_Horoscopes() {
+		{
+			std::stringstream input;
+			input << "5"s << '\n'
+				<< "4 9 2 4 6"s << '\n'
+				<< "7"s << '\n'
+				<< "9 4 0 0 2 8 4"s;
+			std::ostringstream output(std::ios_base::ate);
+			s7_problems::K_Horoscopes(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "3"s << '\n'
+				<< "1 3 4"s << '\n'
+				<< "2 5 7"s << '\n';
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "4"s << '\n'
+				<< "1 1 1 1"s << '\n'
+				<< "2"s << '\n'
+				<< "2 2"s;
+			std::ostringstream output(std::ios_base::ate);
+			s7_problems::K_Horoscopes(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "0"s << '\n';
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "8"s << '\n'
+				<< "1 2 1 9 1 2 1 9"s << '\n'
+				<< "5"s << '\n'
+				<< "9 9 1 9 9"s;
+			std::ostringstream output(std::ios_base::ate);
+			s7_problems::K_Horoscopes(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "3"s << '\n'
+				<< "3 4 8"s << '\n'
+				<< "3 4 5"s << '\n';
+			assert(output.str() == res.str());
+		}
+	}
+	/*-------------------------------------------------------------------------*/
+	void L_LeprekonsGold() {
+		{
+			std::stringstream input;
+			input << "5 15"s << '\n'
+				<< "3 8 1 2 5"s;
+			std::ostringstream output(std::ios_base::ate);
+			s7_problems::L_LeprekonsGold(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "15"s << '\n';
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "5 19"s << '\n'
+				<< "10 10 7 7 4"s;
+			std::ostringstream output(std::ios_base::ate);
+			s7_problems::L_LeprekonsGold(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "18"s << '\n';
+			assert(output.str() == res.str());
+		}
+	}
 }

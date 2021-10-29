@@ -114,5 +114,8 @@ int main()
     //s7_problems::F_JumpsOnStair(input_file, output_file);
 
     //s7_problems::H_FlowerField(input_file, output_file);
-    s7_problems::I_DifficultFlowerField(input_file, output_file);
+    //s7_problems::I_DifficultFlowerField(input_file, output_file);
+
+    s7_problems::K_Horoscopes(input_file, output_file);
+    //s7_problems::L_LeprekonsGold(input_file, output_file);
 }

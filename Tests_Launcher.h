@@ -140,5 +140,8 @@ void sprint7_tests() {
 
     s7_tests::H_FLowerField();
     s7_tests::I_DifficultFlowerField();
+
+    s7_tests::K_Horoscopes();
+    s7_tests::L_LeprekonsGold();
     
 }
