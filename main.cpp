@@ -110,12 +110,14 @@ int main()
     //s7_problems::A_StockMarket(input_file, output_file);
     //s7_problems::B_TimeSchedule(input_file, output_file);
     //s7_problems::C_GoldRush(input_file, output_file);
-
+    //s7_problems::D_FiboForAdults(input_file, output_file);
+    //s7_problems::E_AllaOnAlgos(input_file, output_file);
     //s7_problems::F_JumpsOnStair(input_file, output_file);
-
+    s7_problems::G_ATM(input_file, output_file);
     //s7_problems::H_FlowerField(input_file, output_file);
     //s7_problems::I_DifficultFlowerField(input_file, output_file);
-
-    s7_problems::K_Horoscopes(input_file, output_file);
+    //s7_problems::J_Journeys(input_file, output_file);
+    //s7_problems::K_Horoscopes(input_file, output_file);
     //s7_problems::L_LeprekonsGold(input_file, output_file);
+    //s7_problems::M_Bag(input_file, output_file);
 }

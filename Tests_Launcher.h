@@ -135,13 +135,14 @@ void sprint7_tests() {
     s7_tests::A_StockMarket();
     s7_tests::B_TimeSchedule();
     s7_tests::C_GoldRush();
-
+    s7_tests::D_FiboForAdults();
+    s7_tests::E_AllaOnAlgos();
     s7_tests::F_JumpsOnStair();
-
+    s7_tests::G_ATM();
     s7_tests::H_FLowerField();
     s7_tests::I_DifficultFlowerField();
-
+    s7_tests::J_Journeys();
     s7_tests::K_Horoscopes();
     s7_tests::L_LeprekonsGold();
-    
+    s7_tests::M_Bag();
 }
