@@ -19,6 +19,7 @@
 #include "Algorithms_Y.Praktikum_Sprint6_Exam.h"
 
 #include "Algorithms_Y.Praktikum_Sprint7.h"
+#include "Algorithms_Y.Praktikum_Sprint7_Exam.h"
 
 /*
 void sprint1_tests() {
@@ -145,4 +146,9 @@ void sprint7_tests() {
     s7_tests::K_Horoscopes();
     s7_tests::L_LeprekonsGold();
     s7_tests::M_Bag();
+
+    s7_tests::O_RoutesCount();
+
+    s7_exam_tests::A_LevenshteinDistance();
+    s7_exam_tests::B_EqualSums();
 }
