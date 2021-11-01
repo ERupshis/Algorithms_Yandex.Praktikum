@@ -534,32 +534,47 @@ namespace s7_problems {
 
 	}
 	/*-------------------------------------------------------------------------*/
-	struct edge {
-		int from = 0;
-		int to = 0;
-
-		bool operator < (const edge& other) {
-			if (from >= other.from) {
-				return to < other.to;
-			} else{
-				return true;
-			}
+	int Count(const std::vector<std::vector<int>>& g, int v, std::vector<bool>& w, std::vector<int>& dp) { 
+		int mod = 1'000'000'007;
+		if (w[v]) {
+			return dp[v];
 		}
-	};
+		else {
+			int sum = 0;
+			w[v] = true;
+			for (int c : g[v]) {
+				sum = (sum + Count(g, c, w, dp)) % mod;
+			}
+			dp[v] = sum;
+			return sum;
+		}
+	}
+	int CountPaths(const std::vector<std::vector<int>>& g, int s, int t, int n) {
+		std::vector<bool> w(n + 1);
+		std::vector<int> dp(n + 1);
+		dp[s] = 1;
+		w[s] = true;
+		int answer = Count(g, t, w, dp);
+		return answer;
+	}
+
 
 	void O_RoutesCount(std::istream& input, std::ostream& output) {
 		int n, m;
 		input >> n >> m;
 
-		std::vector<edge> edges(m);
+		std::vector<std::vector<int>> adj_list(n + 1);
 		for (int i = 0; i < m; ++i) {
 			int f, t;
 			input >> f >> t;
-			edges[i] = { f, t };
+			adj_list[t].push_back(f);
 		}
 
 		int src, des;
-		input >> src >> des;
+		input >> src >> des;	
+
+		output << CountPaths(adj_list, src, des, n) << '\n';
+
 
 		//NOT SOLVED
 	}
@@ -1056,7 +1071,7 @@ namespace s7_tests {
 			s7_problems::O_RoutesCount(static_cast<std::iostream&>(input), output);
 			std::stringstream res;
 			res << "2"s << '\n';
-		//	assert(output.str() == res.str());
+			assert(output.str() == res.str());
 		}
 		{
 			std::stringstream input;
@@ -1069,7 +1084,7 @@ namespace s7_tests {
 			s7_problems::O_RoutesCount(static_cast<std::iostream&>(input), output);
 			std::stringstream res;
 			res << "0"s << '\n';
-		//	assert(output.str() == res.str());
+			assert(output.str() == res.str());
 		}
 		{
 			std::stringstream input;
@@ -1082,7 +1097,7 @@ namespace s7_tests {
 			s7_problems::O_RoutesCount(static_cast<std::iostream&>(input), output);
 			std::stringstream res;
 			res << "1"s << '\n';
-		//	assert(output.str() == res.str());
+			assert(output.str() == res.str());
 		}
 	}
 }

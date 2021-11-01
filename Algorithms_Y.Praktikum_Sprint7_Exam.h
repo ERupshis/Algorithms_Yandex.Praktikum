@@ -9,7 +9,7 @@
 namespace s7_exam_problems {
 	using namespace std::literals;
 
-	//SEND ID: 55745697	
+	//SEND ID: 55793089
 
 	// For problem solving by Dynamic Programming way we have to answer on 5 questions:
 	// 1. What will be stored in dp?
@@ -35,7 +35,7 @@ namespace s7_exam_problems {
 	//    - type of calculation:
 	//      BACK dynamic programming
 	// 5. Where will answer for problem be stored in dp table?
-	//    - answer will be in dp[str1.size()][str2.size()] - final condition when we have checked whole str1 and str2
+	//    - answer will be in dp[str2.size()] - final condition when we have checked whole str1 and str2
 	//    
 	// A_LevenshteinDistance() - function that recognize how many operation (symbol's add, remove, replace) are required to transform some string to another
 	// 2D dynamic programming approach has been used. 
@@ -43,37 +43,37 @@ namespace s7_exam_problems {
 	// 
 	// Time Complexity: O(str1.size() * str2.size()). We extend some str by one symbol at every step and make comprasion of last operation.
 	//
-	// Space Complexity: O(str1.size() * str2.size()) of additional memory due to we need to store base cases answers 
-	//    (located at left column with index 0 and top row with index 0)
+	// Space Complexity: O(2 * str2.size()) of additional memory due to we need to keep valule of operations have to done 
+	//	to convert str1 into str2 (at every i-step we extend str1 by one symbol we don't need to store all information due to we are interested to find
+	//  count of operations needed to convert full str1 into full str2) 
+	//   
 
 
 	void A_LevenshteinDistance(std::istream& input, std::ostream& output) {
 		std::string str1, str2;
 		input >> str1 >> str2;
-
-		std::vector<std::vector<int>> dp(str1.size() + 1, std::vector<int>(str2.size() + 1));
-		//fill in elements with indexes i = 0 for str1 and j = 0 for str2 of matrix data range.
-		//It shows how many elements should be removed if another word is empty.
-		for (int i = 0; i <= str1.size(); ++i) {												
-			dp[i][0] = i;  
-		}
-		for (int i = 0; i <= str2.size(); ++i) {
-			dp[0][i] = i;
+		std::vector<int> dp(str2.size() + 1); 
+		for (int i = 0; i <= str2.size(); ++i) {//fill in elements with indexes for str2 of matrix data range.
+												//It shows how many elements should be removed in str2 if another str1 is empty.
+			dp[i] = i;
 		}
 
 		for (int i = 1; i <= str1.size(); ++i) { // filling dp is from left-to-right and from top to bottom
+			std::vector<int> tmp_dp(str2.size() + 1); // temporary dynamic array for storage new i-row
+			tmp_dp[0] = i; // equal to count of removes if str1 if str2 is empty
 			for (int j = 1; j <= str2.size(); ++j) {	
-				int a = dp[i - 1][j] + 1; // case when str1 is converted into str2 by removing excess symbol in str1. last opration is adding symbol to str1
-				int b = dp[i][j - 1] + 1; // case when str1 is converted into str2 by removing excess symbol in str1. last opration is adding symbol to str2
-				int c = dp[i - 1][j - 1] + ((str1[i - 1] == str2[j - 1]) ? 0 : 1); // case when both previous cases are incorrect. In this case we need to 
+				int a = dp[j] + 1; // case when str1 is converted into str2 by removing excess symbol in str1. last opration is adding symbol to str1
+				int b = tmp_dp[j - 1] + 1; // case when str1 is converted into str2 by removing excess symbol in str1. last opration is adding symbol to str2
+				int c = dp[j - 1] + ((str1[i - 1] == str2[j - 1]) ? 0 : 1); // case when both previous cases are incorrect. In this case we need to 
 																				   // replace some element if symbols are not equal
-				dp[i][j] = std::min({ a, b, c }); // the less operations we made to achieve equality of strings, the better solution
+				tmp_dp[j] = std::min({ a, b, c }); // the less operations we made to achieve equality of strings, the better solution
 			}
+			dp = tmp_dp;
 		}
-		output << dp[str1.size()][str2.size()] << '\n';
+		output << dp[str2.size()] << '\n';
 	}
 	/*-------------------------------------------------------------------------*/
-	//SEND ID: 55743635
+	//SEND ID: 55792844
 
 	// For problem solving by Dynamic Programming way we have to answer on 5 questions:
 	// 1. What will be stored in dp?
@@ -107,8 +107,9 @@ namespace s7_exam_problems {
 	// 
 	// Time Complexity: O (N * M), where's N - count of input numbers, M - is a range from 1 to (SUM of all numbers) / 2 with step 1.
 	// 
-	// Space Complexity: O(2 * M) of additional memory, where's M - is a range from 1 to (SUM of all numbers) / 2 with step 1.
-	//    We need to keep 2 rows i and i - 1 at any i-step of adding new number in considering set.
+	// Space Complexity: O(M) of additional memory, where's M - is a range from 1 to (SUM of all numbers) / 2 with step 1.
+	//    We need to keep 2 rows i and i - 1 at any i-step of adding new number in considering set or 
+	//    We can keep data in one row, but iterating through the row should be reveresed.
 	//    To make this possible, we have to check dp[i][j] = half_sum (where's j is equal to half_sum itself) at every i-step
 
 	void B_EqualSums(std::istream& input, std::ostream& output) {
@@ -132,18 +133,16 @@ namespace s7_exam_problems {
 		int half_sum = sum / 2; // horizontal limit of dp 2d array
 		std::vector<int> dp(half_sum + 1, 0); // no need to keep all data. We just need to find exact condition when sum of some numbers set is equal to half sum.
 											// in this way, other numbers will give also half_sum
-		for (int i = 1; i <= n; ++i) {			
-			std::vector<int> tmp_dp(half_sum + 1, 0); // temporary array for keeping numbers sum at i step
-			for (int j = 1; j <= half_sum; ++j) { // fill tmp_dp
+		for (int i = 1; i <= n; ++i) {		
+			for (int j = half_sum; j >= 1; --j) { // fill tmp_dp
 				if (j - vec[i] >= 0) { // j - is a possible sum. Substract current i number from J size sum and check if remains exists in dp
-					tmp_dp[j] = std::max(dp[j], vec[i] + dp[j - vec[i]]);
+					dp[j] = std::max(dp[j], vec[i] + dp[j - vec[i]]);
 				}
 				else { // invalid index of cell - no possible sum if i number with sum of some other numbers
-					tmp_dp[j] = dp[j]; // just assign i-1 sum for j 
+					dp[j] = dp[j]; // just assign i-1 sum for j 
 				}
-			}			
-			dp = tmp_dp; // write temporary dp to defined tmp for next i step
-			if (tmp_dp[half_sum] == half_sum) { // check if we've got sum of numbers set equal to desired value
+			}						
+			if (dp[half_sum] == half_sum) { // check if we've got sum of numbers set equal to desired value
 				output << "True"s << '\n';
 				return;
 			}
