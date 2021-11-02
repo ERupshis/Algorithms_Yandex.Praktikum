@@ -21,6 +21,8 @@
 #include "Algorithms_Y.Praktikum_Sprint7.h"
 #include "Algorithms_Y.Praktikum_Sprint7_Exam.h"
 
+#include "Algorithms_Y.Praktikum_Sprint8.h"
+
 /*
 void sprint1_tests() {
     s1_tests::A_FunctionValues_test();
@@ -130,7 +132,7 @@ void sprint6_tests() {
     s6_exam_tests::A_ExpensiveNetwork();
     s6_exam_tests::B_RailRoads();
 }
-*/
+
 
 void sprint7_tests() {
     s7_tests::A_StockMarket();
@@ -151,4 +153,15 @@ void sprint7_tests() {
 
     s7_exam_tests::A_LevenshteinDistance();
     s7_exam_tests::B_EqualSums();
+}
+*/
+
+void sprint8_tests() {
+
+    s8_tests::B_StringReverse();
+
+
+
+    s8_tests::F_StringInsert();
+    
 }

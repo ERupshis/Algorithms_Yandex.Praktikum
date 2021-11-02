@@ -11,7 +11,8 @@ void Test() {
     //sprint4_tests();
     //sprint5_tests();
     //sprint6_tests();
-    sprint7_tests();
+    //sprint7_tests();
+    sprint8_tests();
 }
 
 #include <fstream>
@@ -124,5 +125,12 @@ int main()
     //s7_problems::O_RoutesCount(input_file, output_file);
 
     //s7_exam_problems::A_LevenshteinDistance(input_file, output_file);
-    s7_exam_problems::B_EqualSums(input_file, output_file);
+    //s7_exam_problems::B_EqualSums(input_file, output_file);
+
+
+    //s8_problems::B_StringReverse(input_file, output_file);
+
+
+
+    //s8_problems::F_StringInsert(input_file, output_file);
 }
