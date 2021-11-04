@@ -159,9 +159,11 @@ void sprint7_tests() {
 void sprint8_tests() {
 
     s8_tests::B_StringReverse();
-
+    s8_tests::C_BorderControl();
 
 
     s8_tests::F_StringInsert();
+
+    s8_tests::L_CompareTwoStrings();
     
 }

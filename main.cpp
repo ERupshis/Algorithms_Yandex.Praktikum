@@ -129,8 +129,11 @@ int main()
 
 
     //s8_problems::B_StringReverse(input_file, output_file);
+    //s8_problems::C_BorderControl(input_file, output_file);
 
 
 
     //s8_problems::F_StringInsert(input_file, output_file);
+
+    s8_problems::L_CompareTwoStrings(input_file, output_file);
 }
