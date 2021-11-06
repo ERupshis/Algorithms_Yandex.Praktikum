@@ -67,13 +67,6 @@ namespace s4_problems {
 
 	}
 	/*-------------------------------------------------------------------------*/
-	struct RangeHasher {
-		size_t operator() (const std::pair<int, int> r) const {
-			return int_hash(r.first) + 37 * int_hash(r.second);
-		}
-		std::hash<int> int_hash;
-	};
-
 	void C_PrefixHashes(std::istream& input, std::ostream& output) {
 		int a, m, n;
 		std::string str;

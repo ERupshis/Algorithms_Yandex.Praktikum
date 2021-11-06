@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <set>
 #include <unordered_map>
+#include <cmath>
 
 namespace s8_problems {
 	using namespace std::literals;
@@ -22,6 +23,31 @@ namespace s8_problems {
 		}
 	}
 	/*-------------------------------------------------------------------------*/
+	std::vector<int> A_HashVector(const std::string& str) {
+		std::unordered_map<char, int> hash_map;
+		std::vector<int> res;
+
+		for (int i = 0; i < str.size(); ++i) {
+			if (!hash_map.count(str[i])) {
+				hash_map[str[i]] = hash_map.size();
+			}
+
+			res.push_back(hash_map[str[i]]);
+		}
+		return res;
+	}
+
+	void A_StrangeComprasion(std::istream& input, std::ostream& output) {
+		std::string str1, str2;
+		input >> str1 >> str2;
+
+		if (A_HashVector(str1) == A_HashVector(str2)) {
+			output << "YES"s << '\n';
+		}
+		else {
+			output << "NO"s << '\n';
+		}
+	}
 	/*-------------------------------------------------------------------------*/
 	void B_StringReverse(std::istream& input, std::ostream& output) {
 		std::stack<std::string> stack;
@@ -83,7 +109,89 @@ namespace s8_problems {
 		output << "OK"s << '\n';
 	}
 	/*-------------------------------------------------------------------------*/
+	void D_BiggestPalindrome(std::istream& input, std::ostream& output) {
+		std::string str;
+		input >> str;
+
+		std::vector<int> vec(26);
+		for (int i = 0; i < str.size(); ++i) {
+			++vec[str[i] - 97];
+		}
+		char pivot = static_cast<char>(0);
+		std::string left;
+		for (int i = 0; i < vec.size(); ++i) {
+			char ch = static_cast<char>(97 + i);
+			if (pivot == static_cast<char>(0) && vec[i] % 2 == 1) {
+				pivot = ch;
+			}			
+			left.insert(left.size(), (vec[i] / 2), ch);
+		}	
+		std::string right{ left };
+		std::reverse(right.begin(), right.end());
+		if (pivot != '\0') {
+			output << left << pivot << right << '\n';
+		}
+		else {
+			output << left << right << '\n';
+		}		
+	}
 	/*-------------------------------------------------------------------------*/
+	std::vector<int64_t> PrefixHashes(const std::string& str) {
+		int64_t a = 1'000'000'007;
+		int64_t m = std::pow(2, 32);
+			
+		std::vector<int64_t> pref_hashes;
+
+		pref_hashes.reserve(str.size());
+		pref_hashes.push_back(0);
+		int64_t hash = 0;
+		for (size_t i = 0; i < str.size(); ++i) {
+			pref_hashes.push_back((pref_hashes[i] * a + str[i]) % m);
+		}		
+		return pref_hashes;
+	}
+
+	int ComparePrefixHashes(const std::string& str, int to_check, const std::vector<int64_t> prefix_hashes) {
+		int64_t a = 1'000'000'007;
+		int64_t m = std::pow(2, 32);
+
+		std::vector<int64_t> pref_hashes;
+
+		pref_hashes.reserve(str.size());
+		pref_hashes.push_back(0);
+		int64_t hash = 0;
+		for (size_t i = 0; i < std::min(static_cast<int>(str.size()), to_check); ++i) {			
+			pref_hashes.push_back((pref_hashes[i] * a + str[i]) % m);
+			if (prefix_hashes[i + 1] != pref_hashes[i + 1]) {
+				return i;
+			}
+		}
+		return std::min(to_check, static_cast<int>(str.size()));
+	}
+
+	void E_CommonPrefix(std::istream& input, std::ostream& output) {
+		int n;
+		input >> n;
+
+		std::vector<std::string> vec;
+		vec.reserve(n);
+		for (int i = 0; i < n; ++i) {
+			std::string tmp;
+			input >> tmp;
+			vec.push_back(tmp);
+		}
+		
+		std::vector<int64_t> prefix_hash = PrefixHashes(vec[0]);
+		int pref = vec[0].size();
+		for (int i = 1; i < vec.size(); ++i) {
+			pref = ComparePrefixHashes(vec[i], pref, prefix_hash);
+			if (pref == 0) {
+				output << "0"s;
+				return;
+			}			
+		}
+		output << pref;
+	}
 	/*-------------------------------------------------------------------------*/
 	struct SubStr {
 		std::string str = ""s;
@@ -117,6 +225,35 @@ namespace s8_problems {
 		output << str.substr(vec_substr[vec_substr.size() - 1].idx, str.size()) << '\n';		
 	}
 	/*-------------------------------------------------------------------------*/
+	void G_MostFreqWord(std::istream& input, std::ostream& output) {
+		int n;
+		input >> n;
+
+		std::unordered_map<std::string, int> unord_map;
+		for (int i = 0; i < n; ++i) {
+			std::string tmp;
+			input >> tmp;
+			unord_map[tmp] += 1;
+		}
+
+		std::vector<std::string> res_words;
+		int word_freq = 0;
+		for (auto& elem : unord_map) {
+			if (elem.second > word_freq) {
+				res_words.clear();
+				res_words.push_back(elem.first);
+				word_freq = elem.second;
+			}
+			else if (elem.second == word_freq) {
+				res_words.push_back(elem.first);
+			}
+		}
+
+		if (res_words.size() != 1) {
+			std::sort(res_words.begin(), res_words.end(), std::less<std::string>{});
+		}
+		output << res_words[0] << '\n';
+	}
 	/*-------------------------------------------------------------------------*/
 	int Find(const std::vector<int>& vec, const std::vector<int>& pattern, int s = 0) {
 		if (vec.size() < pattern.size()) {
@@ -226,6 +363,32 @@ namespace s8_problems {
 		output << '\n';
 	}
 	/*-------------------------------------------------------------------------*/
+	void J_Repeat(std::istream& input, std::ostream& output) {
+		std::string str;
+		input >> str;
+
+		std::string repeat;
+		for (int i = 0; i < str.size(); ++i) {
+			repeat.push_back(str[i]);
+			if (i >= str.size() / 2) {
+				break;
+			}
+			if (str.size() % repeat.size() != 0) {
+				continue;
+			}
+			
+			int k = i + 1;
+			while (k <= str.size() && repeat == str.substr(k, repeat.size())) {
+				k += repeat.size();
+			}
+			if (k == str.size()) {
+				output << str.size() / repeat.size() << '\n';
+				return;
+			}
+			
+		}
+		output << 1 << '\n';
+	}
 	/*-------------------------------------------------------------------------*/
 	struct Node {
 		bool terminal = false;
@@ -397,6 +560,39 @@ namespace s8_tests {
 	using namespace std::literals;
 	using namespace s8_problems;
 
+
+	void A_StrangeComprasion() {
+		{
+			std::stringstream input;
+			input << "mxyskaoghi"s << '\n'
+				<< "qodfrgmslc"s;
+			std::ostringstream output(std::ios_base::ate);
+			s8_problems::A_StrangeComprasion(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "YES"s << '\n';
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "agg"s << '\n'
+				<< "xdd"s;
+			std::ostringstream output(std::ios_base::ate);
+			s8_problems::A_StrangeComprasion(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "YES"s << '\n';
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "agg"s << '\n'
+				<< "xda"s;
+			std::ostringstream output(std::ios_base::ate);
+			s8_problems::A_StrangeComprasion(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "NO"s << '\n';
+			assert(output.str() == res.str());
+		}
+	}
 	/*-------------------------------------------------------------------------*/
 	void B_StringReverse() {
 		{
@@ -512,9 +708,73 @@ namespace s8_tests {
 		}		
 	}
 	/*-------------------------------------------------------------------------*/
-
+	void D_BiggestPalindrome() {
+		{
+			std::stringstream input;
+			input << "aaaabb"s;
+			std::ostringstream output(std::ios_base::ate);
+			s8_problems::D_BiggestPalindrome(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "aabbaa"s << '\n';
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "pabcd"s;
+			std::ostringstream output(std::ios_base::ate);
+			s8_problems::D_BiggestPalindrome(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "a"s << '\n';
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "aaabbb"s;
+			std::ostringstream output(std::ios_base::ate);
+			s8_problems::D_BiggestPalindrome(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "ababa"s << '\n';
+			assert(output.str() == res.str());
+		}
+	}
 	/*-------------------------------------------------------------------------*/
-
+	void E_CommonPrefix() {
+		{
+			std::stringstream input;
+			input << "3"s << '\n'
+				<< "abacaba"s << '\n'
+				<< "abudabi"s << '\n'
+				<< "abcdefg"s;
+			std::ostringstream output(std::ios_base::ate);
+			s8_problems::E_CommonPrefix(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "2"s;
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "2"s << '\n'
+				<< "tutu"s << '\n'
+				<< "kukuku"s;
+			std::ostringstream output(std::ios_base::ate);
+			s8_problems::E_CommonPrefix(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "0"s;
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "3"s << '\n'
+				<< "qwe"s << '\n'
+				<< "qwerty"s << '\n'
+				<< "qwerpy"s;
+			std::ostringstream output(std::ios_base::ate);
+			s8_problems::E_CommonPrefix(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "3"s;
+			assert(output.str() == res.str());
+		}
+	}
 	/*-------------------------------------------------------------------------*/
 	void F_StringInsert() {
 		{
@@ -544,6 +804,53 @@ namespace s8_tests {
 		}		
 	}
 	/*-------------------------------------------------------------------------*/
+	void G_MostFreqWord() {
+		{
+			std::stringstream input;
+			input << "5"s << '\n'
+				<< "caba"s << '\n'
+				<< "aba"s << '\n'
+				<< "caba"s << '\n'
+				<< "abac"s << '\n'
+				<< "aba"s;
+			std::ostringstream output(std::ios_base::ate);
+			s8_problems::G_MostFreqWord(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "aba"s << '\n';
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "3"s << '\n'
+				<< "b"s << '\n'
+				<< "bc"s << '\n'
+				<< "bcd"s;
+			std::ostringstream output(std::ios_base::ate);
+			s8_problems::G_MostFreqWord(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "b"s << '\n';
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "10"s << '\n'
+				<< "ciwlaxtnhhrnenw"s << '\n'
+				<< "ciwnvsuni"s << '\n'
+				<< "ciwaxeujmsmvpojqjkxk"s << '\n'
+				<< "ciwnvsuni"s << '\n'
+				<< "ciwnvsuni"s << '\n'
+				<< "ciwuxlkecnofovq"s << '\n'
+				<< "ciwuxlkecnofovq"s << '\n'
+				<< "ciwodramivid"s << '\n'
+				<< "ciwlaxtnhhrnenw"s << '\n'
+				<< "ciwnvsuni"s;
+			std::ostringstream output(std::ios_base::ate);
+			s8_problems::G_MostFreqWord(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "ciwnvsuni"s << '\n';
+			assert(output.str() == res.str());
+		}
+	}
 	/*-------------------------------------------------------------------------*/
 	void H_ShiftSearch() {
 		{
@@ -597,6 +904,35 @@ namespace s8_tests {
 		}
 	}
 	/*-------------------------------------------------------------------------*/
+	void J_Repeat() {
+		{
+			std::stringstream input;
+			input << "zzzzzz"s;
+			std::ostringstream output(std::ios_base::ate);
+			s8_problems::J_Repeat(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "6"s << '\n';
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "abacaba"s;
+			std::ostringstream output(std::ios_base::ate);
+			s8_problems::J_Repeat(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "1"s << '\n';
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "abababab"s;
+			std::ostringstream output(std::ios_base::ate);
+			s8_problems::J_Repeat(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "4"s << '\n';
+			assert(output.str() == res.str());
+		}
+	}
 	/*-------------------------------------------------------------------------*/
 	void K_CamelCase() {
 		{
@@ -723,7 +1059,6 @@ namespace s8_tests {
 			assert(output.str() == res.str());
 		}
 	}
-
 }
 
 

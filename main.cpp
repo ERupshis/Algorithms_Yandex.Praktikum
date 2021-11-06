@@ -127,18 +127,19 @@ int main()
     //s7_exam_problems::A_LevenshteinDistance(input_file, output_file);
     //s7_exam_problems::B_EqualSums(input_file, output_file);
 
-
+    //s8_problems::A_StrangeComprasion(input_file, output_file);
     //s8_problems::B_StringReverse(input_file, output_file);
     //s8_problems::C_BorderControl(input_file, output_file);
-
-    
-
+    //s8_problems::D_BiggestPalindrome(input_file, output_file);
+    //s8_problems::E_CommonPrefix(input_file, output_file);
     //s8_problems::F_StringInsert(input_file, output_file);
-
+    //s8_problems::G_MostFreqWord(input_file, output_file);
     //s8_problems::H_ShiftSearch(input_file, output_file);
     //s8_problems::I_GlobalChange(input_file, output_file);
-
-    s8_problems::K_CamelCase(input_file, output_file);
+    //s8_problems::J_Repeat(input_file, output_file);
+    //s8_problems::K_CamelCase(input_file, output_file);
     //s8_problems::L_CompareTwoStrings(input_file, output_file);
     //s8_problems::M_PrefixFuncCount(input_file, output_file);
+
+
 }

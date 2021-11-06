@@ -157,16 +157,16 @@ void sprint7_tests() {
 */
 
 void sprint8_tests() {
-
+    s8_tests::A_StrangeComprasion();
     s8_tests::B_StringReverse();
     s8_tests::C_BorderControl();
-
-
+    s8_tests::D_BiggestPalindrome();
+    s8_tests::E_CommonPrefix();
     s8_tests::F_StringInsert();
-
+    s8_tests::G_MostFreqWord();
     s8_tests::H_ShiftSearch();
     s8_tests::I_GlobalChange();
-
+    s8_tests::J_Repeat();
     s8_tests::K_CamelCase();
     s8_tests::L_CompareTwoStrings();
     s8_tests::M_PrefixFuncCount();
