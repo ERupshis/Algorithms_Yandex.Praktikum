@@ -164,6 +164,10 @@ void sprint8_tests() {
 
     s8_tests::F_StringInsert();
 
+    s8_tests::H_ShiftSearch();
+    s8_tests::I_GlobalChange();
+
+    s8_tests::K_CamelCase();
     s8_tests::L_CompareTwoStrings();
-    
+    s8_tests::M_PrefixFuncCount();
 }
