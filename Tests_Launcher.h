@@ -22,6 +22,7 @@
 #include "Algorithms_Y.Praktikum_Sprint7_Exam.h"
 
 #include "Algorithms_Y.Praktikum_Sprint8.h"
+#include "Algorithms_Y.Praktikum_Sprint8_Exam.h"
 
 /*
 void sprint1_tests() {
@@ -170,4 +171,7 @@ void sprint8_tests() {
     s8_tests::K_CamelCase();
     s8_tests::L_CompareTwoStrings();
     s8_tests::M_PrefixFuncCount();
+
+    s8_exam_tests::A_PackedPrefix();
+
 }
