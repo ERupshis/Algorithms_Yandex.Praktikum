@@ -173,5 +173,6 @@ void sprint8_tests() {
     s8_tests::M_PrefixFuncCount();
 
     s8_exam_tests::A_PackedPrefix();
+    s8_exam_tests::B_CheatSheet();
 
 }

@@ -142,4 +142,5 @@ int main()
     //s8_problems::M_PrefixFuncCount(input_file, output_file);
 
     //s8_exam_problems::A_PackedPrefix(input_file, output_file);
+    //s8_exam_problems::B_CheatSheet(input_file, output_file);
 }
