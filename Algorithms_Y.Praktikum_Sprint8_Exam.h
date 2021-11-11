@@ -19,12 +19,9 @@ namespace s8_exam_problems {
 	// their common prefix and unpacks only begining of next string limited by this common prefix size. No need to unpack or compare sufix
 	// of string in this way. Prefix size redefinition is executed in cycle right after of unpacking of new string from vector of strings.
 	// 
-	//		Time Complexity: O(D) - overall length of all input strings, where's D = N * L:  N - count of strings, L - length of exact string
-	//							+ O(K) - overall sum of mupltiplication of packed substring. Necessary for unpacking substrings several times in cycle
-	//							+ O(M) - count of ']' brackets in all N input strings, necessary to limit reading of chars in packed substring area
-	//							+ O(N * J) - comparing strings prefixes at every unpacking of new string, where's N - count of strings, 
-	//														J - size(variable) of laready defined prefix. Can be reduced at every step
-	//					Overall: O(D + K + M + N * J)
+	//		Time Complexity: O(N * L) - overall length of all input strings, where's  N - count of strings, L - length of exact unpacked string							
+	//						+ O(N * M) - prefix search , where's M - size of unpacked string													
+	//					Overall: O(N * M) because L can be excluded from evaluation because it's guarantee lower than M
 	// 
 	//		Space Complexity: additional memory:
 	//				- UnpackPrefix() - O(M), where's M - size of unpacked string. May be limited by pref parameter.
@@ -242,6 +239,114 @@ namespace s8_exam_problems {
 			output << "NO"s << '\n';
 		}
 	}
+	/*-------------------------------------------------------------------------*/
+	//SEND ID: 57181911
+
+	// B_CheatSheet method that define if query can be assembled from other words. Words can be repeated any times.
+	// Dynamic programming method was used for solving this problem. 'Trie' was chosen as a storage of words dictionary.
+	// Thanks to easy-checking construction we can easily define if substring from query exists in Trie. If next substring symbol 
+	// doesn't exist in the Trie's last approved node - search can be stopped. Thanks to mark 'terminal' in nodes we can easily verify 
+	// if this is the last 'word' node or not. If yes. it's just enough to remember position (j) of this last symbol in query and change value in 
+	// dp[j + 1]. it means that at this position probably begins new word we have to find in Trie.
+	//
+	// Time Complexity: 
+	//		- B_CheatSheet2() - O(N * L) - add words in Trie, where's N - number of words and L - length of exact word(variable). 
+	//								L evaluation also includes time complexity of searching every symbol in hash-table 'links' in nodes. 
+	//								Searching and adding new symbol in 'links' takes O(1) on average. Except worst cases when rehashing is required.
+	//							O(M * L) - check every substr in query and try to find all words which start from query[i] symbol, where's 
+	//								M - length of query and L - length of biggest word in Trie which starts from query[i] symbol.
+	//							
+	//						Overall: O((N + M) * L)
+	// 
+	//			- AddString() - O(K), where's K - size of input string
+	//			- FindWords() - O(K), where's K - size of biggest word in trie that start from query[i] symbol			
+	// 
+	//	Space Complexity:
+	//		- B_CheatSheet2() - additional memory: O(F) - Trie size, where's F - count of links between two nearest symbols in all words. 
+	//														F will be smaller if words starts with similar symbols. In this way they have common prefix and
+	//														count of links will be smaller than O(N*L) - worst case when we have only unique words.								
+	//							
+	//
+
+	// Problem B. Variant 2
+	struct Node {
+		bool terminal = false;
+		std::unordered_map<char, Node*> links;		
+	};
+
+	Node* AddString(Node* root, const std::string& str) {
+		Node* curr_node = root;
+		for (int i = 0; i < str.size(); ++i) {			
+			char symbol = str[i];
+			if (curr_node->links.count(symbol) == 0) {// we have to create new node in Trie
+				Node* new_node = new Node();
+				curr_node->links[symbol] = new_node; 
+			}
+			curr_node = curr_node->links.at(symbol); // node has been created before. just jump further.		
+		}		
+		curr_node->terminal = true; // last node (where links last symbol in str) should be terminal. This status define word in trie
+		return curr_node; // no need to return but let be here
+	}
+
+	std::vector<int> FindWords(Node* root, std::string_view str, int i) {
+		std::vector<int> res;
+		Node* curr_node = root;
+		for (int j = i; j <= i + 100 && j < str.size() ; ++j) { // check all allowable lengths of words
+			char symbol = str[j];
+			if (curr_node->links.count(symbol) == 0) {// no need to seek. Link for an another symbol doesn't exist in trie
+				break;
+			}	
+			curr_node = curr_node->links.at(symbol); // jump further
+			if (curr_node->terminal == true) { // check if word can consist of already checked symbols.
+				res.push_back(j);
+			}
+		}
+		return res;
+	}
+
+	void DeleteTrie(Node* root) {// release memory in heap
+		for (auto link : root->links) {
+			DeleteTrie(link.second);
+		}
+		delete root; 
+	}
+
+
+	void B_CheatSheet2(std::istream& input, std::ostream& output) {
+		std::string query;
+		int n;
+		input >> query >> n;
+
+		Node* root = new Node(); // create Search Trie
+		for (int i = 0; i < n; ++i) {
+			std::string tmp;
+			input >> tmp;
+			AddString(root, tmp);
+		}
+
+		std::vector<bool> dp(query.size() + 1, false);  // size() + 1 - position right after last char
+		dp[0] = true; // initial point for filling dp vector
+		for (int i = 0; i < dp.size(); ++i) {
+			if (dp[i] == true) {// we can generate the whole prefix before [i] symbol in query				
+				std::vector<int> exist_words_length = FindWords(root, query, i);// try to find the list of words last symbols that are stored in trie (summ of i and length of word)
+				for (auto elem : exist_words_length) {
+					dp[elem + 1] = true; // later we can proceed search after this word in query
+				}				
+			}
+			if (dp.back()) { // if we already have route till the last char, no need to continue
+				break;
+			}
+		}
+
+		DeleteTrie(root);
+
+		if (dp.back()) {
+			output << "YES"s << '\n';
+		}
+		else {
+			output << "NO"s << '\n';
+		}
+	}
 }
 
 namespace s8_exam_tests {
@@ -297,6 +402,48 @@ namespace s8_exam_tests {
 	}
 	/*-------------------------------------------------------------------------*/
 	void B_CheatSheet() {
+		{
+			std::stringstream input;
+			input << "theexamiwillpasstheexam"s << '\n'
+				<< "5"s << '\n'
+				<< "will"s << '\n'
+				<< "pass"s << '\n'
+				<< "the"s << '\n'
+				<< "exam"s << '\n'
+				<< "i"s;
+			std::ostringstream output(std::ios_base::ate);
+			s8_exam_problems::B_CheatSheet2(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "YES"s << '\n';
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "abacaba"s << '\n'
+				<< "2"s << '\n'
+				<< "abac"s << '\n'
+				<< "caba"s;
+			std::ostringstream output(std::ios_base::ate);
+			s8_exam_problems::B_CheatSheet2(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "NO"s << '\n';
+			assert(output.str() == res.str());
+		}
+		{
+			std::stringstream input;
+			input << "abacaba"s << '\n'
+				<< "3"s << '\n'
+				<< "abac"s << '\n'
+				<< "caba"s << '\n'
+				<< "aba"s;
+			std::ostringstream output(std::ios_base::ate);
+			s8_exam_problems::B_CheatSheet2(static_cast<std::iostream&>(input), output);
+			std::stringstream res;
+			res << "YES"s << '\n';
+			assert(output.str() == res.str());
+		}
+
+
 		{
 			std::stringstream input;
 			input << "theexamiwillpasstheexam"s << '\n'
